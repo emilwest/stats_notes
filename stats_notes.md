@@ -78,6 +78,10 @@ full_dates <- full_dates %>% mutate(month = format(date, "%m"), year = format(da
 
 # you can merge the full dates with a dataframe that also contains year & month. na:s automatically added
 merge(full_dates, df, by = c("year", "month"), all.x = TRUE)
+
+# you can combine year & month columns into a single column as:
+df %>% 
+  mutate(new_d = format( make_date(year, month), "%Y-%m" ) )
 ```
 
 

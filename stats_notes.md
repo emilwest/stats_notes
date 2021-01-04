@@ -63,10 +63,12 @@ prop.table() # with proportions
 ```
 
 # Create a sequence of dates 
+
+```r
 full_dates <- seq(as.Date("2016-09-01"), by = "month", length.out =39)
 full_dates <- tibble(date = full_dates)
 full_dates <- full_dates %>% mutate(month = format(date, "%m"), year = format(date, "%Y") )
-
+```
 
 
 

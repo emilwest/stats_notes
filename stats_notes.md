@@ -68,6 +68,9 @@ prop.table() # with proportions
 full_dates <- seq(as.Date("2016-09-01"), by = "month", length.out =39)
 full_dates <- tibble(date = full_dates)
 full_dates <- full_dates %>% mutate(month = format(date, "%m"), year = format(date, "%Y") )
+
+# you can merge the full dates with a dataframe that also contains year & month. na:s automatically added
+merge(full_dates, df, by = c("year", "month"), all.x = TRUE)
 ```
 
 

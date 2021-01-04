@@ -62,6 +62,13 @@ table()
 prop.table() # with proportions
 ```
 
+## Add totals to table
+
+```r
+# 2=sum cols, 1=sum rows, otherwise it sums both
+tab <- addmargins(table(df$Company,df$Marital), 2)
+```
+
 # Create a sequence of dates 
 
 ```r

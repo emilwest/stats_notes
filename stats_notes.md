@@ -98,34 +98,18 @@ cut(tmp2$Antal, breaks = c(-Inf,20,50,Inf), labels = c("\u226420", "21-50", "50-
 # Data för Sverigekarta
 tmp1 <- tempfile()
 download.file("http://api.thenmap.net/v2/se-7/geo/2020-08-14", destfile = tmp1)
-county <- read_sf(tmp1) # Read simple features or layers from file or database
+county <- read_sf(tmp1)
+county <- st_transform(x = county, crs = 3006)
+county <- merge(county, antal, by.x = "id", by.y = "Kommun", all.x=T)
 
-# Transforms coordinates of object to new projection.
-# crs = coordinate reference system: integer with the EPSG code
-county <- st_transform(x = county, crs = 3006) 
-
-county <- merge(county, bef, by.x = "id", by.y = "Kommun")
-
-tmp2 <- st_as_sf(kord, coords = c("lat", "long"), crs = 4326, agr = "constant") # Convert foreign object to an sf object
-tmp2 <- st_transform(x = tmp2, crs = 3006)
-
-# create circles 
-ID_circle <- c("Lund", "Karlskrona", "Linköping", "Uppsala", "Örebro", "Umeå", "Solna", "Gårda")
-data_sf_utm <- tmp2[tmp2$Ort %in% ID_circle, ]
-circle1 <- sf::st_buffer(data_sf_utm, dist = 100000)
-circle2 <- sf::st_buffer(data_sf_utm, dist = 100000/2)
-circle3 <- sf::st_buffer(data_sf_utm, dist = 100000/4)
-
+county$size <- cut(county$Antal, breaks = c(0, 10, 100, 1000, Inf), 
+                    labels = c("1-10", "11-100", "101-1000", ">1000"))
+                    
+cls_size <- brewer.pal(4, "Reds")
 ggplot() +
-  geom_sf(data = county, aes(fill = size2)) +
-  #geom_sf(data = circle1, fill = "red", alpha = 0.2, inherit.aes = FALSE, lwd = 1) + 
-  geom_sf(data = circle2, fill = "yellow", alpha = 0.2, inherit.aes = FALSE, lwd = 1) + 
-  geom_sf(data = circle3, fill = "green", alpha = 0.2, inherit.aes = FALSE, lwd = 1) + 
-  geom_sf(data = tmp2, aes(size = size)) + 
+  geom_sf(data = county, aes(fill = size)) +
   theme_void() +
-  scale_size_manual(name = "Frequency (events/year)", values = sz) + 
   scale_fill_manual("Municipality size", values = cls_size) 
-
 ```
 
 

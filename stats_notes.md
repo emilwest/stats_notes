@@ -93,6 +93,7 @@ cut(tmp2$Antal, breaks = c(-Inf,20,50,Inf), labels = c("\u226420", "21-50", "50-
 
 # Create Swedish map of municipalities (kommuner)
 
+[Kommunkoder](https://www.scb.se/hitta-statistik/regional-statistik-och-kartor/regionala-indelningar/lan-och-kommuner/lan-och-kommuner-i-kodnummerordning/#Stockholms_lan)
 
 ```r
 # Data för Sverigekarta

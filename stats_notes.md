@@ -36,6 +36,12 @@ outlier_df %>%
 Note: outliers in `boxplot()` is computed differently. In that case,
 use `boxplot.stats()$out` to see outlier values.
 
+## Group boxplot by group
+
+```r
+boxplot(temp$num ~ temp$group)
+```
+
 # Table 1 : nice summary tables
 
 ```
@@ -128,4 +134,17 @@ ggplot() +
 ```
 
 
+# Statistical tests
 
+## Calculate power in t-test
+
+```r
+# delta: difference in means
+power.t.test(delta = 10, sd = 19, power = 0.8, sig.level = 0.05)
+```
+
+```r
+wilcox.test(df$num ~ temp$group)
+t.test(temp$num ~ temp$group)
+
+```

@@ -165,7 +165,6 @@ t.test(temp$num ~ temp$group)
 ### Generate survival curves
 
 ```r
-df$survival <- 1
 library(survival) # survival curves
 fit1 <- survfit(Surv( time , survival ) ~ variable, data=df)
 

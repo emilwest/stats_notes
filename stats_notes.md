@@ -109,6 +109,10 @@ df %>%
 ```r 
 cut(tmp2$Antal, breaks = c(-Inf,20,50,Inf), labels = c("\u226420", "21-50", "50-521"))
 # will show ≤20    21-50  50-521
+
+cut(0:10, breaks = c(0,  1, 4, 10, Inf), labels = c("0", "1-3", "4-9", "\u226510"), include.lowest = T,right=F )
+# [1] 0   1-3 1-3 1-3 4-9 4-9 4-9 4-9 4-9 4-9 ≥10
+#Levels: 0 1-3 4-9 ≥10
 ```
 
 # Create Swedish map of municipalities (kommuner)

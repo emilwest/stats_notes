@@ -159,3 +159,26 @@ wilcox.test(df$num ~ temp$group)
 t.test(temp$num ~ temp$group)
 
 ```
+
+# Survival analysis
+
+### Generate survival curves
+
+```r
+df$survival <- 1
+library(survival) # survival curves
+fit1 <- survfit(Surv( time , survival ) ~ variable, data=df)
+
+# Survival plot:
+#install.packages("survminer")
+library(survminer)
+ggsurvplot(fit1)
+```
+
+### Cox regression
+
+```r
+library(survival) 
+fit1 <- survfit(Surv( time , survival ) ~ variable, data=df)
+summary(fit1)
+```

@@ -105,6 +105,8 @@ df %>%
 ```
 
 # Use cut
+`right` = indicating if the intervals should be closed on the right (and open on the left) or vice versa
+`include.lowest` = indicating if an ‘x[i]’ equal to the lowest (or highest, for right = FALSE) ‘breaks’ value should be included.
 
 ```r 
 cut(tmp2$Antal, breaks = c(-Inf,20,50,Inf), labels = c("\u226420", "21-50", "50-521"))
@@ -113,6 +115,11 @@ cut(tmp2$Antal, breaks = c(-Inf,20,50,Inf), labels = c("\u226420", "21-50", "50-
 cut(0:10, breaks = c(0,  1, 4, 10, Inf), labels = c("0", "1-3", "4-9", "\u226510"), include.lowest = T,right=F )
 # [1] 0   1-3 1-3 1-3 4-9 4-9 4-9 4-9 4-9 4-9 ≥10
 #Levels: 0 1-3 4-9 ≥10
+
+# <19, ≥20 :
+cut(0:20, breaks = c(0,  19,  Inf),labels = c("<20", "\u226520"),include.lowest = T,right=T )
+#[1] <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 ≥20
+#Levels: <20 ≥20
 ```
 
 # Create Swedish map of municipalities (kommuner)

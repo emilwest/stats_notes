@@ -4,7 +4,7 @@ ranodm intercepts model: gruppspecifika intercept med egna unika effekter:
 tex (1 | student) interceptet 1 får variera mellan student till student
 lägg till random effects till vänster om |
 
-# Read files in R:
+# Read excel files in R:
 
 ```r
 # Excel: 
@@ -15,7 +15,9 @@ library("excel.link")
 xl.read.file(indata, password = "mypswd", write.res.password="mypswd")
 
 ```
+# Read files in R
 
+to do
 
 # Check outliers in boxplots: 
 

@@ -218,4 +218,4 @@ ggarrange(p1, p2, p3, ncol=3, common.legend = T, legend="right")
 ```
 Generates:
 
-[arrange.png]
+[Arrange example](arrange.png)

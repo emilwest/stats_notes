@@ -202,11 +202,10 @@ ggarrange(p1, p2, p3, ncol=3, common.legend = T, legend="right")
 
 Generates the following:
 
------------------------
-|     |        |       |
-|-----+        +-------|
-|-----+        +-------|
-|_____|________|_______|
+|   |   |   |
+|---|   |---|
+|   |   |   |
+|   |   |   |
 
 ```r
 # with common legend

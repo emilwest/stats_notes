@@ -127,6 +127,10 @@ cut(0:20, breaks = c(0,  19,  Inf),labels = c("<20", "\u226520"),include.lowest 
 [Kommunkoder](https://www.scb.se/hitta-statistik/regional-statistik-och-kartor/regionala-indelningar/lan-och-kommuner/lan-och-kommuner-i-kodnummerordning/#Stockholms_lan)
 
 ```r
+library(tidyverse)
+library(sf)
+library(RColorBrewer)
+
 # Data för Sverigekarta
 tmp1 <- tempfile()
 download.file("http://api.thenmap.net/v2/se-7/geo/2020-08-14", destfile = tmp1)
@@ -180,4 +184,43 @@ ggsurvplot(fit1)
 library(survival) 
 fit1 <- survfit(Surv( time , survival ) ~ variable, data=df)
 summary(fit1)
+```
+
+# ggplot2
+
+
+### Arrange plots
+
+```r
+library(ggpubr)
+ggarrange(p1, p2, p3)
+# with common legend:
+ggarrange(p1, p2, p3, ncol=3, common.legend = T, legend="right")
+```
+
+#### Arrange within arrange
+
+Generates the following:
+
+-----------------------
+|     |        |       |
+|-----+        +-------|
+|-----+        +-------|
+|_____|________|_______|
+
+```r
+# with common legend
+p1 <- ggarrange(p11  ,
+          p12 ,
+          p13 ,
+          ncol=1, nrow=3,  legend = "none"
+)
+p2 <- ggarrange( p_antal ,  legend = "none")
+p3 <- ggarrange(
+  p_21,
+  p_22 ,
+  p_23 , 
+  ncol=1,nrow=3, common.legend = T, legend="right"
+)
+ggarrange(p1, p2, p3, ncol=3, common.legend = T, legend="right")
 ```

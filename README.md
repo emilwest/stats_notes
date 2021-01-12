@@ -226,16 +226,6 @@ Generates:
 
 ### Legend
 
-```r
-library(tidyverse)
-p11 <- iris %>% ggplot(aes(Sepal.Length, Sepal.Width, color=Species)) + geom_point()
-# change title in legend:
-p11 + labs(color = "Hej") # or fill/group
-# Alternatively:
-p11 + scale_color_discrete("Hej")
-
-scale_fill_manual("Municipality size", values = cls_size, drop=FALSE)  
-```
 
 #### Legend title
 
@@ -258,7 +248,9 @@ library(RColorBrewer)
 p11 <- iris %>% ggplot(aes(Sepal.Length, Sepal.Width, color=Species)) + geom_point()
 
 # choose custom color palette 
-library(RColorBrewer)
+p11 + scale_color_brewer("Hej",palette = "Reds")
+
+# alternatively:
 num_categories <- 3
 cls_size <- brewer.pal(num_categories, "Reds") 
 p11 +  scale_color_manual("Hej", values = cls_size, drop=FALSE)

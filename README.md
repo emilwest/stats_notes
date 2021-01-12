@@ -200,13 +200,6 @@ ggarrange(p1, p2, p3, ncol=3, common.legend = T, legend="right")
 
 #### Arrange within arrange
 
-Generates the following:
-
-|   |   |   |
-|---|---|---|
-|   |   |   |
-|   |   |   |
-
 ```r
 # with common legend
 p1 <- ggarrange(p11  ,
@@ -223,3 +216,6 @@ p3 <- ggarrange(
 )
 ggarrange(p1, p2, p3, ncol=3, common.legend = T, legend="right")
 ```
+Generates:
+
+[arrange.png]

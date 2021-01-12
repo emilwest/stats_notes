@@ -223,3 +223,51 @@ ggarrange(p1, p2, p3, ncol=3, common.legend = T, legend="right")
 Generates:
 
 ![Arrange example](arrange.png)
+
+### Legend
+
+```r
+library(tidyverse)
+p11 <- iris %>% ggplot(aes(Sepal.Length, Sepal.Width, color=Species)) + geom_point()
+# change title in legend:
+p11 + labs(color = "Hej") # or fill/group
+# Alternatively:
+p11 + scale_color_discrete("Hej")
+
+scale_fill_manual("Municipality size", values = cls_size, drop=FALSE)  
+```
+
+#### Legend title
+
+```r
+library(tidyverse)
+p11 <- iris %>% ggplot(aes(Sepal.Length, Sepal.Width, color=Species)) + geom_point()
+# change title in legend:
+p11 + labs(color = "Hej") # or fill/group
+# Alternatively:
+p11 + scale_color_discrete("Hej")
+p11 + scale_fill_discrete("Hej") # if fill=Species
+p11 + scale_color_manual("Hej")  
+```
+
+#### Legend colors
+
+```r
+library(tidyverse)
+library(RColorBrewer)
+p11 <- iris %>% ggplot(aes(Sepal.Length, Sepal.Width, color=Species)) + geom_point()
+
+# choose custom color palette 
+library(RColorBrewer)
+num_categories <- 3
+cls_size <- brewer.pal(num_categories, "Reds") 
+p11 +  scale_color_manual("Hej", values = cls_size, drop=FALSE)
+# or if fill=Species, use: 
+# scale_fill_manual("Hej", values = cls_size, drop=FALSE)
+# scale_linetype_manual()
+
+# choose a pre-defined color palette:
+p11 + scale_color_viridis_d("Hej")
+p11 + scale_color_grey()
+
+```

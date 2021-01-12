@@ -246,9 +246,12 @@ p11 + scale_color_manual("Hej")
 library(tidyverse)
 library(RColorBrewer)
 p11 <- iris %>% ggplot(aes(Sepal.Length, Sepal.Width, color=Species)) + geom_point()
+p11_c <- ggplot(iris, aes(x=Sepal.Length, y=Petal.Length, color=Sepal.Width)) + geom_point()
 
 # choose custom color palette 
 p11 + scale_color_brewer("Hej",palette = "Reds")
+# continous:
+p11_c + scale_color_gradient(low = "white", high = "red")
 
 # alternatively:
 num_categories <- 3

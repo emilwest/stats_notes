@@ -201,17 +201,21 @@ ggarrange(p1, p2, p3, ncol=3, common.legend = T, legend="right")
 #### Arrange within arrange
 
 ```r
+library(tidyverse)
+library(ggpubr)
+# with common legend
+p11 <- iris %>% ggplot(aes(Sepal.Length, Sepal.Width, color=Species)) + geom_point()
 # with common legend
 p1 <- ggarrange(p11  ,
-          p12 ,
-          p13 ,
-          ncol=1, nrow=3,  legend = "none"
+                p11 ,
+                p11 ,
+                ncol=1, nrow=3,  legend = "none"
 )
-p2 <- ggarrange( p_antal ,  legend = "none")
+p2 <- ggarrange( p11 ,  legend = "none")
 p3 <- ggarrange(
-  p_21,
-  p_22 ,
-  p_23 , 
+  p11,
+  p11 ,
+  p11 , 
   ncol=1,nrow=3, common.legend = T, legend="right"
 )
 ggarrange(p1, p2, p3, ncol=3, common.legend = T, legend="right")

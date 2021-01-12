@@ -175,10 +175,11 @@ For testing the null hypothesis of independence of rows and columns in a conting
 ```r
 fisher.test( matrix(c(2,10,20,3),nrow=2,ncol=2)  )
 ```
+<!--
+```r
 
-//```r
-//```
-
+```
+-->
 
 # Survival analysis
 

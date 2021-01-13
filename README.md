@@ -155,7 +155,10 @@ ggplot() +
 
 ```r
 # delta: difference in means
+# Number of subjects needed to obtain 80% power
 power.t.test(delta = 10, sd = 19, power = 0.8, sig.level = 0.05)
+# calculate power from sample size:
+power.t.test(delta = 10, sd = 19, n=100, sig.level = 0.05)
 ```
 ## Wilcoxon rank sum test
 Also known as the Mann Whitney U test.

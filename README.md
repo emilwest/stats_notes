@@ -19,6 +19,22 @@ xl.read.file(indata, password = "mypswd", write.res.password="mypswd")
 
 to do
 
+
+# Save R results in Word file
+
+```r
+library(flextable) # converting dataframes to flextable objects
+library(officer) # for adding data to word document, like flextables
+
+# simplest example:
+tab1 <- matrix( c(1,2,3,4), ncol=2, nrow=2)
+word_export <- read_docx()
+word_export <- word_export %>% body_add_flextable( as.data.frame.matrix(tab1) %>% flextable()  )
+print(word_export, 'try.docx')
+
+
+```
+
 # Check outliers in boxplots: 
 
 ```r

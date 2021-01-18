@@ -31,7 +31,12 @@ tab1 <- matrix( c(1,2,3,4), ncol=2, nrow=2)
 word_export <- read_docx()
 word_export <- word_export %>% body_add_flextable( as.data.frame.matrix(tab1) %>% flextable()  )
 print(word_export, 'try.docx')
+```
 
+
+```r
+# add new page:
+mydoc %>% body_add_break()
 
 ```
 

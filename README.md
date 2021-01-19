@@ -194,6 +194,12 @@ Tests difference in means
 t.test(temp$num ~ temp$group)
 ```
 
+## Correlation incl p-values and confidence interval
+
+```r
+cor.test()
+```
+
 ## Fisher's exact test
 For testing the null hypothesis of independence of rows and columns in a contingency table with fixed marginals.
 ```r

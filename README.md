@@ -26,6 +26,9 @@ to do
 detach(package:officer)
 ```
 
+## Restart R-session and unload packages
+RStudio: command/ctrl + shift + F10
+
 
 # Save R results in Word file
 

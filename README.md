@@ -19,6 +19,13 @@ xl.read.file(indata, password = "mypswd", write.res.password="mypswd")
 
 to do
 
+# Unload library/package from R session without restarting
+
+```r
+# unloading library(officer)
+detach(package:officer)
+```
+
 
 # Save R results in Word file
 

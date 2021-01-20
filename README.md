@@ -1,8 +1,9 @@
 # Mixed model
 https://m-clark.github.io/mixed-models-with-R/random_intercepts.html
-ranodm intercepts model: gruppspecifika intercept med egna unika effekter: 
-tex (1 | student) interceptet 1 får variera mellan student till student
-lägg till random effects till vänster om |
+
+Random intercepts model: group-specific intercepts with own unique effects.
+E.g. (1 | student) the intercept 1 is allowed to vary between student to student.
+The random effect is to the left of |
 
 # Read excel files in R:
 

@@ -222,6 +222,7 @@ fisher.test( matrix(c(2,10,20,3),nrow=2,ncol=2)  )
 Kappa measures the agreement between two variables, taking into account the agreement that would happen by chance.
 Kappa = (O-E) / (1-E), where O = observed agreement, E = expected agreement assuming independence.
 
+
 ```r
 library(psych) 
 tab<-matrix(c(12,20,20,12),ncol=2,nrow=2)

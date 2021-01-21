@@ -340,3 +340,24 @@ p11 + scale_color_viridis_d("Hej")
 p11 + scale_color_grey()
 
 ```
+
+# Stringr string manipulation
+
+```r
+library(tidyverse)
+df <- tibble(text = c("hej01", "HEJ:;_", "158c222e9b2ba8408") )
+df
+
+# detect presence of pattern match in string:
+str_detect(df$text, "hej")
+# can be used to filter:
+df %>% filter(str_detect(text, pattern = "hej"))
+
+# find indexes of strings
+str_which(df$text, "[a-z]" )
+
+# count number of matches in a string:
+str_count(df$text, "[0-9]")
+
+str_locate(df$text, "[0-9]")
+```

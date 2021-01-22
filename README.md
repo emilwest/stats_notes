@@ -341,6 +341,22 @@ p11 + scale_color_grey()
 
 ```
 
+### Bar plot
+
+```r
+# stat=identity  : use own y-values, rather than counting the aggregate number of rows for each x (stat=count)
+# position=dodge : place bars side by side instead of stacked
+ geom_bar(stat="identity", position = "dodge")
+
+# add labels above bar plot, for example percentage value
++ geom_text(aes(label= str_glue("{value*100}%") ),
+                position=position_dodge(width=0.9),
+            vjust=-0.25) 
+
+```
+
+
+
 # Stringr string manipulation
 
 to do: create file and link to file

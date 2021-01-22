@@ -343,6 +343,8 @@ p11 + scale_color_grey()
 
 # Stringr string manipulation
 
+to do: create file and link to file
+
 ```r
 library(tidyverse)
 df <- tibble(text = c("hej01", "HEJ:;_", "158c222e9b2ba8408") )

@@ -314,6 +314,7 @@ p11 + scale_fill_discrete("Hej") # if fill=Species
 p11 + scale_color_manual("Hej")  
 ```
 
+
 #### Legend colors
 
 ```r
@@ -355,6 +356,14 @@ p11 + scale_color_grey()
 
 ```
 
+### Plot text column in ggplot in the same order it appears in the data frame
+
+```r
+# procedure is a text column
+f <- function(x) factor(x, levels = unique(x))
+reshape2::melt(tmp, id.vars = "Procedure") %>%
+  ggplot(aes(x=f(Procedure), y=value*100, fill=variable)) 
+```
 
 
 # Stringr string manipulation

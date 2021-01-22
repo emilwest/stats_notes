@@ -256,7 +256,7 @@ ggsurvplot(fit1)
 
 ```r
 library(survival) 
-fit1 <- survfit(Surv( time , survival ) ~ variable, data=df)
+fit1 <- coxph(Surv( time , survival ) ~ variable, data=df)
 summary(fit1)
 ```
 

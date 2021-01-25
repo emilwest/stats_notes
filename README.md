@@ -259,6 +259,59 @@ library(survival)
 fit1 <- coxph(Surv( time , survival ) ~ variable, data=df)
 summary(fit1)
 ```
+### Calculate binomial confidence interval
+
+```r 
+binom.test(40, 95) # num successes, num trials
+```
+
+With CI in parenthesis for.ex. (10.1-15.5%) calculated from percentage of success:
+```r 
+library(stringr)
+calc_conf <- function(perc, n){
+  test <- round(perc*n)
+  res  <- binom.test(test, n)
+  lower <- res$conf.int[1] %>% round(3) *100 
+  upper <- res$conf.int[2] %>% round(3) *100
+  lower <- format(lower, nsmall = 1)
+  upper <- format(upper, nsmall = 1)
+  return(str_glue("({lower}-{upper}%)"))
+}
+calc_conf(0.42, 95)
+```
+
+### Calculate difference in binomial confidence intervals
+
+```r
+library(DescTools)
+# x = number of successes in group 1 or 2, n = number of trials in group 1 or 2 
+BinomDiffCI(x1=40,n1=95,x2=2,n2=47)
+```
+
+Nicely formatted CI calculated from percentage of success:
+```r
+library(stringr)
+bindiff <- function(perc_1, n_1, perc_2, n_2){
+  test1 <- round(perc_1*n_1)
+  test2 <- round(perc_2*n_2) 
+  
+  res <- BinomDiffCI(test1,n_1,test2,n_2)
+  val <- res[1] %>% round(3) *100
+  lower <- res[2] %>% round(3) *100
+  upper <- res[3] %>% round(3) *100
+  val <- format(val, nsmall = 1)
+  lower <- format(lower, nsmall = 1)
+  upper <- format(upper, nsmall = 1)
+  
+  return(
+    list(test1=test1,test2=test2, 
+    ci = str_glue("{val}% ({lower}-{upper}%)")
+    ))
+}
+bindiff(0.42,95,0.042,47)
+```
+
+
 
 # ggplot2
 

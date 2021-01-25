@@ -625,3 +625,11 @@ str_detect(strings, pattern)
 str_detect(strings, fixed(pattern))
 str_detect(strings, coll(pattern))
 ```
+# Powershell
+Not really part of statistics but good to know!
+
+### grep -r in powershell
+
+```powershell
+dir C:\Users\emiwes\Documents\experiments -Recurse | Select-String -pattern "my search"
+```

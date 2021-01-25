@@ -232,33 +232,6 @@ tab<-matrix(c(12,20,20,12),ncol=2,nrow=2)
 psych::cohen.kappa(tab) # -0.25
 ```
 
-<!--
-```r
-
-```
--->
-
-# Survival analysis
-
-### Generate survival curves
-
-```r
-library(survival) # survival curves
-fit1 <- survfit(Surv( time , survival ) ~ variable, data=df)
-
-# Survival plot:
-#install.packages("survminer")
-library(survminer)
-ggsurvplot(fit1)
-```
-
-### Cox regression
-
-```r
-library(survival) 
-fit1 <- coxph(Surv( time , survival ) ~ variable, data=df)
-summary(fit1)
-```
 ### Calculate binomial confidence interval
 
 ```r 
@@ -311,6 +284,36 @@ bindiff <- function(perc_1, n_1, perc_2, n_2){
 bindiff(0.42,95,0.042,47) # 37.8% (24.2-48.0%)
 ```
 
+
+
+
+<!--
+```r
+
+```
+-->
+
+# Survival analysis
+
+### Generate survival curves
+
+```r
+library(survival) # survival curves
+fit1 <- survfit(Surv( time , survival ) ~ variable, data=df)
+
+# Survival plot:
+#install.packages("survminer")
+library(survminer)
+ggsurvplot(fit1)
+```
+
+### Cox regression
+
+```r
+library(survival) 
+fit1 <- coxph(Surv( time , survival ) ~ variable, data=df)
+summary(fit1)
+```
 
 
 # ggplot2

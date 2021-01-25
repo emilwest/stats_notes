@@ -277,7 +277,7 @@ calc_conf <- function(perc, n){
   upper <- format(upper, nsmall = 1)
   return(str_glue("({lower}-{upper}%)"))
 }
-calc_conf(0.42, 95)
+calc_conf(0.42, 95) # (32.0-52.7%)
 ```
 
 ### Calculate difference in binomial confidence intervals
@@ -308,7 +308,7 @@ bindiff <- function(perc_1, n_1, perc_2, n_2){
     ci = str_glue("{val}% ({lower}-{upper}%)")
     ))
 }
-bindiff(0.42,95,0.042,47)
+bindiff(0.42,95,0.042,47) # 37.8% (24.2-48.0%)
 ```
 
 

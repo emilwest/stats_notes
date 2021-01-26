@@ -294,7 +294,8 @@ bindiff <- function(perc_1, n_1, perc_2, n_2){
 bindiff(0.42,95,0.042,47) # 37.8% (24.2-48.0%)
 ```
 
-
+### Ordinal logistic regression
+Proportinal odds: effekten av de oberoende variablerna på den beroende ordinala variabeln är konstant för alla nivåer i den beroende variabeln.
 
 
 <!--

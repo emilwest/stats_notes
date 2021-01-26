@@ -154,6 +154,16 @@ cut(0:20, breaks = c(0,  19,  Inf),labels = c("<20", "\u226520"),include.lowest 
 #Levels: <20 ≥20
 ```
 
+# Split dataframe into groups
+Returns list of dataframes
+
+```r
+library(tidyverse) 
+mtcars %>% split(.$cyl)
+```
+
+
+
 # Create Swedish map of municipalities (kommuner)
 
 [Kommunkoder](https://www.scb.se/hitta-statistik/regional-statistik-och-kartor/regionala-indelningar/lan-och-kommuner/lan-och-kommuner-i-kodnummerordning/#Stockholms_lan)

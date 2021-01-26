@@ -625,6 +625,7 @@ str_detect(strings, pattern)
 str_detect(strings, fixed(pattern))
 str_detect(strings, coll(pattern))
 ```
+
 # Powershell
 Not really part of statistics but good to know!
 
@@ -632,4 +633,21 @@ Not really part of statistics but good to know!
 
 ```powershell
 dir C:\Users\emiwes\Documents\experiments -Recurse | Select-String -pattern "my search"
+```
+
+# Run/execute program/scripts from R using system()
+
+```r
+system("powershell ls -rec H:\\Documents\\")
+```
+
+### Search and replace multiple files in folder
+Add ls -rec for subfolders and for ex. -Include *.txt for including txt files only 
+```r
+system("powershell (ls H:\\Documents\\multiple_tests\\*) |
+       Foreach-Object{ $f=$_; (gc $f.PSPath) |
+       Foreach-Object {$_ -replace '\\\"hej', 'hej' } |
+       Set-Content $f.PSPath
+       }
+       ")
 ```

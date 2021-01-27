@@ -432,6 +432,35 @@ reshape2::melt(tmp, id.vars = "Procedure") %>%
   ggplot(aes(x=f(Procedure), y=value*100, fill=variable)) 
 ```
 
+# Tidyeval
+
+### Quote contents as a quosure
+Quosure- An expression that has been saved with an environment (aka a closure).  
+A quosure can be evaluated later in the stored environment to  return a predictable result.
+```r
+a <- 1
+b <- 2
+q <- rlang::quo(a+b)
+q
+```
+
+### Quote within function
+Useful when doing ggplot functions. For example with this function you can create a function like this `f(mtcars, disp, mpg )`.
+!! uncoutes the symbol.
+```r
+# !! unquotes the symbol 
+f <- function(df,a,b){
+  a <- rlang::enquo(a)
+  b <- rlang::enquo(b)
+  
+  df %>%
+    ggplot(aes(x=!!a,y=!!b)) + 
+    geom_point()
+}
+mtcars
+f(mtcars, disp, mpg )
+```
+
 
 # Stringr string manipulation
 

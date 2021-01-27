@@ -445,6 +445,7 @@ q <- rlang::quo(a+b)
 #expr: ^a + b
 #env:  global
 ```
+Evaluate it with `rlang::eval_tidy(q)`, returning 3.
 
 ### Quote within function
 Useful when doing ggplot functions. For example with this function you can create a function like this `f(mtcars, disp, mpg )`, where disp and mpg are columns within the dataframe mtcars (included in tidyverse). 

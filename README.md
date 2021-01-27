@@ -433,6 +433,8 @@ reshape2::melt(tmp, id.vars = "Procedure") %>%
 ```
 
 # Tidyeval
+Code - a sequence of symbols/constants/calls that will return a result if evaluated. Code can be:
+(i) Evaluated immediately (Standard Eval), (ii) Quoted to use later (Non-Standard Eval).
 
 ### Quote contents as a quosure
 Quosure- An expression that has been saved with an environment (aka a closure).  

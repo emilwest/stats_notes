@@ -441,7 +441,9 @@ A quosure can be evaluated later in the stored environment to  return a predicta
 a <- 1
 b <- 2
 q <- rlang::quo(a+b)
-q
+# <quosure>
+#expr: ^a + b
+#env:  global
 ```
 
 ### Quote within function

@@ -445,7 +445,7 @@ q
 ```
 
 ### Quote within function
-Useful when doing ggplot functions. For example with this function you can create a function like this `f(mtcars, disp, mpg )`.
+Useful when doing ggplot functions. For example with this function you can create a function like this `f(mtcars, disp, mpg )`, where disp and mpg are columns within the dataframe mtcars (included in tidyverse). 
 !! uncoutes the symbol.
 ```r
 library(tidyverse)

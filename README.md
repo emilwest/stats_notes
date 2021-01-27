@@ -448,11 +448,11 @@ q
 Useful when doing ggplot functions. For example with this function you can create a function like this `f(mtcars, disp, mpg )`.
 !! uncoutes the symbol.
 ```r
-# !! unquotes the symbol 
+library(tidyverse)
 f <- function(df,a,b){
   a <- rlang::enquo(a)
   b <- rlang::enquo(b)
-  
+  # !! unquotes the symbol 
   df %>%
     ggplot(aes(x=!!a,y=!!b)) + 
     geom_point()

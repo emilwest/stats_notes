@@ -465,6 +465,45 @@ f <- function(df,a,b){
 mtcars
 f(mtcars, disp, mpg )
 ```
+# Purr
+
+###  map: apply function to each element of list or vector
+
+```r
+# map: apply function to each element of list of vector
+mtcars %>% map(., sum) # sum each col in df
+pmap_dbl(mtcars,sum) # sum of each row
+by_cyl <- mtcars %>% split(.$cyl) # list of dfs
+mods <- by_cyl %>% map(~ lm(mpg ~ wt, data = .)) # in each df, create linear model
+
+```
+
+
+### Nest: split dataframe into list of dataframes
+
+```r
+library(tidyverse)
+n_iris <- iris %>%  group_by(Species) %>%  nest()
+## A tibble: 3 x 2
+## Groups:   Species [3]
+#  Species    data             
+#  <fct>      <list>           
+#1 setosa     <tibble [50 x 4]>
+#2 versicolor <tibble [50 x 4]>
+#3 virginica  <tibble [50 x 4]>
+```
+
+### Join each element in nested dataframe with another dataframe
+
+```r
+join_df <- function(df_nest, df_other) {
+  df_all <- inner_join(df_nest, df_other, by = c("name1" = "name2"))
+  return(df_all)
+}
+
+tmp_n2 <- tmp_n %>%
+  mutate(new_data = map(data, ~ join_df(., df_of_interest)))
+```
 
 
 # Stringr string manipulation

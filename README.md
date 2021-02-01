@@ -505,6 +505,45 @@ tmp_n2 <- tmp_n %>%
   mutate(new_data = map(data, ~ join_df(., df_of_interest)))
 ```
 
+### Read nested files
+
+Consider the dataframe df:
+
+| matrix | filePathIn  |
+|--------|-------------|
+| A      | my_dir/A.px |
+| B      | my_dir/B.px |
+| C      | my_dir/C.px |
+
+```r
+inFile_n <- df %>% group_by(matrix) %>% nest()
+# läs in alla matriser:
+inFile_alla <- inFile_n %>% 
+  mutate( rrr = map(data, function(x) read.px(x$filePathIn) ) )
+# alternatively:
+#inFile_n %>% 
+#  mutate( rrr = map(data, ~ read.px(.x$filePathIn)  ) )
+```
+where:
+
+
+inFile_n:
+
+| matrix \<chr\> | data \<list\>      |
+|----------------|--------------------|
+| A              | \<tibble [1 x 2]\> |
+| B              | \<tibble [1 x 2]\> |
+| C              | \<tibble [1 x 2]\> |
+
+
+inFile_alla:
+
+| matrix \<chr\> | data \<list\>      | rrr \<list\>             |
+|----------------|--------------------|--------------------------|
+| A              | \<tibble [1 x 2]\> | \<tibble [27,000 x 7]\>  |
+| B              | \<tibble [1 x 2]\> | \<tibble [25,200 x 6]\>  |
+| C              | \<tibble [1 x 2]\> | \<tibble [126,000 x 7]\> |
+
 
 # Stringr string manipulation
 

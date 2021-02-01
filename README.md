@@ -230,7 +230,7 @@ fisher.test( matrix(c(2,10,20,3),nrow=2,ncol=2)  )
 In Python: 
 ```python
 import scipy.stats as stats
-oddsratio, pvalue = stats.fisher_exact([[12, 20], [20, 12]])
+oddsratio, pvalue = stats.fisher_exact([[2, 10], [20, 3]])
 # (0.03, 8.124495626949326e-05)
 ```
 

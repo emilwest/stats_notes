@@ -419,7 +419,7 @@ p11 + scale_color_grey()
 ### Bar plot
 
 ```r
-# stat=identity  : use own y-values, rather than counting the aggregate number of rows for each x (stat=count)
+# stat=identity: use own y-values, rather than counting the aggregate number of rows for each x (stat=count)
 # position=dodge : place bars side by side instead of stacked
  geom_bar(stat="identity", position = "dodge")
 

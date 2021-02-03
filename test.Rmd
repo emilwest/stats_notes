@@ -24,3 +24,16 @@ summary(cars)
 ```{r}
 2+2+2
 ```
+
+
+
+```{r}
+fisher.test( matrix(c(2,10,20,3),nrow=2,ncol=2)  )
+# odds ratio: 0.035, p=0.00008124
+```
+In Python: 
+```{python}
+import scipy.stats as stats
+oddsratio, pvalue = stats.fisher_exact([[2, 10], [20, 3]])
+# (0.03, 8.124495626949326e-05)
+```

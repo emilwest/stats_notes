@@ -32,3 +32,31 @@ summary(cars)
 ```
 
     ## [1] 6
+
+``` r
+fisher.test( matrix(c(2,10,20,3),nrow=2,ncol=2)  )
+```
+
+    ## 
+    ##  Fisher's Exact Test for Count Data
+    ## 
+    ## data:  matrix(c(2, 10, 20, 3), nrow = 2, ncol = 2)
+    ## p-value = 8.124e-05
+    ## alternative hypothesis: true odds ratio is not equal to 1
+    ## 95 percent confidence interval:
+    ##  0.002550506 0.265899606
+    ## sample estimates:
+    ## odds ratio 
+    ## 0.03534288
+
+``` r
+# odds ratio: 0.035, p=0.00008124
+```
+
+In Python:
+
+``` python
+import scipy.stats as stats
+oddsratio, pvalue = stats.fisher_exact([[2, 10], [20, 3]])
+# (0.03, 8.124495626949326e-05)
+```

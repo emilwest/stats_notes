@@ -18,7 +18,7 @@ xl.read.file(indata, password = "mypswd", write.res.password="mypswd")
 ```
 # Read files in R
 
-to do
+To do
 
 # Unload library/package from R session without restarting
 

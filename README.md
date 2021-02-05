@@ -279,6 +279,7 @@ BinomDiffCI(x1=40,n1=95,x2=2,n2=47)
 ```
 
 Nicely formatted CI calculated from percentage of success:
+
 ```r
 library(stringr)
 bindiff <- function(perc_1, n_1, perc_2, n_2){

@@ -155,7 +155,7 @@ cut(0:20, breaks = c(0,  19,  Inf),labels = c("<20", "\u226520"),include.lowest 
 ```
 
 # Split dataframe into groups
-Returns list of dataframes
+Returns list of dataframes.
 
 ```r
 library(tidyverse) 

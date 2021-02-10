@@ -155,6 +155,7 @@ cut(0:20, breaks = c(0,  19,  Inf),labels = c("<20", "\u226520"),include.lowest 
 ```
 
 # Split dataframe into groups
+
 Returns list of dataframes.
 
 ```r
@@ -203,6 +204,7 @@ power.t.test(delta = 10, sd = 19, power = 0.8, sig.level = 0.05)
 power.t.test(delta = 10, sd = 19, n=100, sig.level = 0.05)
 ```
 ## Wilcoxon rank sum test
+
 Also known as the Mann Whitney U test.
 
 ```r
@@ -210,6 +212,7 @@ wilcox.test(df$num ~ temp$group)
 ```
 
 ## t-test
+
 Tests difference in means
 ```r
 t.test(temp$num ~ temp$group)
@@ -222,6 +225,7 @@ cor.test()
 ```
 
 ## Fisher's exact test
+
 For testing the null hypothesis of independence of rows and columns in a contingency table with fixed marginals.
 ```r
 fisher.test( matrix(c(2,10,20,3),nrow=2,ncol=2)  )

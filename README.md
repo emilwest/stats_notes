@@ -3,7 +3,7 @@ https://m-clark.github.io/mixed-models-with-R/random_intercepts.html
 
 Random intercepts model: group-specific intercepts with own unique effects.
 E.g. (1 | student) the intercept 1 is allowed to vary between student to student.
-The random effect is to the left of |
+The random effect is to the left of |.
 
 # Read excel files in R:
 

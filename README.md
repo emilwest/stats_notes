@@ -205,7 +205,7 @@ power.t.test(delta = 10, sd = 19, n=100, sig.level = 0.05)
 ```
 ## Wilcoxon rank sum test
 
-Also known as the Mann Whitney U test.
+Also known as the Mann-Whitney U test.
 
 ```r
 wilcox.test(df$num ~ temp$group)

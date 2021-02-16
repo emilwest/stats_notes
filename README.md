@@ -27,8 +27,11 @@ To do
 detach(package:officer)
 ```
 
-## Restart R-session and unload packages
-RStudio: command/ctrl + shift + F10
+## RStudio useful shortcuts
+
+Restart R-session and unload packages: command/ctrl + shift + F10
+Auto-indent: ctrl + i
+Edit multiple lines simultaneusly (increase the blinking line vertically): ctrl + alt + up/down arrow
 
 
 # Save R results in Word file

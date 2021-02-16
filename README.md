@@ -30,7 +30,9 @@ detach(package:officer)
 ## RStudio useful shortcuts
 
 Restart R-session and unload packages: command/ctrl + shift + F10
+
 Auto-indent: ctrl + i
+
 Edit multiple lines simultaneusly (increase the blinking line vertically): ctrl + alt + up/down arrow
 
 

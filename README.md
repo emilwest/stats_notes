@@ -450,12 +450,15 @@ reshape2::melt(tmp, id.vars = "Procedure") %>%
 ```
 
 # Tidyeval
+
 Code - a sequence of symbols/constants/calls that will return a result if evaluated. Code can be:
 (i) Evaluated immediately (Standard Eval), (ii) Quoted to use later (Non-Standard Eval).
 
 ### Quote contents as a quosure
+
 Quosure- An expression that has been saved with an environment (aka a closure).  
 A quosure can be evaluated later in the stored environment to  return a predictable result.
+
 ```r
 a <- 1
 b <- 2
@@ -464,6 +467,7 @@ q <- rlang::quo(a+b)
 #expr: ^a + b
 #env:  global
 ```
+
 Evaluate it with `rlang::eval_tidy(q)`, returning 3.
 
 ### Quote within function

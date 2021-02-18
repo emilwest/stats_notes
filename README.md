@@ -29,7 +29,7 @@ detach(package:officer)
 
 ## RStudio useful shortcuts
 
-Restart R-session and unload packages: command/ctrl + shift + F10
+Restart R-session and unload packages: command/ctrl + shift + F10.
 
 Auto-indent: ctrl + i
 

@@ -398,6 +398,13 @@ p11 + scale_fill_discrete("Hej") # if fill=Species
 p11 + scale_color_manual("Hej")  
 ```
 
+#### Change the legend label text
+
+```r
++ scale_color_discrete(labels = c("A",  "B", "C")) # for ggplot(aes(color=category))
++ scale_fill_discrete(labels = c("A",  "B", "C")) # for ggplot(aes(fill=category))
+```
+
 
 #### Legend colors
 

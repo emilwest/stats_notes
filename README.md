@@ -5,16 +5,28 @@ Random intercepts model: group-specific intercepts with own unique effects.
 E.g. (1 | student) the intercept 1 is allowed to vary between student to student.
 The random effect is to the left of |.
 
-# Read excel files in R:
+# Read/write excel files in R:
 
 ```r
-# Excel: 
-readxl::read_xlsx(name_of_file)
+# Read xlsx/xls:
+readxl::read_xlsx(name_of_file) 
+readxl::read_xls(name_of_file) # or readxl::read_excel(name_of_file) for guessing xls or xlsx
+# Read xlsx:
+openxlsx::read.xlsx(name_of_file) # only for xlsx
 
 # Password protected excel:
 library("excel.link")
 xl.read.file(indata, password = "mypswd", write.res.password="mypswd")
 
+# Write excel files:
+library(openxlsx)
+write.xlsx(df, file = "Output/myfile.xlsx")
+
+# Write multiple data frames as sheets in single excel file:
+list_of_datasets <- list("Sheet name 1" = df1, 
+                         "Sheet name 2" = df2,
+                         "Sheet name 3" = df3)
+write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")                    
 ```
 # Read files in R
 

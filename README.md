@@ -26,7 +26,7 @@ write.xlsx(df, file = "Output/myfile.xlsx")
 list_of_datasets <- list("Sheet name 1" = df1, 
                          "Sheet name 2" = df2,
                          "Sheet name 3" = df3)
-write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")                    
+openxlsx::write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")                    
 ```
 # Read files in R
 

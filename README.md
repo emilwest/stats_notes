@@ -230,7 +230,8 @@ wilcox.test(df$num ~ temp$group)
 
 ## t-test
 
-Tests difference in means
+Tests difference in means.
+
 ```r
 t.test(temp$num ~ temp$group)
 ```

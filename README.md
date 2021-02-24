@@ -278,6 +278,7 @@ binom.test(40, 95) # num successes, num trials
 ```
 
 With CI in parenthesis for.ex. (10.1-15.5%) calculated from percentage of success:
+
 ```r 
 library(stringr)
 calc_conf <- function(perc, n){

@@ -816,3 +816,26 @@ system("powershell (ls H:\\Documents\\multiple_tests\\*) |
        }
        ")
 ```
+
+# Git
+
+```git
+# open global .gitconfig in ~/.gitconfig. To find where ~ is on windows, type echo $HOME
+git config --global --edit
+# create and switch to branch:
+git checkout -b main/emil_westin
+# push to your current branch:
+git push origin HEAD
+# push to main directly:
+git push origin HEAD:main 
+# show changes:
+git diff 
+# add everything to staged:
+git add -A
+# unstage all files:
+git reset 
+# unstage specific file:
+git restore --staged file.txt
+# commit:
+git commit -m "message"
+```

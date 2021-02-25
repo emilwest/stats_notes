@@ -819,9 +819,13 @@ system("powershell (ls H:\\Documents\\multiple_tests\\*) |
 
 # Git
 
-Using git version 2.30.0.windows.2
+Git is a distributed version control system that is really useful to know.
+
+
 
 ```git
+Note: [Using git version 2.30.0.windows.2]
+
 # open global .gitconfig in ~/.gitconfig. To find where ~ is on windows, type echo $HOME
 git config --global --edit
 # create and switch to branch:
@@ -840,4 +844,10 @@ git reset
 git restore --staged file.txt
 # commit:
 git commit -m "message"
+# to modify previous commit, for ex include a new file, type:
+git commit --amend 
+# if you already have a folder that you want to track with version conrol and associate with a remote repository:
+git remote add origin https://linktoyourremotereporitory
+# clone a repository (get a local copy incl all version history):
+git clone https://linktoremotereporitory
 ```

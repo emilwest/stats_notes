@@ -819,6 +819,8 @@ system("powershell (ls H:\\Documents\\multiple_tests\\*) |
 
 # Git
 
+Using git version 2.30.0.windows.2
+
 ```git
 # open global .gitconfig in ~/.gitconfig. To find where ~ is on windows, type echo $HOME
 git config --global --edit

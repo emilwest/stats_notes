@@ -47,6 +47,8 @@ Auto-indent: ctrl + i
 
 Edit multiple lines simultaneusly (increase the blinking line vertically): ctrl + alt + up/down arrow
 
+Duplicate current line: ctrl + shift + up/down
+
 
 # Save R results in Word file
 

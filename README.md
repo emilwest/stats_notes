@@ -70,6 +70,44 @@ mydoc %>% body_add_break()
 
 ```
 
+Function for adding R table to word document:
+```r
+myft <- function(mydoc, tab, title) {
+  res <- body_add_par(mydoc, "")
+  res <- body_add_par(mydoc, title, style = "Tabellrubrik_")
+  res <- body_add_flextable(mydoc, flextable(tab %>% as.data.frame.matrix() %>% rownames_to_column(" ")) %>% autofit(), align = "left") 
+  return(res)
+}
+mydoc <- myft(mydoc, tt0, "Table 1. xxx")
+```
+
+Template:
+
+```r
+library(flextable)
+library(officer)
+
+setwd("<set working dir>")
+getwd()
+
+inmall <- "word_template.docx"
+utmall <- "out_file.docx"
+
+# RAPPORT: IMPORT --------------------------------------------------------------
+mydoc <- read_docx(inmall)
+
+# RAPPORT: TITLE PAGE ----------------------------------------------------------
+mydoc <- body_replace_all_text(mydoc, "TITLE", "My title page", only_at_cursor = F)
+mydoc <- body_replace_all_text(mydoc, "DATE", as.character(Sys.Date()), only_at_cursor = F)
+
+# RAPPORT: SECTION 1 -----------------------------------------------------------
+mydoc <- body_add_par(mydoc, "Descriptive statistics", style = "heading 1", pos = "before")
+
+# RAPPORT: EXPORT --------------------------------------------------------------
+print(mydoc, utmall)
+shell.exec(utmall)
+```
+
 # Check outliers in boxplots: 
 
 ```r

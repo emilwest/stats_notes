@@ -504,6 +504,48 @@ p11 + scale_color_grey()
 
 ```
 
+Dodging overlapping labels:
+
+```r
+p <- ggplot(mpg) +
+  geom_bar(aes(x = manufacturer)) + 
+  theme(axis.text.x = element_text(size = 11))
+# Use guide_axis to dodge the labels
+p + 
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+```
+
+
+### Binning scales
+Introduced in ggplot2 3.3.0. A binning scale takes continuous data and makes it discrete by assigning each data point to a bin.
+Allows continuous data to be used with discrete palettes
+
+```r
+p <- ggplot(mpg) + 
+  geom_point(aes(displ, cty, size = hwy, colour = hwy))
+
+p + 
+  scale_size_binned()
+
+# show outermost ticks:
+p + 
+  scale_size_binned(guide = guide_bins(show.limits = TRUE))
+  
+p + 
+  scale_colour_binned()
+  
+# place data at the center of the bin they belong to:
+p + 
+  scale_x_binned()
+ 
+# this facilitates to create histograms with tick-marks between the bars:
+ggplot(mpg) + 
+  geom_bar(aes(displ)) + 
+  scale_x_binned()
+
+```
+
+
 ### Plot text column in ggplot in the same order it appears in the data frame
 
 ```r

@@ -894,3 +894,23 @@ git remote add origin https://linktoyourremotereporitory
 # clone a repository (get a local copy incl all version history):
 git clone https://linktoremotereporitory
 ```
+
+Nice extra things to add in the ~/.gitcongig to add color in the terminal:
+
+```git
+[color]
+    ui = auto
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+[color "status"]
+    added = yellow
+    changed = green
+    untracked = cyan
+```

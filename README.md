@@ -895,7 +895,7 @@ git remote add origin https://linktoyourremotereporitory
 git clone https://linktoremotereporitory
 ```
 
-Nice extra things to add in the ~/.gitcongig to add color in the terminal:
+Nice extra things to add in the ~/.gitconfig to add color in the terminal:
 
 ```git
 [color]

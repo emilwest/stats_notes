@@ -518,6 +518,7 @@ p +
 
 
 ### Binning scales
+
 Introduced in ggplot2 3.3.0. A binning scale takes continuous data and makes it discrete by assigning each data point to a bin.
 Allows continuous data to be used with discrete palettes
 

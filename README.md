@@ -75,6 +75,7 @@ mydoc %>% body_add_break()
 ```
 
 Function for adding R table to word document:
+
 ```r
 myft <- function(mydoc, tab, title) {
   res <- body_add_par(mydoc, "")
@@ -370,6 +371,7 @@ bindiff(0.42,95,0.042,47) # 37.8% (24.2-48.0%)
 ```
 
 ### Ordinal logistic regression
+
 Proportinal odds: effekten av de oberoende variablerna på den beroende ordinala variabeln är konstant för alla nivåer i den beroende variabeln.
 
 

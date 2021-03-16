@@ -291,11 +291,14 @@ cor.test()
 ## Fisher's exact test
 
 For testing the null hypothesis of independence of rows and columns in a contingency table with fixed marginals.
+
 ```r
 fisher.test( matrix(c(2,10,20,3),nrow=2,ncol=2)  )
 # odds ratio: 0.035, p=0.00008124
 ```
+
 In Python: 
+
 ```python
 import scipy.stats as stats
 oddsratio, pvalue = stats.fisher_exact([[2, 10], [20, 3]])

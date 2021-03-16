@@ -1,4 +1,8 @@
-![Stats notes](wordcloud1.png)
+<p align="center">
+<img align="left" width="100" height="100" src="https://github.com/emilwest/stats_notes/blob/main/wordcloud1.png">
+</p>
+
+<!-- ![Stats notes](wordcloud1.png) -->
 
 This document contains notes I make about R, data science and software engineering in the context of statistics.
 

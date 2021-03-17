@@ -39,6 +39,25 @@ openxlsx::write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")
 
 To do
 
+# System handling in R
+
+Remove all files and subdirectories under path/* (without deleting path/):
+
+```r
+unlink("path/*", recursive = TRUE)
+unlink("path/*") # deletes files only, no directories
+```
+
+Remove all files and subdirectories for multiple paths:
+
+```r
+# set pattern = ".*out.*" to target specific directories named out
+out_dirs <- list.files(str_glue("C:/path1/path2"), full.names = T, recursive = T, pattern = ".*out.*", include.dirs = T)
+out_dirs <- str_c(out_dirs, "/*")
+# out_dirs contains: "C:/path1/path2/ax/out/*" "C:/path1/path2/dk/out/*" "C:/path1/path2/EA/out/*" "C:/path1/path2/EU/out/*" ...
+unlink(out_dirs, recursive = T) # removes files and dirs under "C:/path1/path2/{ax,dk,EA,EU,...}/out/*"
+```
+
 # Unload library/package from R session without restarting
 
 ```r

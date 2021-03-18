@@ -239,6 +239,32 @@ cut(0:20, breaks = c(0,  19,  Inf),labels = c("<20", "\u226520"),include.lowest 
 #Levels: <20 ≥20
 ```
 
+# Vectors
+
+## Split vector into chunks given length of each chunk
+
+From https://statisticsglobe.com/split-vector-into-chunks-in-r 
+
+```r
+ my_vec <- 2008:2021
+  chunk_length <- 5
+  split(my_vec,             
+        ceiling(seq_along(my_vec) / chunk_length))
+```
+
+##  Split vector into chunks given number of chunks
+
+From https://statisticsglobe.com/split-vector-into-chunks-in-r 
+
+```r
+chunk_number <- 7   
+split(my_vec,             # Applying split() function
+      cut(seq_along(my_vec),
+          chunk_number,
+          labels = FALSE))
+```
+
+
 # Split dataframe into groups
 
 Returns list of dataframes.

@@ -221,6 +221,7 @@ df %>%
 ```
 
 # Use cut
+
 `right` = indicating if the intervals should be closed on the right (and open on the left) or vice versa.
 `include.lowest` = indicating if an ‘x[i]’ equal to the lowest (or highest, for right = FALSE) ‘breaks’ value should be included.
 

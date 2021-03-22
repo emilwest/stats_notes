@@ -957,7 +957,9 @@ system("powershell ls -rec H:\\Documents\\")
 ```
 
 ### Search and replace multiple files in folder
+
 Add ls -rec for subfolders and for ex. -Include *.txt for including txt files only 
+
 ```r
 system("powershell (ls H:\\Documents\\multiple_tests\\*) |
        Foreach-Object{ $f=$_; (gc $f.PSPath) |

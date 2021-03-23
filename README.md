@@ -642,8 +642,10 @@ q <- rlang::quo(a+b)
 Evaluate it with `rlang::eval_tidy(q)`, returning 3.
 
 ### Quote within function
+
 Useful when doing ggplot functions. For example with this function you can create a function like this `f(mtcars, disp, mpg )`, where disp and mpg are columns within the dataframe mtcars (included in tidyverse). 
 !! uncoutes the symbol.
+
 ```r
 library(tidyverse)
 f <- function(df,a,b){
@@ -942,6 +944,7 @@ str_detect(strings, coll(pattern))
 ```
 
 # Powershell
+
 Not really part of statistics but good to know!
 
 ### grep -r in powershell

@@ -35,7 +35,7 @@ list_of_datasets <- list("Sheet name 1" = df1,
 openxlsx::write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")                    
 ```
 
-## Read multiple excel sheets from single excel file
+## Read multiple excel sheets from single excel file into a single data frame
 
 Credits to https://dominicroye.github.io/en/2019/import-excel-sheets-with-r/ 
 
@@ -43,7 +43,7 @@ Credits to https://dominicroye.github.io/en/2019/import-excel-sheets-with-r/
 in_path <- "path/to/excelfile.xlsx"
 
 # read multiple sheets and join them into single dataframe:
-ddd <- in_path %>%
+df <- in_path %>%
   excel_sheets() %>% # vector containing name of sheets
   set_names() %>% # sets the names of vector with names of sheets
   # map_df: a list of tables joined with bind_rows into single dataframe:
@@ -53,7 +53,7 @@ ddd <- in_path %>%
   )
 ```
 
-## Read multiple excel sheets for multiple excel files
+## Read multiple excel sheets for multiple excel files into a single data frame
 
 ```r
 read_multiple_excel_sheets <- function(path) {
@@ -63,7 +63,7 @@ read_multiple_excel_sheets <- function(path) {
   map_df(read_excel, path = path)
 }
 
-data_df <- dir(pattern = "xlsx") %>% 
+df <- dir(pattern = "xlsx") %>% 
            map_df(read_multiple_excel,
                   .id = "level")
 ```

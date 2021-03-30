@@ -411,7 +411,7 @@ tab<-matrix(c(12,20,20,12),ncol=2,nrow=2)
 psych::cohen.kappa(tab) # -0.25
 ```
 
-### Calculate binomial confidence interval
+## Calculate binomial confidence interval
 
 ```r 
 binom.test(40, 95) # num successes, num trials
@@ -433,7 +433,7 @@ calc_conf <- function(perc, n){
 calc_conf(0.42, 95) # (32.0-52.7%)
 ```
 
-### Calculate difference in binomial confidence intervals
+## Calculate difference in binomial confidence intervals
 
 ```r
 library(DescTools)
@@ -465,7 +465,7 @@ bindiff <- function(perc_1, n_1, perc_2, n_2){
 bindiff(0.42,95,0.042,47) # 37.8% (24.2-48.0%)
 ```
 
-### Ordinal logistic regression
+## Ordinal logistic regression
 
 Proportinal odds: effekten av de oberoende variablerna på den beroende ordinala variabeln är konstant för alla nivåer i den beroende variabeln.
 

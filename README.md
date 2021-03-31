@@ -69,9 +69,17 @@ df <- dir(pattern = "xlsx") %>%
 ```
 
 
-# Read files in R
+# Read CSV files in R
 
-To do
+Read multiple csv files in directory:
+
+```r 
+library(tidyverse)
+# reading all csv files in current directory:
+tibble(path = dir(pattern = "\\.csv$")) %>% 
+  rowwise(path) %>% 
+  summarise(read_csv(path))
+```
 
 # System handling in R
 

@@ -1,0 +1,329 @@
+---
+title: "Loading images"
+author: "Emil Westin"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=F, warning=F, message=F}
+#tensorflow::install_tensorflow(extra_packages='pillow')
+library(keras)
+library(tensorflow)
+library(tidyverse)
+```
+
+
+# Loading the image labels
+
+Consider the following directory containg six folders:
+
+```{r}
+base_dir <- "C:/Users/emiwes/Downloads/dataset-resized/dataset-resized"
+list.dirs(base_dir,full.names = F)
+```
+
+In each folder, the pictures are named by number, for example cardboard1.jpg, cardboard10.jpg.
+```{r}
+fnames <- list.files(base_dir, full.names = TRUE,recursive = T,include.dirs = F)
+n <- fnames %>% length()
+fnames[1:5]
+```
+
+To get the filenames, we can use regex:
+
+```{r}
+labs <- gsub("(.*)/([a-z0-9]+.jpg)", "\\2", fnames)
+labs[1:10]
+```
+
+We extract just the class name, for example cardboard:
+```{r}
+labs <- as_tibble(labs)
+class_name <-  gsub("(.*)/([a-z]+)([0-9]+).jpg", "\\2", fnames) 
+labs$class_name <- class_name
+labs %>% head(5)
+```
+
+
+## Convert labels to numbers. 
+
+Python/numpy uses 0-based indexing. 
+Otherwise an error will say "index 6 is out of bounds for axis" when using to_categorical().
+We can use as_numeric() from the sjlabelled package and set start.at = 0. 
+
+```{r, warning=F, message=F}
+library(sjlabelled)
+labs_numeric <- as_numeric(as.factor(labs$class_name), start.at = 0)
+labs_numeric %>% length()
+labs_numeric %>% unique()
+```
+
+Convert the numeric vector to a matrix (2D array): 
+
+```{r}
+class(labs_numeric)
+y_labs <- to_categorical(labs_numeric, num_classes = 6)
+dim(y_labs)
+class(y_labs)
+
+# Altwenatively:
+# labs$class_name <- factor(labs$class_name)
+# binarized <- model.matrix( value ~ 0 + ., data = labs, contrasts.arg = list(contrasts=F) )
+# labs <- cbind(id=labs$value, as_tibble(binarized)) 
+# colnames(labs) <- gsub("class_name","", colnames(labs) )
+
+```
+
+Now it looks as follows:
+
+```{r}
+y_labs[1:5,]
+y_labs[1006:1010,]
+```
+
+
+
+
+
+# Method A: using image_load
+
+## Method A, Case 1: Load a single image
+
+
+The images are stored as tensors of shape (samples, height, width, color_depth).
+In this case (n, 150, 150, 3), i.e. 3 color channels (RGB). 
+
+Consider the following example:
+
+```{r ,warning=F}
+# load the first file name (cardboard1.jpg) with size 150x150 pixels
+img1 <- image_load(fnames[1], target_size = c(150, 150) )
+img1
+```
+
+We can convert it to array as follows:
+
+```{r}
+img1 <- image_to_array(img1)
+# 150 x 150 x 3 
+dim(img1)
+# shows 3 color values for pixel (1,1):
+img1[1,1,]
+```
+
+\newpage
+
+
+Neural networks prefer to deal with small input numbers. 
+As such, it is typical to rescale the pixel values to a [0,1] interval by dividing the pixels by 255.
+The array_reshape function does this and says to have the same dimension as before (150, 150, 3):
+
+```{r}
+img1_scaled <- array_reshape(img1/255, c(150, 150, 3))
+dim(img1_scaled)
+img1_scaled[1,1,]
+```
+
+
+We can plot the image from the tensor like this:
+
+```{r}
+plot(as.raster(img1_scaled))
+```
+
+
+
+## Method A, Case 2: Load multiple images
+
+In general, we can do this procedure for a large number of pictures.
+
+```{r, eval = FALSE}
+data <- array(0, c(n,150,150,3))
+for(i in 1:n){
+    img_path <- fnames[[i]]
+    # Convert it to an array with shape (150, 150, 3)
+    img <- image_load(img_path, target_size = c(150, 150))
+    img_array <- image_to_array(img)
+    data[i,,,] <- array_reshape(img_array/255, c(150, 150, 3))
+}
+# it is a good idea to save this since it can take some time to run:
+# save(data, file="img_arr.RData")
+```
+
+After running the code above and saving, the data can be re-loaded as:
+
+```{r}
+# LOADS THE DATA FILE WITH ThE IMAGE ARRAYS
+load(file = "C:/Users/emiwes/Desktop/img_arr.RData")
+```
+
+
+We can plot any image from the tensor like this, for example second image in the tensor:
+```{r}
+plot(as.raster(data[2,,,]))
+```
+
+
+# Method B: using flow_images_from_dataframe
+
+### Create a dataframe
+
+```{r}
+df <- cbind( list.files(base_dir, full.names = F, recursive = T), y_labs) %>% as.data.frame()
+df[,c(2:7)] <- sapply(df[,c(2:7)], as.numeric)
+colnames(df) <- c("id","cardboard","glass","metal","paper","plastic","trash")
+df %>% head(5)
+```
+
+### Split train/test/validation
+
+```{r}
+labels <- y_labs
+labels_full <- df
+# train + validation
+set.seed(40)
+smp_size <- floor(0.5 * n ) # 1263
+train.validation.ind <- sample(seq_len(n), size = smp_size)
+
+train.validation <- data[train.validation.ind,,,]
+train.validation.labels <- labels[train.validation.ind, ]
+train.validation.labels.full <- labels_full[train.validation.ind, ]
+
+test <- data[-train.validation.ind,,,]
+test.labels <- labels[-train.validation.ind, ]
+test.labels.full <- labels_full[-train.validation.ind, ]
+
+# now we split train+validation into train/validation
+set.seed(40)
+# 80% train, 20% validation
+train.ind <- sample(1:nrow(train.validation) , floor(0.8*length(train.validation.ind)) )
+
+training <- train.validation[train.ind,,,]
+training.labels <- train.validation.labels[train.ind, ]
+training.labels.full <- train.validation.labels.full[train.ind, ]
+
+validation <- train.validation[-train.ind,,,]
+validation.labels <- train.validation.labels[-train.ind, ]
+validation.labels.full <- train.validation.labels.full[-train.ind, ]
+```
+
+### Check dataframes
+
+```{r}
+training.labels.full %>% head(5)
+validation.labels.full  %>% head(5)
+test.labels.full  %>% head(5)
+```
+
+
+### flow_images_from_dataframe for training set
+
+
+```{r}
+train_datagen <- image_data_generator(rescale = 1/255) 
+
+train_generator <- flow_images_from_dataframe(
+  directory = base_dir,
+  dataframe = training.labels.full,
+  generator = train_datagen,
+  x_col = "id",
+  y_col =  list("cardboard","glass","metal","paper","plastic","trash"),
+  seed = 40,
+  shuffle = TRUE,
+  class_mode = "other", 
+  target_size = c(150,150)
+)
+```
+
+### flow_images_from_dataframe for test set
+
+```{r}
+test_datagen <- image_data_generator(rescale = 1/255) 
+
+test_generator <- flow_images_from_dataframe(
+  directory = base_dir,
+  dataframe = test.labels.full,
+  generator = test_datagen,
+  x_col = "id",
+  y_col =  list("cardboard","glass","metal","paper","plastic","trash"),
+  seed = 40,
+  shuffle = TRUE,
+  class_mode = "other",
+  target_size = c(150,150)
+)
+```
+
+### flow_images_from_dataframe for validation set
+
+```{r}
+val_datagen <- image_data_generator(rescale = 1/255) 
+
+validation_generator <- flow_images_from_dataframe(
+  directory = base_dir,
+  dataframe = validation.labels.full,
+  generator = val_datagen,
+  x_col = "id",
+  y_col =  list("cardboard","glass","metal","paper","plastic","trash"),
+  seed = 40,
+  shuffle = TRUE,
+  class_mode = "other",
+  target_size = c(150,150)
+)
+```
+
+### Training a neural network with VGG16
+
+
+```{r, eval=F}
+# https://github.com/rstudio/reticulate/issues/502
+conv_base <- application_vgg16(
+  weights = "imagenet",
+  include_top = FALSE,
+  input_shape = c(150, 150, 3)
+)
+freeze_weights(conv_base)
+
+model <- keras_model_sequential() %>%
+  conv_base %>%
+  layer_flatten() %>%
+  layer_dense(units = 20, activation = "relu") %>%
+  layer_dense(units = 6, activation = "softmax")
+
+model %>% compile(
+  optimizer = "rmsprop",
+  loss = "categorical_crossentropy",
+  metrics = c("accuracy")
+)
+
+history <- model %>% fit_generator(
+  train_generator,
+  validation_data=validation_generator,
+  epochs = 6,
+  steps_per_epoch = 5,
+  validation_steps = 5,
+  workers=1 
+)
+plot(history)
+#model %>% save_model_hdf5("model1.h5")
+```
+
+###  Evaluation
+
+
+```{r, eval=F}
+#class(model)
+
+results <- model %>% evaluate( x = test, y = test.labels)
+results
+#    loss accuracy 
+# 1.448924 0.380538 
+preds <- model %>% predict_classes(test)
+table(test.labels,preds) %>% sum()
+table(test.labels,preds) %>% diag() %>% sum()
+
+```
+

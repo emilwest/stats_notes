@@ -268,7 +268,6 @@ From https://stackoverflow.com/questions/14096814/merging-a-lot-of-data-frames
 Reduce(function(...) merge(..., all=TRUE), list(df1, df2, df3))
 ```
 
-
 # Create a sequence of dates 
 
 ```r

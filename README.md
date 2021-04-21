@@ -817,7 +817,7 @@ See [stringr.R](R/stringr.R)
 
 # Powershell
 
-Not really part of statistics but good to know!
+Not really part of statistics but good to know if you need to do any form of automation on system files. 
 
 ### grep -r in powershell
 

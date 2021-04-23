@@ -136,7 +136,6 @@ print(word_export, 'try.docx')
 ```r
 # add new page:
 mydoc %>% body_add_break()
-
 ```
 
 Function for adding R table to word document:

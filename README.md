@@ -187,6 +187,7 @@ To do.
 Pxweb:
 
 ```r
+library(pxweb)
 ```
 
 # Download text files from URL

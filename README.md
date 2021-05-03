@@ -112,11 +112,11 @@ detach(package:officer)
 
 Restart R-session and unload packages: command/ctrl + shift + F10.
 
-Auto-indent: ctrl + i
+Auto-indent: ctrl + i.
 
-Edit multiple lines simultaneusly (increase the blinking line vertically): ctrl + alt + up/down arrow
+Edit multiple lines simultaneusly (increase the blinking line vertically): ctrl + alt + up/down arrow.
 
-Duplicate current line: ctrl + shift + up/down
+Duplicate current line: ctrl + shift + up/down.
 
 
 # Save R results in Word file

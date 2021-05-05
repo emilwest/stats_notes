@@ -14,8 +14,6 @@ The random effect is to the left of |.
 
 # Read/write excel files in R:
 
-<i class="fas fa-file-excel"></i>
-
 
 ```r
 # Read xlsx/xls:

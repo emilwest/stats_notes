@@ -1,5 +1,6 @@
 ![Stats notes](img/wordcloud1.png) 
 
+
 This document contains notes I make about R, data science and software engineering in the context of statistics.
 
 How to use this document: search for a keyword with ctrl + f or scroll trough. 
@@ -12,6 +13,9 @@ E.g. (1 | student) the intercept 1 is allowed to vary between student to student
 The random effect is to the left of |.
 
 # Read/write excel files in R:
+
+<i class="fas fa-file-excel"></i>
+
 
 ```r
 # Read xlsx/xls:

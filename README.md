@@ -112,13 +112,19 @@ detach(package:officer)
 
 ## RStudio useful shortcuts
 
-Restart R-session and unload packages: command/ctrl + shift + F10.
+Restart R-session and unload packages: `Command`/`Ctrl` + `Shift` + `F10`.
 
-Auto-indent: ctrl + i.
+Auto-indent: `Ctrl` + `i`.
 
-Edit multiple lines simultaneusly (increase the blinking line vertically): ctrl + alt + up/down arrow.
+Edit multiple lines simultaneusly (increase the blinking line vertically): `Ctrl` + `Alt` + `↑ / ↓`.
 
-Duplicate current line: ctrl + shift + up/down.
+Duplicate current line: `Alt` + `Shift` + `↑ / ↓` 
+
+Insert assignment (`<-`): `Alt` + `-`
+
+Insert pipe operator (`%>%`): `Ctrl` + `Shift` + `m`
+
+Delete current line: `Ctrl` + `d`
 
 
 # Save R results in Word file

@@ -126,6 +126,8 @@ Insert pipe operator (`%>%`): `Ctrl` + `Shift` + `m`
 
 Delete current line: `Ctrl` + `d`
 
+Multiple word selection: `Ctrl` + `Alt`  + double left click
+
 
 # Save R results in Word file
 

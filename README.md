@@ -112,11 +112,11 @@ detach(package:officer)
 
 ## RStudio useful shortcuts
 
-Restart R-session and unload packages: `Command`/`Ctrl` + `Shift` + `F10`.
+Restart R-session and unload packages: `Command`/`Ctrl` + `Shift` + `F10`
 
-Auto-indent: `Ctrl` + `i`.
+Auto-indent: `Ctrl` + `i`
 
-Edit multiple lines simultaneusly (increase the blinking line vertically): `Ctrl` + `Alt` + `↑ / ↓`.
+Edit multiple lines simultaneusly (increase the blinking line vertically): `Ctrl` + `Alt` + `↑ / ↓`
 
 Duplicate current line: `Alt` + `Shift` + `↑ / ↓` 
 

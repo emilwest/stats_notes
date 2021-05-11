@@ -357,6 +357,7 @@ mtcars %>% split(.$cyl)
 # Calculating sums
 
 ## Calculate sum and return NA if all categories are NA
+
 The problem with sum(x, na.rm = TRUE) is that it will return 0 if all categories are NA. 
 Sometimes we want it to be NA, here is how:
 

@@ -802,7 +802,6 @@ inFile_alla <- inFile_n %>%
 ```
 where:
 
-
 inFile_n:
 
 | matrix \<chr\> | data \<list\>      |

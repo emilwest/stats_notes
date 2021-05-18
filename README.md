@@ -907,3 +907,8 @@ Nice extra things to add in the ~/.gitconfig to add color in the terminal:
     changed = green
     untracked = cyan
 ```
+
+# Creating a virtual environment
+
+To do
+

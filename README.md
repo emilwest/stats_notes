@@ -912,3 +912,6 @@ Nice extra things to add in the ~/.gitconfig to add color in the terminal:
 
 To do
 
+# Bash / linux useful commands
+
+To do

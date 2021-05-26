@@ -301,6 +301,15 @@ df %>%
   mutate(new_d = format( make_date(year, month), "%Y-%m" ) )
 ```
 
+# Create a Data Frame from All Combinations of Factor Variables
+
+Returns a dataframe (data.frame) from all combinations of the supplied vectors or factors.
+Useful if you for ex. want to test a set of hyperparameters without creating nested for loops, just create a dataframe of all combinations and iterate through it.
+
+```r
+expand.grid(letters[1:2], 1:3, c("+", "-"))
+```
+
 # Use cut
 
 `right` = indicating if the intervals should be closed on the right (and open on the left) or vice versa.

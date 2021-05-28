@@ -5,12 +5,25 @@ This document contains notes I make about R, data science and software engineeri
 
 How to use this document: search for a keyword with ctrl + f or scroll trough. 
 
-# Mixed model
-https://m-clark.github.io/mixed-models-with-R/random_intercepts.html
 
-Random intercepts model: group-specific intercepts with own unique effects.
-E.g. (1 | student) the intercept 1 is allowed to vary between student to student.
-The random effect is to the left of |.
+# RStudio useful shortcuts
+
+Restart R-session and unload packages: `Command`/`Ctrl` + `Shift` + `F10`
+
+Auto-indent: `Ctrl` + `i`
+
+Edit multiple lines simultaneusly (increase the blinking line vertically): `Ctrl` + `Alt` + `↑ / ↓`
+
+Duplicate current line: `Alt` + `Shift` + `↑ / ↓` 
+
+Insert assignment (`<-`): `Alt` + `-`
+
+Insert pipe operator (`%>%`): `Ctrl` + `Shift` + `m`
+
+Delete current line: `Ctrl` + `d`
+
+Multiple word selection: `Ctrl` + `Alt`  + double left click
+
 
 # Read/write excel files in R:
 
@@ -111,23 +124,6 @@ unlink(out_dirs, recursive = T) # removes files and dirs under "C:/path1/path2/{
 detach(package:officer)
 ```
 
-## RStudio useful shortcuts
-
-Restart R-session and unload packages: `Command`/`Ctrl` + `Shift` + `F10`
-
-Auto-indent: `Ctrl` + `i`
-
-Edit multiple lines simultaneusly (increase the blinking line vertically): `Ctrl` + `Alt` + `↑ / ↓`
-
-Duplicate current line: `Alt` + `Shift` + `↑ / ↓` 
-
-Insert assignment (`<-`): `Alt` + `-`
-
-Insert pipe operator (`%>%`): `Ctrl` + `Shift` + `m`
-
-Delete current line: `Ctrl` + `d`
-
-Multiple word selection: `Ctrl` + `Alt`  + double left click
 
 
 # Save R results in Word file
@@ -527,6 +523,12 @@ bindiff(0.42,95,0.042,47) # 37.8% (24.2-48.0%)
 
 Proportinal odds: effekten av de oberoende variablerna på den beroende ordinala variabeln är konstant för alla nivåer i den beroende variabeln.
 
+# Mixed model
+https://m-clark.github.io/mixed-models-with-R/random_intercepts.html
+
+Random intercepts model: group-specific intercepts with own unique effects.
+E.g. (1 | student) the intercept 1 is allowed to vary between student to student.
+The random effect is to the left of |.
 
 <!--
 ```r

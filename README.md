@@ -523,7 +523,7 @@ bindiff(0.42,95,0.042,47) # 37.8% (24.2-48.0%)
 
 Proportinal odds: effekten av de oberoende variablerna på den beroende ordinala variabeln är konstant för alla nivåer i den beroende variabeln.
 
-# Mixed model
+## Mixed model
 https://m-clark.github.io/mixed-models-with-R/random_intercepts.html
 
 Random intercepts model: group-specific intercepts with own unique effects.

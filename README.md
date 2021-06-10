@@ -10,6 +10,8 @@ How to use this document: search for a keyword with ctrl + f or scroll trough.
 
 Restart R-session and unload packages: `Command`/`Ctrl` + `Shift` + `F10`
 
+Comment/uncomment single/multiple lines: `Ctrl`+ `Shift` + `c`
+
 Auto-indent: `Ctrl` + `i`
 
 Edit multiple lines simultaneusly (increase the blinking line vertically): `Ctrl` + `Alt` + `↑ / ↓`

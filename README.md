@@ -12,6 +12,8 @@ Restart R-session and unload packages: `Command`/`Ctrl` + `Shift` + `F10`
 
 Comment/uncomment single/multiple lines: `Ctrl`+ `Shift` + `c`
 
+Display command palette:  `Ctrl`+ `Shift` + `p`
+
 Auto-indent: `Ctrl` + `i`
 
 Edit multiple lines simultaneusly (increase the blinking line vertically): `Ctrl` + `Alt` + `↑ / ↓`

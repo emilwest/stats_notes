@@ -8,25 +8,18 @@ How to use this document: search for a keyword with ctrl + f or scroll trough.
 
 # RStudio useful shortcuts
 
-Restart R-session and unload packages: `Command`/`Ctrl` + `Shift` + `F10`
-
-Comment/uncomment single/multiple lines: `Ctrl`+ `Shift` + `c`
-
-Display command palette:  `Ctrl`+ `Shift` + `p`
-
-Auto-indent: `Ctrl` + `i`
-
-Edit multiple lines simultaneusly (increase the blinking line vertically): `Ctrl` + `Alt` + `↑ / ↓`
-
-Duplicate current line: `Alt` + `Shift` + `↑ / ↓` 
-
-Insert assignment (`<-`): `Alt` + `-`
-
-Insert pipe operator (`%>%`): `Ctrl` + `Shift` + `m`
-
-Delete current line: `Ctrl` + `d`
-
-Multiple word selection: `Ctrl` + `Alt`  + double left click
+|                                                                            | Command                            |
+|----------------------------------------------------------------------------|------------------------------------|
+| Restart R-session and unload packages:                                     | `Command`/`Ctrl` + `Shift` + `F10` |
+| Comment/uncomment single/multiple lines:                                   |  `Ctrl`+ `Shift` + `c`             |
+| Display command palette:                                                   |  `Ctrl`+ `Shift` + `p`             |
+| Auto-indent:                                                               | `Ctrl` + `i`                       |
+| Edit multiple lines simultaneusly (increase the blinking line vertically): |  `Ctrl` + `Alt` + `↑ / ↓`          |
+| Duplicate current line:                                                    | `Alt` + `Shift` + `↑ / ↓`          |
+| Insert assignment (`<-`):                                                  |  `Alt` + `-`                       |
+| Insert pipe operator (`%>%`):                                              |  `Ctrl` + `Shift` + `m`            |
+| Delete current line:                                                       |  `Ctrl` + `d`                      |
+| Multiple word selection:                                                   | `Ctrl` + `Alt` + double left click |
 
 
 # Read/write excel files in R:

@@ -121,6 +121,15 @@ out_dirs <- str_c(out_dirs, "/*")
 unlink(out_dirs, recursive = T) # removes files and dirs under "C:/path1/path2/{ax,dk,EA,EU,...}/out/*"
 ```
 
+Extract filenames or directory names from a path:
+
+```r
+basename("C:/px/hej.txt")
+# hej.txt
+dirname("C:/px/hej.txt")
+# "C:/px"
+```
+
 # Unload library/package from R session without restarting
 
 ```r

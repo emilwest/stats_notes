@@ -3,7 +3,7 @@
 
 This document contains notes I make about R, data science and software engineering in the context of statistics.
 
-How to use this document: search for a keyword with ctrl + f or scroll trough. 
+How to use this document: search for a keyword with `Ctrl` + `f` or scroll trough. 
 
 
 # RStudio useful shortcuts

@@ -772,6 +772,7 @@ mods <- by_cyl %>% map(~ lm(mpg ~ wt, data = .)) # in each df, create linear mod
 
 ```
 
+Why use map instead of lapply? https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply
 
 ### Nest: split dataframe into list of dataframes
 

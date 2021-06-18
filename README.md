@@ -24,7 +24,6 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 
 # Read/write excel files in R:
 
-
 ```r
 # Read xlsx/xls:
 readxl::read_xlsx(name_of_file) 

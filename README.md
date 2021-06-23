@@ -191,9 +191,22 @@ shell.exec(utmall)
 
 # PX files
 
-To do. 
+Read a px-file in R:
 
 ```r
+library(pxR)
+px_in <- read.px("abcd10.px",  encoding='iso-8859-15')
+```
+
+Write/export a px-file:
+
+```r
+library(NSDB)
+NSDB::write.px_mod(
+  px_in,
+  "abcd10_new.px",
+  fileEncoding = "iso-8859-15"
+)
 ```
 
 Pxweb:

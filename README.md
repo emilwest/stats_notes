@@ -96,14 +96,14 @@ tibble(path = dir(pattern = "\\.csv$")) %>%
 
 # System handling in R
 
-Remove all files and subdirectories under path/* (without deleting path/):
+## Remove all files and subdirectories under path/* (without deleting path/)
 
 ```r
 unlink("path/*", recursive = TRUE)
 unlink("path/*") # deletes files only, no directories
 ```
 
-Remove all files and subdirectories for multiple paths:
+## Remove all files and subdirectories for multiple paths
 
 ```r
 # set pattern = ".*out.*" to target specific directories named out
@@ -113,7 +113,7 @@ out_dirs <- str_c(out_dirs, "/*")
 unlink(out_dirs, recursive = T) # removes files and dirs under "C:/path1/path2/{ax,dk,EA,EU,...}/out/*"
 ```
 
-Extract filenames or directory names from a path:
+## Extract filenames or directory names from a path
 
 ```r
 basename("C:/px/hej.txt")
@@ -128,7 +128,6 @@ dirname("C:/px/hej.txt")
 # unloading library(officer)
 detach(package:officer)
 ```
-
 
 
 # Save R results in Word file
@@ -191,14 +190,14 @@ shell.exec(utmall)
 
 # PX files
 
-Read a px-file in R:
+## Read a px-file in R
 
 ```r
 library(pxR)
 px_in <- read.px("abcd10.px",  encoding='iso-8859-15')
 ```
 
-Write/export a px-file:
+## Write/export a px-file
 
 ```r
 library(NSDB)
@@ -209,7 +208,7 @@ NSDB::write.px_mod(
 )
 ```
 
-Pxweb:
+## Pxweb
 
 ```r
 library(pxweb)

@@ -377,7 +377,7 @@ mtcars %>% split(.$cyl)
 ```
 
 # Lists
-
++ Do a comparison with python dicts.
 ## Add element to list
 To do 
 

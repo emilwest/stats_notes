@@ -367,7 +367,6 @@ split(my_vec,             # Applying split() function
           labels = FALSE))
 ```
 
-
 # Split dataframe into groups
 
 Returns list of dataframes.
@@ -376,6 +375,17 @@ Returns list of dataframes.
 library(tidyverse) 
 mtcars %>% split(.$cyl)
 ```
+
+# Lists
+
+## Add element to list
+To do 
+
+## Remove element of list
+To do 
+
+## Modify element of list
+To do 
 
 # Calculating sums
 

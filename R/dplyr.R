@@ -19,8 +19,7 @@ df %>%
   group_by(grp) %>% 
   summarise(rng = range(x))
 
+#  Extract column values as a vector. Choose by name or index.
+mtcars %>% pull(cyl)
 
-# reading all csv files in current directory:
-tibble(path = dir(pattern = "\\.csv$")) %>% 
-  rowwise(path) %>% 
-  summarise(read_csv(path))
+# helpers for select() and across()

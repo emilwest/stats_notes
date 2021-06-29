@@ -201,7 +201,7 @@ px_in <- read.px("abcd10.px",  encoding='iso-8859-15')
 
 ```r
 library(NSDB)
-NSDB::write.px_mod(
+NSDB::write.px(
   px_in,
   "abcd10_new.px",
   fileEncoding = "iso-8859-15"

@@ -20,7 +20,7 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 | Insert pipe operator (`%>%`):                                              |  `Ctrl` + `Shift` + `m`            |
 | Delete current line:                                                       |  `Ctrl` + `d`                      |
 | Multiple word selection:                                                   | `Ctrl` + `Alt` + double left click |
-
+| Run code from beginning to line                                            | `Ctrl` + `Alt` + `b`               |
 
 # Read/write excel files in R:
 

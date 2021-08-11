@@ -11,6 +11,8 @@ library(wordcloud2)
 library(wordcloud)
 library(stringr)
 
+setwd("C:/Users/emiwes/Desktop/Notes/stats_notes/")
+
 my_data <- readtext("C:/Users/emiwes/Desktop/Notes/stats_notes/README.md")
 my_data$doc_id <- 1
 
@@ -42,10 +44,12 @@ df <- data.frame(word = colnames(mat), freq = mat[1, ] %>% as.vector())
 df$freq[df$word == "notes"] <- 150
 df$freq[df$word == "stats"] <- 200
 df <- df %>% arrange(freq)
-wordcloud2(df, size = 1.6, color = "random-dark", shape = "triangle-forward")
+wc <- wordcloud2(df, size = 1.6, color = "random-light", shape = "triangle-forward")
+wc
 
 wordcloud(df$word, df$freq,
   min.freq = 1,
   max.words = 200, random.order = T, rot.per = 0.35,
   colors = brewer.pal(8, "Dark2")
 )
+

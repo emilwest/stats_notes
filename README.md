@@ -1,4 +1,4 @@
-![Stats notes](img/wordcloud1.png) 
+![Stats notes](img/wordcloud2.png) 
 
 
 This document contains notes I make about R, data science and software engineering in the context of statistics.

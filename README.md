@@ -950,7 +950,7 @@ Nice extra things to add in the ~/.gitconfig to add color in the terminal:
 
 # Creating a virtual environment
 
-To do
+To do 
 
 # Bash / linux useful commands
 

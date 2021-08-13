@@ -46,38 +46,48 @@ list_of_datasets <- list("Sheet name 1" = df1,
 openxlsx::write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")                    
 ```
 
-## Add plots to excel sheet
+## Add a plot to an excel sheet
 
 ```r
+library(tidyverse)
 library(openxlsx)
 wb <- createWorkbook()
+addWorksheet(wb, "Sheet 1", gridLines = FALSE)
+p <- iris %>% 
+    ggplot(aes(x=Sepal.Length, y = Sepal.Width)) +
+    geom_point()
+print(p)
+insertPlot(wb, sheet = "Sheet 1", width = 20, height = 20, fileType = "png", units = "cm")
+## Save workbook
+saveWorkbook(wb, "insertPlotExample2.xlsx", overwrite = TRUE)
+```
 
-## Add a worksheet
+## Add multiple plots into single excel sheet
+
+```r
+library(tidyverse)
+library(openxlsx)
+wb <- createWorkbook()
 addWorksheet(wb, "Sheet 1", gridLines = FALSE)
 
-ccc <- dd$Country %>% unique()
+ccc <- iris$Species %>%  unique 
+
 startrow <- 1
 for (i in ccc) {
   #print(i)
-  tmp <- dd %>% filter(Country == i)
-  p<-tmp %>% 
-  drop_na() %>% 
-  group_by(file, Status) %>% 
-  ggplot(aes(y = file,fill = Status)) +
-  geom_bar() +
-  facet_wrap(. ~ factor(Country) + factor(Source)) +
-    theme_light() +
-    labs(x = "", y = "") +
-    scale_x_continuous(breaks = c(0,1,2)) +
-    theme(panel.grid.minor.x = element_blank())
+  p <- iris %>% 
+    filter(Species == i) %>% 
+    ggplot(aes(x=Sepal.Length, y = Sepal.Width)) +
+    geom_point()
+    
   print(p)
-  
   insertPlot(wb, sheet = "Sheet 1", startRow = startrow, width = 20, height = 20, fileType = "png", units = "cm")
   startrow <- startrow + 45
 }
 
+getwd()
 ## Save workbook
-saveWorkbook(wb, "insertPlotExample.xlsx", overwrite = TRUE)
+saveWorkbook(wb, "insertPlotExample2.xlsx", overwrite = TRUE)
 ```
 
 ## Read multiple excel sheets from single excel file into a single data frame

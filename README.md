@@ -288,6 +288,17 @@ use `boxplot.stats()$out` to see outlier values.
 boxplot(temp$num ~ temp$group)
 ```
 
+## Compare if two dataframes are identical
+
+```r
+all.equal(px_df,px_df2)
+identical(px_df,px_df2)
+dplyr::all_equal(px_df,px_df2) # By default ignores column and row order, and is sensitive to variable classes, but can be overidden. Can automatically convert factors to character and integers to doubles.
+# Example from documentation:
+scramble <- function(x) x[sample(nrow(x)), sample(ncol(x))]
+all_equal(mtcars, scramble(mtcars)) # By default, ordering of rows and columns ignored
+```
+
 # Table 1 : nice summary tables
 
 ```

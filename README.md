@@ -244,8 +244,8 @@ px_in <- read.px("abcd10.px",  encoding='iso-8859-15')
 ## Write/export a px-file
 
 ```r
-library(NSDB)
-NSDB::write.px(
+library(pxR)
+write.px(
   px_in,
   "abcd10_new.px",
   fileEncoding = "iso-8859-15"
@@ -256,6 +256,7 @@ NSDB::write.px(
 
 ```r
 library(pxweb)
+pxweb::pxweb_interactive() # interactively browse statistical databases and download px-files via API queries
 ```
 
 # Download text files from URL

@@ -8,7 +8,6 @@ editor_options:
     wrap: sentence
 ---
 
-
 ![Stats notes](img/wordcloud2.png)
 
 This document contains notes I make about R, data science and software engineering in the context of statistics.
@@ -33,11 +32,38 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 
 # Probability distributions in R
 
-$e^{x-2x+12-23}+123+\beta$
+To do
+
+| Distribution | cdf | Inverse cdf/Quantile | pdf | Col5 |
+|--------------|-----|----------------------|-----|------|
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+
+| `pbeta` | `qbeta` | `dbeta` | `rbeta` |
+|---------|---------|---------|---------|
+
+$e^{x-2x+12-23}+123+\\beta$
 
 $P(X=x) = 0.5$
-
-
 
 # Read/write excel files in R:
 
@@ -394,7 +420,7 @@ expand.grid(letters[1:2], 1:3, c("+", "-"))
 `right` = indicating if the intervals should be closed on the right (and open on the left) or vice versa.
 `include.lowest` = indicating if an x[i] equal to the lowest (or highest, for right = FALSE) "breaks" value should be included.
 
-```r 
+``` r
 cut(tmp2$Antal, breaks = c(-Inf,20,50,Inf), labels = c("\u226420", "21-50", "50-521"))
 # will show ≤20    21-50  50-521
 

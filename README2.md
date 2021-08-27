@@ -17,8 +17,8 @@ scroll trough.
 | Comment/uncomment single/multiple lines:                                   | `Ctrl`+ `Shift` + `c`              |
 | Display command palette:                                                   | `Ctrl`+ `Shift` + `p`              |
 | Auto-indent:                                                               | `Ctrl` + `i`                       |
-| Edit multiple lines simultaneusly (increase the blinking line vertically): | `Ctrl` + `Alt` + `â / â`       |
-| Duplicate current line:                                                    | `Alt` + `Shift` + `â / â`      |
+| Edit multiple lines simultaneusly (increase the blinking line vertically): | `Ctrl` + `Alt` + `↑ / ↓`           |
+| Duplicate current line:                                                    | `Alt` + `Shift` + `↑ / ↓`          |
 | Insert assignment (`<-`):                                                  | `Alt` + `-`                        |
 | Insert pipe operator (`%>%`):                                              | `Ctrl` + `Shift` + `m`             |
 | Delete current line:                                                       | `Ctrl` + `d`                       |

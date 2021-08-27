@@ -1,5 +1,3 @@
-Untitled
-================
 
 ![Stats notes](img/wordcloud2.png)
 
@@ -388,21 +386,21 @@ expand.grid(letters[1:2], 1:3, c("+", "-"))
 
 `right` = indicating if the intervals should be closed on the right (and
 open on the left) or vice versa. `include.lowest` = indicating if an
-âx\[i\]â equal to the lowest (or highest, for right = FALSE)
-âbreaksâ value should be included.
+x\[i\] equal to the lowest (or highest, for right = FALSE) “breaks”
+value should be included.
 
 ``` r
 cut(tmp2$Antal, breaks = c(-Inf,20,50,Inf), labels = c("\u226420", "21-50", "50-521"))
-# will show â¤20    21-50  50-521
+# will show ≤20    21-50  50-521
 
 cut(0:10, breaks = c(0,  1, 4, 10, Inf), labels = c("0", "1-3", "4-9", "\u226510"), include.lowest = T,right=F )
-# [1] 0   1-3 1-3 1-3 4-9 4-9 4-9 4-9 4-9 4-9 â¥10
-#Levels: 0 1-3 4-9 â¥10
+# [1] 0   1-3 1-3 1-3 4-9 4-9 4-9 4-9 4-9 4-9 ≥10
+#Levels: 0 1-3 4-9 ≥10
 
-# <19, â¥20 :
+# <19, ≥20 :
 cut(0:20, breaks = c(0,  19,  Inf),labels = c("<20", "\u226520"),include.lowest = T,right=T )
-#[1] <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 â¥20
-#Levels: <20 â¥20
+#[1] <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 ≥20
+#Levels: <20 ≥20
 ```
 
 # Vectors

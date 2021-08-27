@@ -2,7 +2,7 @@
 title: "Untitled"
 output: 
   github_document:
-    pandoc_args: --gladtex
+    pandoc_args: --webtex 
 
 editor_options: 
   markdown: 
@@ -33,28 +33,12 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 
 # Probability distributions in R
 
-```{r}
-library(katex)
-
-```
-
-```{r}
-tex4 <- "\\int u \\frac{dv}{dx}\\,dx=uv-\\int \\frac{du}{dx}v\\,dx"
-katex_html(tex4,include_css = T)
-
-```
-
-\<eq\>e^{x-2x+12-23}+123+\\beta\</eq\>
+$e^{x-2x+12-23}+123+\beta$
 
 $P(X=x) = 0.5$
 
-$$
 
-P(X=x) = 0.5
 
-e^{x-2x+12-23}+123+\\theta
-
-$$
 
 # Read/write excel files in R:
 

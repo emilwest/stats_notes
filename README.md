@@ -383,7 +383,7 @@ expand.grid(letters[1:2], 1:3, c("+", "-"))
 # Use cut
 
 `right` = indicating if the intervals should be closed on the right (and open on the left) or vice versa.
-`include.lowest` = indicating if an ‘x[i]’ equal to the lowest (or highest, for right = FALSE) ‘breaks’ value should be included.
+`include.lowest` = indicating if an x[i] equal to the lowest (or highest, for right = FALSE) "breaks" value should be included.
 
 ```r 
 cut(tmp2$Antal, breaks = c(-Inf,20,50,Inf), labels = c("\u226420", "21-50", "50-521"))

@@ -25,9 +25,9 @@ scroll trough.
 
 # Probability distributions in R
 
-![e^{x-2x+12-23}+123+\\beta](https://latex.codecogs.com/png.latex?e%5E%7Bx-2x%2B12-23%7D%2B123%2B%5Cbeta "e^{x-2x+12-23}+123+\beta")
+![e^{x-2x+12-23}+123+\\beta](https://latex.codecogs.com/svg.latex?e%5E%7Bx-2x%2B12-23%7D%2B123%2B%5Cbeta "e^{x-2x+12-23}+123+\beta")
 
-![P(X=x) = 0.5](https://latex.codecogs.com/png.latex?P%28X%3Dx%29%20%3D%200.5 "P(X=x) = 0.5")
+![P(X=x) = 0.5](https://latex.codecogs.com/svg.latex?P%28X%3Dx%29%20%3D%200.5 "P(X=x) = 0.5")
 
 # Read/write excel files in R:
 
@@ -810,7 +810,7 @@ reshape2::melt(tmp, id.vars = "Procedure") %>%
 Code - a sequence of symbols/constants/calls that will return a result
 if evaluated. Code can be:
 
-![i](https://latex.codecogs.com/png.latex?i "i") Evaluated immediately
+![i](https://latex.codecogs.com/svg.latex?i "i") Evaluated immediately
 (Standard Eval), (ii) Quoted to use later (Non-Standard Eval).
 
 ### Quote contents as a quosure

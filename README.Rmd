@@ -1,12 +1,13 @@
 ---
 output: 
   github_document:
-    pandoc_args: --webtex 
+    pandoc_args: --webtex=https://latex.codecogs.com/svg.latex?
 
 editor_options: 
   markdown: 
     wrap: sentence
 ---
+
 
 ![Stats notes](img/wordcloud2.png)
 

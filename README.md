@@ -23,9 +23,47 @@ scroll trough.
 | Multiple word selection:                                                   | `Ctrl` + `Alt` + double left click |
 | Run code from beginning to line                                            | `Ctrl` + `Alt` + `b`               |
 
+# Notepad++ useful shortcuts
+
+|                   | Command                   |
+|-------------------|---------------------------|
+| Move line up/down | `Ctrl`+ `Shift` + `↑ / ↓` |
+|                   |                           |
+|                   |                           |
+|                   |                           |
+
 # Probability distributions in R
 
-![e^{x-2x+12-23}+123+\\beta](https://latex.codecogs.com/svg.latex?e%5E%7Bx-2x%2B12-23%7D%2B123%2B%5Cbeta "e^{x-2x+12-23}+123+\beta")
+To do
+
+| Distribution | cdf | Inverse cdf/Quantile | pdf | Col5 |
+|--------------|-----|----------------------|-----|------|
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+|              |     |                      |     |      |
+
+| `pbeta` | `qbeta` | `dbeta` | `rbeta` |
+|---------|---------|---------|---------|
+
+![e^{x-2x+12-23}+123+\\\\beta](https://latex.codecogs.com/svg.latex?e%5E%7Bx-2x%2B12-23%7D%2B123%2B%5C%5Cbeta "e^{x-2x+12-23}+123+\\beta")
 
 ![P(X=x) = 0.5](https://latex.codecogs.com/svg.latex?P%28X%3Dx%29%20%3D%200.5 "P(X=x) = 0.5")
 

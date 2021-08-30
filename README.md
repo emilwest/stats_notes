@@ -22,15 +22,16 @@ scroll trough.
 | Delete current line:                                                       | `Ctrl` + `d`                       |
 | Multiple word selection:                                                   | `Ctrl` + `Alt` + double left click |
 | Run code from beginning to line                                            | `Ctrl` + `Alt` + `b`               |
+| Move/shift line up/down                                                    | `Alt` + `↑ / ↓`                    |
 
 # Notepad++ useful shortcuts
 
-|                   | Command                   |
-|-------------------|---------------------------|
-| Move line up/down | `Ctrl`+ `Shift` + `↑ / ↓` |
-|                   |                           |
-|                   |                           |
-|                   |                           |
+|                         | Command                   |
+|-------------------------|---------------------------|
+| Move/shift line up/down | `Ctrl`+ `Shift` + `↑ / ↓` |
+|                         |                           |
+|                         |                           |
+|                         |                           |
 
 # Probability distributions in R
 

@@ -30,6 +30,15 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 | Multiple word selection:                                                   | `Ctrl` + `Alt` + double left click |
 | Run code from beginning to line                                            | `Ctrl` + `Alt` + `b`               |
 
+# Notepad++ useful shortcuts
+
+|                   | Command                   |
+|-------------------|---------------------------|
+| Move line up/down | `Ctrl`+ `Shift` + `↑ / ↓` |
+|                   |                           |
+|                   |                           |
+|                   |                           |
+
 # Probability distributions in R
 
 To do

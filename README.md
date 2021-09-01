@@ -421,6 +421,22 @@ dataframe of all combinations and iterate through it.
 expand.grid(letters[1:2], 1:3, c("+", "-"))
 ```
 
+# Dplyr
+
+## Mutate columns to other format
+
+``` r
+library(tidyverse)
+
+# Old way (superseded):
+iris %>%
+    mutate_if(is.factor, as.character)
+# New way (recommended from version 1.0.0):
+iris %>%
+  mutate(across(where(is.factor), as.character))
+# if converting to factor, use as_factor to preserve order that the factors appear
+```
+
 # Use cut
 
 `right` = indicating if the intervals should be closed on the right (and

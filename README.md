@@ -37,36 +37,79 @@ scroll trough.
 
 To do
 
-| Distribution | cdf | Inverse cdf/Quantile | pdf | Col5 |
-|--------------|-----|----------------------|-----|------|
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
-|              |     |                      |     |      |
+| Distribution                   | cdf ![F(x) = P(X \\leq x)](https://latex.codecogs.com/svg.latex?F%28x%29%20%3D%20P%28X%20%5Cleq%20x%29 "F(x) = P(X \leq x)") | Inverse cdf/quantile ![F^{-1}(p) = x](https://latex.codecogs.com/svg.latex?F%5E%7B-1%7D%28p%29%20%3D%20x "F^{-1}(p) = x") | pdf ![f(x) = P(X = x)](https://latex.codecogs.com/svg.latex?f%28x%29%20%3D%20P%28X%20%3D%20x%29 "f(x) = P(X = x)") | Generate a random variable |
+|--------------------------------|------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|----------------------------|
+| Beta                           |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Binomial                       |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Chi-Square                     |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Discrete Uniform               |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Exponential                    |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| F                              |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Gamma                          |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Geometric                      |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Logistic                       |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Log Normal                     |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Negative Binomial              |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Normal                         |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Poisson                        |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Student t                      |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Studentized Tange              |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Uniform                        |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Weibull                        |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Wilcoxon Rank Sum Statistic    |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+| Wilcoxon Signed Rank Statistic |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+|                                |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
+|                                |                                                                                                                              |                                                                                                                           |                                                                                                                    |                            |
 
-| `pbeta` | `qbeta` | `dbeta` | `rbeta` |
-|---------|---------|---------|---------|
+The cdf and the inverse cdf are related by
 
-![e^{x-2x+12-23}+123+\\\\beta](https://latex.codecogs.com/svg.latex?e%5E%7Bx-2x%2B12-23%7D%2B123%2B%5C%5Cbeta "e^{x-2x+12-23}+123+\\beta")
+![p = F(x), 0 \\leq p \\leq 1](https://latex.codecogs.com/svg.latex?p%20%3D%20F%28x%29%2C%200%20%5Cleq%20p%20%5Cleq%201 "p = F(x), 0 \leq p \leq 1")
 
-![P(X=x) = 0.5](https://latex.codecogs.com/svg.latex?P%28X%3Dx%29%20%3D%200.5 "P(X=x) = 0.5")
+![x = F^{-1}(p)](https://latex.codecogs.com/svg.latex?x%20%3D%20F%5E%7B-1%7D%28p%29 "x = F^{-1}(p)")
+
+I.e. given a number (probability) between 0 and 1, return the p-th
+quantile, i.e. the x-value on the plot.
+
+``` r
+library(tidyverse)
+n <- 100000
+mu <- 50
+sd <- 5
+set.seed(10)
+X <- rnorm(n, mu, sd) # Generate random variable
+p <- 0.5 # Let the probability be 50% (the 50th percentile)
+q <- qnorm(p, mu, sd) # inverse cdf
+cdf <- pnorm(q, mu, sd) # cdf should be approx. equal to p
+
+plot1 <- X %>%
+  enframe() %>%
+  ggplot(aes(x = value)) +
+  geom_density() +
+  geom_vline(xintercept = q, linetype = "dashed") +
+  annotate("text", x = q + 2, y = 0, label = str_glue("q = {q}")) +
+  theme_minimal()
+
+# extract x,y values from plot in order to shade the area
+d <- ggplot_build(plot1)$data[[1]]
+d <- d %>% mutate(color = ifelse(x <= q, "P(X <= x)", "P(X > x)"))
+
+plot1 +
+  geom_area(data = subset(d, x <= q), aes(
+    x = x, y = y,
+    color = factor(color)
+  ), fill = "red") +
+  scale_color_discrete("cdf") +
+  labs(
+    title = "Relationship between cdf and inverse cdf (the quantile q)",
+    subtitle = "N(50,5)",
+    x = "x"
+  )
+```
+
+![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+In this case, for p = 0.5, we get that the quantile equals the mean 50,
+since the normal distribution is symmetric and n is large.
 
 # Read/write excel files in R:
 
@@ -671,9 +714,8 @@ bindiff(0.42,95,0.042,47) # 37.8% (24.2-48.0%)
 
 ## Ordinal logistic regression
 
-Proportinal odds: effekten av de oberoende variablerna pÃ¥ den beroende
-ordinala variabeln Ã¤r konstant fÃ¶r alla nivÃ¥er i den beroende
-variabeln.
+Proportional odds: the effect of the independent variables on the
+dependent variable is constant for all levels in the dependent variable.
 
 ## Mixed model
 

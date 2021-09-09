@@ -45,31 +45,30 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 To do
 
 | Distribution                   | cdf $F(x) = P(X \leq x)$ | Inverse cdf/quantile $F^{-1}(p) = x$ | pdf $f(x) = P(X = x)$ | Generate a random variable |
-|--------------------------------|---------------------------|------------------------------------------|-----------------------|----------------------------|
-| Beta                           |                           |                                          |                       |                            |
-| Binomial                       |                           |                                          |                       |                            |
-| Chi-Square                     |                           |                                          |                       |                            |
-| Discrete Uniform               |                           |                                          |                       |                            |
-| Exponential                    |                           |                                          |                       |                            |
-| F                              |                           |                                          |                       |                            |
-| Gamma                          |                           |                                          |                       |                            |
-| Geometric                      |                           |                                          |                       |                            |
-| Logistic                       |                           |                                          |                       |                            |
-| Log Normal                     |                           |                                          |                       |                            |
-| Negative Binomial              |                           |                                          |                       |                            |
-| Normal                         |                           |                                          |                       |                            |
-| Poisson                        |                           |                                          |                       |                            |
-| Student t                      |                           |                                          |                       |                            |
-| Studentized Tange              |                           |                                          |                       |                            |
-| Uniform                        |                           |                                          |                       |                            |
-| Weibull                        |                           |                                          |                       |                            |
-| Wilcoxon Rank Sum Statistic    |                           |                                          |                       |                            |
-| Wilcoxon Signed Rank Statistic |                           |                                          |                       |                            |
-|                                |                           |                                          |                       |                            |
-|                                |                           |                                          |                       |                            |
+|--------------------------------|---------------------------|--------------------------------------|-----------------------|----------------------------|
+| Beta                           |                           |                                      |                       |                            |
+| Binomial                       |                           |                                      |                       |                            |
+| Chi-Square                     |                           |                                      |                       |                            |
+| Discrete Uniform               |                           |                                      |                       |                            |
+| Exponential                    |                           |                                      |                       |                            |
+| F                              |                           |                                      |                       |                            |
+| Gamma                          |                           |                                      |                       |                            |
+| Geometric                      |                           |                                      |                       |                            |
+| Logistic                       |                           |                                      |                       |                            |
+| Log Normal                     |                           |                                      |                       |                            |
+| Negative Binomial              |                           |                                      |                       |                            |
+| Normal                         | `pnorm`                   | `qnorm`                              | `dnorm`               | `rnorm`                    |
+| Poisson                        |                           |                                      |                       |                            |
+| Student t                      |                           |                                      |                       |                            |
+| Studentized Tange              |                           |                                      |                       |                            |
+| Uniform                        |                           |                                      |                       |                            |
+| Weibull                        |                           |                                      |                       |                            |
+| Wilcoxon Rank Sum Statistic    |                           |                                      |                       |                            |
+| Wilcoxon Signed Rank Statistic |                           |                                      |                       |                            |
+|                                |                           |                                      |                       |                            |
+|                                |                           |                                      |                       |                            |
 
-
-The cdf and the inverse cdf are related by 
+The cdf and the inverse cdf are related by
 
 $p = F(x), 0 \leq p \leq 1$
 
@@ -77,7 +76,7 @@ $x = F^{-1}(p)$
 
 I.e. given a number (probability) between 0 and 1, return the p-th quantile, i.e. the x-value on the plot.
 
-```{r, message=F}
+```{r cdf, message=F}
 library(tidyverse)
 n <- 100000
 mu <- 50
@@ -91,9 +90,9 @@ cdf <- pnorm(q, mu, sd) # cdf should be approx. equal to p
 plot1 <- X %>%
   enframe() %>%
   ggplot(aes(x = value)) +
-  geom_density() +
+  geom_density(fill = "gray") +
   geom_vline(xintercept = q, linetype = "dashed") +
-  annotate("text", x = q + 2, y = 0, label = str_glue("q = {q}")) +
+  annotate("text", x = q + 3, y = 0, label = str_glue("q = {q}")) +
   theme_minimal()
 
 # extract x,y values from plot in order to shade the area
@@ -108,15 +107,13 @@ plot1 +
   scale_color_discrete("cdf") +
   labs(
     title = "Relationship between cdf and inverse cdf (the quantile q)",
-    subtitle = "N(50,5)",
+    subtitle = "X ~ N(50,5)",
     x = "x"
   )
 
 ```
 
-In this case, for p = 0.5, we get that the quantile equals the mean 50, 
-since the normal distribution is symmetric and n is large. 
-
+In this case, for p = 0.5, we get that the quantile equals the mean 50, since the normal distribution is symmetric and n is large.
 
 # Read/write excel files in R:
 

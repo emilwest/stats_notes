@@ -322,6 +322,24 @@ print(mydoc, utmall)
 shell.exec(utmall)
 ```
 
+# For-loops
+
+Never use `for (i in 1:lenght(n))` because it will fail if `length(n)` is 0, i.e. it will evaluate to `1 0`. 
+
+Use `seq_along` or `seq_len` instead.
+
+## Preallocate the output container
+
+For faster looping.
+
+```r
+out <- vector("list", length(n))
+for (i in seq_len(n)) {
+out[[i]] <- 1 + i
+}
+```
+
+
 # PX files
 
 ## Read a px-file in R

@@ -33,6 +33,8 @@ scroll trough.
 |                         |                           |
 |                         |                           |
 
+# R data structures
+
 # Probability distributions in R
 
 To do
@@ -226,6 +228,23 @@ tibble(path = dir(pattern = "\\.csv$")) %>%
   rowwise(path) %>% 
   summarise(read_csv(path))
 ```
+
+Or read from any directory:
+
+``` r
+path <- "C:/Users/my_usrname/output/csv"
+
+df <- list.files(path, full.names = T, include.dirs = F) %>% 
+  set_names(basename(.)) %>% 
+  map_df(.x = ., 
+         .f = read_delim,
+         delim = ";", 
+         col_types = cols(.default = "c"),
+         .id = "matris")
+```
+
+If the csv files has different columns, read directly into a list with
+map() instead.
 
 # System handling in R
 

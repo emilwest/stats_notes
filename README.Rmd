@@ -251,7 +251,9 @@ df <- list.files(path, full.names = T, include.dirs = F) %>%
          col_types = cols(.default = "c"),
          .id = "matris")
 ```
+
 If the csv files has different columns, read directly into a list with map() instead.
+
 
 # System handling in R
 

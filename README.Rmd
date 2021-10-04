@@ -6,6 +6,7 @@ output:
 editor_options: 
   markdown: 
     wrap: sentence
+    extensions: +tex_math_dollars
 ---
 
 ![Stats notes](img/wordcloud2.png)
@@ -40,41 +41,35 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 |                         |                           |
 |                         |                           |
 
-
 # R data structures
-
-
-
-
-
 
 # Probability distributions in R
 
 To do
 
 | Distribution                   | cdf $F(x) = P(X \leq x)$ | Inverse cdf/quantile $F^{-1}(p) = x$ | pdf $f(x) = P(X = x)$ | Generate a random variable |
-|--------------------------------|---------------------------|--------------------------------------|-----------------------|----------------------------|
-| Beta                           |                           |                                      |                       |                            |
-| Binomial                       |                           |                                      |                       |                            |
-| Chi-Square                     |                           |                                      |                       |                            |
-| Discrete Uniform               |                           |                                      |                       |                            |
-| Exponential                    |                           |                                      |                       |                            |
-| F                              |                           |                                      |                       |                            |
-| Gamma                          |                           |                                      |                       |                            |
-| Geometric                      |                           |                                      |                       |                            |
-| Logistic                       |                           |                                      |                       |                            |
-| Log Normal                     |                           |                                      |                       |                            |
-| Negative Binomial              |                           |                                      |                       |                            |
-| Normal                         | `pnorm`                   | `qnorm`                              | `dnorm`               | `rnorm`                    |
-| Poisson                        |                           |                                      |                       |                            |
-| Student t                      |                           |                                      |                       |                            |
-| Studentized Tange              |                           |                                      |                       |                            |
-| Uniform                        |                           |                                      |                       |                            |
-| Weibull                        |                           |                                      |                       |                            |
-| Wilcoxon Rank Sum Statistic    |                           |                                      |                       |                            |
-| Wilcoxon Signed Rank Statistic |                           |                                      |                       |                            |
-|                                |                           |                                      |                       |                            |
-|                                |                           |                                      |                       |                            |
+|--------------------------------|--------------------------|--------------------------------------|-----------------------|----------------------------|
+| Beta                           |                          |                                      |                       |                            |
+| Binomial                       |                          |                                      |                       |                            |
+| Chi-Square                     |                          |                                      |                       |                            |
+| Discrete Uniform               |                          |                                      |                       |                            |
+| Exponential                    |                          |                                      |                       |                            |
+| F                              |                          |                                      |                       |                            |
+| Gamma                          |                          |                                      |                       |                            |
+| Geometric                      |                          |                                      |                       |                            |
+| Logistic                       |                          |                                      |                       |                            |
+| Log Normal                     |                          |                                      |                       |                            |
+| Negative Binomial              |                          |                                      |                       |                            |
+| Normal                         | `pnorm`                  | `qnorm`                              | `dnorm`               | `rnorm`                    |
+| Poisson                        |                          |                                      |                       |                            |
+| Student t                      |                          |                                      |                       |                            |
+| Studentized Tange              |                          |                                      |                       |                            |
+| Uniform                        |                          |                                      |                       |                            |
+| Weibull                        |                          |                                      |                       |                            |
+| Wilcoxon Rank Sum Statistic    |                          |                                      |                       |                            |
+| Wilcoxon Signed Rank Statistic |                          |                                      |                       |                            |
+|                                |                          |                                      |                       |                            |
+|                                |                          |                                      |                       |                            |
 
 The cdf and the inverse cdf are related by
 
@@ -240,7 +235,7 @@ tibble(path = dir(pattern = "\\.csv$")) %>%
 
 Or read from any directory:
 
-```r
+``` r
 path <- "C:/Users/my_usrname/output/csv"
 
 df <- list.files(path, full.names = T, include.dirs = F) %>% 
@@ -253,7 +248,6 @@ df <- list.files(path, full.names = T, include.dirs = F) %>%
 ```
 
 If the csv files has different columns, read directly into a list with map() instead.
-
 
 # System handling in R
 
@@ -349,7 +343,7 @@ shell.exec(utmall)
 
 # For-loops
 
-Never use `for (i in 1:lenght(n))` because it will fail if `length(n)` is 0, i.e. it will evaluate to `1 0`. 
+Never use `for (i in 1:lenght(n))` because it will fail if `length(n)` is 0, i.e. it will evaluate to `1 0`.
 
 Use `seq_along` or `seq_len` instead.
 
@@ -357,13 +351,12 @@ Use `seq_along` or `seq_len` instead.
 
 For faster looping.
 
-```r
+``` r
 out <- vector("list", length(n))
 for (i in seq_len(n)) {
 out[[i]] <- 1 + i
 }
 ```
-
 
 # PX files
 
@@ -1065,7 +1058,28 @@ inFile_alla:
 
 # Stringr string manipulation
 
-See [stringr.R](R/stringr.R)
+See [stringr.R](R/stringr.R) for a walk-through.
+
+## Generate acronyms
+
+Based on the first character of each word in a string.
+Returns a character vector.
+
+```{r, message=F}
+library(tidyverse)
+generate_varcodes <- function(s) {
+ str_split(s, boundary("word")) %>%
+    map(~str_sub(.x, 1,1)) %>%
+    map(str_to_upper) %>%
+    map(str_c, collapse = "") %>%
+    unlist()
+}
+mpg %>% 
+  select(model) %>% 
+  distinct() %>% 
+  mutate(acronym = generate_varcodes(model)) %>% 
+  head()
+```
 
 # Powershell
 

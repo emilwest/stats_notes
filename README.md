@@ -74,6 +74,15 @@ quantile, i.e. the x-value on the plot.
 
 ``` r
 library(tidyverse)
+```
+
+    ## Warning: package 'tibble' was built under R version 4.1.1
+
+    ## Warning: package 'tidyr' was built under R version 4.1.1
+
+    ## Warning: package 'readr' was built under R version 4.1.1
+
+``` r
 n <- 100000
 mu <- 50
 sd <- 5
@@ -1067,7 +1076,38 @@ inFile\_alla:
 
 # Stringr string manipulation
 
-See [stringr.R](R/stringr.R)
+See [stringr.R](R/stringr.R) for a walk-through.
+
+## Generate acronyms
+
+Based on the first character of each word in a string. Returns a
+character vector.
+
+``` r
+library(tidyverse)
+generate_varcodes <- function(s) {
+ str_split(s, boundary("word")) %>%
+    map(~str_sub(.x, 1,1)) %>%
+    map(str_to_upper) %>%
+    map(str_c, collapse = "") %>%
+    unlist()
+}
+mpg %>% 
+  select(model) %>% 
+  distinct() %>% 
+  mutate(acronym = generate_varcodes(model)) %>% 
+  head()
+```
+
+    ## # A tibble: 6 x 2
+    ##   model              acronym
+    ##   <chr>              <chr>  
+    ## 1 a4                 A      
+    ## 2 a4 quattro         AQ     
+    ## 3 a6 quattro         AQ     
+    ## 4 c1500 suburban 2wd CS2    
+    ## 5 corvette           C      
+    ## 6 k1500 tahoe 4wd    KT4
 
 # Powershell
 

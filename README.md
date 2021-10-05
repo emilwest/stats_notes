@@ -514,10 +514,11 @@ iris %>%
 library(tidyverse)
 # function to filter a dataframe given a string s, with regex or exact matching.
 # df = dataframe to filter
-# column = name of column, 
-# s = string to search, 
+# column = name of column,
+# s = string to search,
 # exact_match = wheter to match string exactly or with regex
-filter_regex <- function(df, column, s, exact_match = T) {
+# negate = match non-matching
+filter_regex <- function(df, column, s, exact_match = T, negate_ = FALSE) {
   column <- rlang::enquo(column)
 
   if (exact_match == TRUE) {
@@ -531,15 +532,22 @@ filter_regex <- function(df, column, s, exact_match = T) {
     searchtt <- s
   }
   df %>%
-    filter(str_detect(string = !!column, pattern = searchtt))
+    filter(str_detect(string = !!column, pattern = searchtt, negate = negate_))
 }
-
 # The default is to match the strings exactly
 mpg %>%
   filter_regex(model, c("a4", "tiburon")) %>% pull(model) %>% unique
 ```
 
     ## [1] "a4"      "tiburon"
+
+``` r
+mpg %>%
+  filter_regex(model, c("a4", "tiburon"), negate_ = T) %>% pull(model) %>% unique %>% head
+```
+
+    ## [1] "a4 quattro"         "a6 quattro"         "c1500 suburban 2wd"
+    ## [4] "corvette"           "k1500 tahoe 4wd"    "malibu"
 
 ``` r
 # Use exact_match = F to allow regex:

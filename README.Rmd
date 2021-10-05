@@ -32,14 +32,6 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 | Run code from beginning to line                                            | `Ctrl` + `Alt` + `b`               |
 | Move/shift line up/down                                                    | `Alt` + `↑ / ↓`                    |
 
-# Notepad++ useful shortcuts
-
-|                         | Command                   |
-|-------------------------|---------------------------|
-| Move/shift line up/down | `Ctrl`+ `Shift` + `↑ / ↓` |
-|                         |                           |
-|                         |                           |
-|                         |                           |
 
 # R data structures
 

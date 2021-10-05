@@ -24,15 +24,6 @@ scroll trough.
 | Run code from beginning to line                                            | `Ctrl` + `Alt` + `b`               |
 | Move/shift line up/down                                                    | `Alt` + `↑ / ↓`                    |
 
-# Notepad++ useful shortcuts
-
-|                         | Command                   |
-|-------------------------|---------------------------|
-| Move/shift line up/down | `Ctrl`+ `Shift` + `↑ / ↓` |
-|                         |                           |
-|                         |                           |
-|                         |                           |
-
 # R data structures
 
 # Probability distributions in R

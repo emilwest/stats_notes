@@ -65,15 +65,6 @@ quantile, i.e. the x-value on the plot.
 
 ``` r
 library(tidyverse)
-```
-
-    ## Warning: package 'tibble' was built under R version 4.1.1
-
-    ## Warning: package 'tidyr' was built under R version 4.1.1
-
-    ## Warning: package 'readr' was built under R version 4.1.1
-
-``` r
 n <- 100000
 mu <- 50
 sd <- 5
@@ -516,6 +507,54 @@ iris %>%
   mutate(across(where(is.factor), as.character))
 # if converting to factor, use as_factor to preserve order that the factors appear
 ```
+
+## Filter function: match string exactly or with regex
+
+``` r
+library(tidyverse)
+# function to filter a dataframe given a string s, with regex or exact matching.
+# df = dataframe to filter
+# column = name of column, 
+# s = string to search, 
+# exact_match = wheter to match string exactly or with regex
+filter_regex <- function(df, column, s, exact_match = T) {
+  column <- rlang::enquo(column)
+
+  if (exact_match == TRUE) {
+    s <- str_c("^", s, "$") # add beginning and end of line to string
+  }
+
+  if (length(s) > 1) {
+    searchtt <- paste0(s, sep = "|", collapse = "")
+    searchtt <- str_sub(searchtt, 1, nchar(searchtt) - 1)
+  } else {
+    searchtt <- s
+  }
+  df %>%
+    filter(str_detect(string = !!column, pattern = searchtt))
+}
+
+# The default is to match the strings exactly
+mpg %>%
+  filter_regex(model, c("a4", "tiburon")) %>% pull(model) %>% unique
+```
+
+    ## [1] "a4"      "tiburon"
+
+``` r
+# Use exact_match = F to allow regex:
+mpg %>%
+  filter_regex(model, c("a4","tiburon"), exact_match = F) %>% pull(model) %>% unique
+```
+
+    ## [1] "a4"         "a4 quattro" "tiburon"
+
+``` r
+mpg %>%
+  filter_regex(model, c("a[0-9]+.*"), exact_match = F) %>% pull(model) %>% unique
+```
+
+    ## [1] "a4"         "a4 quattro" "a6 quattro"
 
 # Use cut
 

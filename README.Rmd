@@ -71,7 +71,7 @@ $x = F^{-1}(p)$
 
 I.e. given a number (probability) between 0 and 1, return the p-th quantile, i.e. the x-value on the plot.
 
-```{r cdf, message=F}
+```{r cdf, message=F, warning = F}
 library(tidyverse)
 n <- 100000
 mu <- 50
@@ -511,7 +511,7 @@ iris %>%
 
 ## Filter function: match string exactly or with regex
 
-```{r, message = F}
+```{r, message = F, warning = F}
 library(tidyverse)
 # function to filter a dataframe given a string s, with regex or exact matching.
 # df = dataframe to filter

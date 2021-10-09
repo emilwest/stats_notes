@@ -23,15 +23,14 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 | Comment/uncomment single/multiple lines:                                   | `Ctrl`+ `Shift` + `c`              |
 | Display command palette:                                                   | `Ctrl`+ `Shift` + `p`              |
 | Auto-indent:                                                               | `Ctrl` + `i`                       |
-| Edit multiple lines simultaneusly (increase the blinking line vertically): | `Ctrl` + `Alt` + `↑ / ↓`           |
-| Duplicate current line:                                                    | `Alt` + `Shift` + `↑ / ↓`          |
+| Edit multiple lines simultaneusly (increase the blinking line vertically): | `Ctrl` + `Alt` + `↑ / ↓`       |
+| Duplicate current line:                                                    | `Alt` + `Shift` + `↑ / ↓`      |
 | Insert assignment (`<-`):                                                  | `Alt` + `-`                        |
 | Insert pipe operator (`%>%`):                                              | `Ctrl` + `Shift` + `m`             |
 | Delete current line:                                                       | `Ctrl` + `d`                       |
 | Multiple word selection:                                                   | `Ctrl` + `Alt` + double left click |
 | Run code from beginning to line                                            | `Ctrl` + `Alt` + `b`               |
-| Move/shift line up/down                                                    | `Alt` + `↑ / ↓`                    |
-
+| Move/shift line up/down                                                    | `Alt` + `↑ / ↓`                |
 
 # R data structures
 
@@ -547,10 +546,6 @@ mpg %>%
 mpg %>%
   filter_regex(model, c("a[0-9]+.*"), exact_match = F) %>% pull(model) %>% unique
 ```
-
-
-
-
 
 # Use cut
 
@@ -1206,3 +1201,40 @@ To do
 # Bash / linux useful commands
 
 To do
+
+# Fun stuff
+
+## Calculate target pace
+
+Pros of using `lubridate`: more informative output, no need to re-invent the wheel.
+
+Pros of doing manual calculation: more control/understanding how it is calculated.
+
+```{r targetpace, warning=F, message=F, collapse=TRUE}
+library(tidyverse)
+# calculate without lubridate:
+
+# halvamara in < 2h
+dist <- 21.1
+duration <- 120
+s <- 120*60
+s
+# pace to complete half marathon in 1:59:59
+pace <- (s-1)/dist
+pace
+rest <- pace %% 60
+mins <- (pace-rest)/60
+str_glue("{mins}m {round(rest,1)}s") %>% print()
+
+# -----------------------------
+
+# calculate with lubridate:
+library(lubridate)
+dist <- 21.1
+s <- duration(120, "minutes")
+s
+# pace to complete half marathon in 1:59:59
+pace <- (s-1)/dist
+pace
+seconds_to_period(pace) %>% round(1)
+```

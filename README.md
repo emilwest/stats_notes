@@ -1240,3 +1240,47 @@ To do
 # Bash / linux useful commands
 
 To do
+
+# Fun stuff
+
+## Calculate target pace
+
+Pros of using `lubridate`: more informative output, no need to re-invent
+the wheel.
+
+Pros of doing manual calculation: more control/understanding how it is
+calculated.
+
+``` r
+library(tidyverse)
+# calculate without lubridate:
+
+# halvamara in < 2h
+dist <- 21.1
+duration <- 120
+s <- 120*60
+s
+## [1] 7200
+# pace to complete half marathon in 1:59:59
+pace <- (s-1)/dist
+pace
+## [1] 341.1848
+rest <- pace %% 60
+mins <- (pace-rest)/60
+str_glue("{mins}m {round(rest,1)}s") %>% print()
+## 5m 41.2s
+# -----------------------------
+
+# calculate with lubridate:
+library(lubridate)
+dist <- 21.1
+s <- duration(120, "minutes")
+s
+## [1] "7200s (~2 hours)"
+# pace to complete half marathon in 1:59:59
+pace <- (s-1)/dist
+pace
+## [1] "341.184834123223s (~5.69 minutes)"
+seconds_to_period(pace) %>% round(1)
+## [1] "5M 41.2S"
+```

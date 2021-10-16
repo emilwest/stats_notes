@@ -1,5 +1,6 @@
 library(httr)
 library(jsonlite)
+library(tidyverse)
 
 
 url <- "https://pxweb.nordicstatistics.org:443/api/v1/en/Nordic Statistics/Geography and climate/Land use/DENS01.px"
@@ -27,7 +28,7 @@ query <- '{
 
 r <- POST(url, body=query)
 px <- content(r, type="text", encoding = "Windows-1252")
+px
 
-library(pxR)
-pxR::read.px(px, encoding = "Windows-1252")
-
+px %>% 
+  str_split("\r\n") 

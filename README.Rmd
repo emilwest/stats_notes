@@ -1121,6 +1121,13 @@ Not really part of statistics but good to know if you need to do any form of aut
 dir C:\Users\emiwes\Documents\experiments -Recurse | Select-String -pattern "my search"
 ```
 
+### Rename all files in folder
+
+This example removes all files containing _flags in filename:
+```powershell
+Dir | Rename-Item –NewName { $_.name –replace “_flags“,”” }
+```
+
 # Run/execute program/scripts from R using system()
 
 ``` r

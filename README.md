@@ -1158,6 +1158,14 @@ form of automation on system files.
 dir C:\Users\emiwes\Documents\experiments -Recurse | Select-String -pattern "my search"
 ```
 
+### Rename all files in folder
+
+This example removes all files containing \_flags in filename:
+
+``` powershell
+Dir | Rename-Item –NewName { $_.name –replace “_flags“,”” }
+```
+
 # Run/execute program/scripts from R using system()
 
 ``` r
@@ -1269,6 +1277,7 @@ rest <- pace %% 60
 mins <- (pace-rest)/60
 str_glue("{mins}m {round(rest,1)}s") %>% print()
 ## 5m 41.2s
+
 # -----------------------------
 
 # calculate with lubridate:

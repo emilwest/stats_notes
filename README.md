@@ -506,6 +506,9 @@ iris %>%
 iris %>%
   mutate(across(where(is.factor), as.character))
 # if converting to factor, use as_factor to preserve order that the factors appear
+## mutate column format for list of dataframes
+data_all %>% 
+  map(~ .x %>% mutate(across(where(is_double), as.character)))
 ```
 
 ## Filter function: match string exactly or with regex

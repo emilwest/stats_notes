@@ -145,6 +145,18 @@ needed. So it is a good idea to double check with the data so that your
 imported dates look as expected.
 [Link](https://support.microsoft.com/en-us/office/date-systems-in-excel-e7fe7167-48a9-4b96-bb53-5612a800b487 "Date systems in excel")
 
+If the column contains both dates and text for some reason, and you want
+to keep the text, use this function:
+
+``` r
+convertd <- function(x) {
+  x <- ifelse(str_detect(x, "^[0-9]+$"), as.character(as.Date(as.numeric(x), origin = "1899-12-30")), x)
+  return(x)
+}
+convertd(c(22,"aa"))
+# [1] "1900-01-21" "aa" 
+```
+
 ## Add a plot to an excel sheet
 
 ``` r

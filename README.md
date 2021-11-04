@@ -149,6 +149,8 @@ If the column contains both dates and text for some reason, and you want
 to keep the text, use this function:
 
 ``` r
+# Function for converting excel-dates in 1900-date system to R-dates, while keeping texts as they are
+# if the column has a mix of texts and dates
 convertd <- function(x) {
   x <- ifelse(str_detect(x, "^[0-9]+$"), as.character(as.Date(as.numeric(x), origin = "1899-12-30")), x)
   return(x)

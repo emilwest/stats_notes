@@ -128,6 +128,23 @@ list_of_datasets <- list("Sheet name 1" = df1,
 openxlsx::write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")                    
 ```
 
+## Read dates
+
+When importing dates from Excel into R, dates are represented as days
+since 1899-12-30. Usually this is done automatically, but in some cases
+there may be text in the columns, then you can use this method (text
+-&gt; NA):
+
+``` r
+as.Date(44301, origin = "1899-12-30")
+```
+
+All versions of Excel for Windows calculate dates based on the 1900 date
+system. However for older versions of Mac, the 1904 date system is
+needed. So it is a good idea to double check with the data so that your
+imported dates look as expected.
+[Link](https://support.microsoft.com/en-us/office/date-systems-in-excel-e7fe7167-48a9-4b96-bb53-5612a800b487 "Date systems in excel")
+
 ## Add a plot to an excel sheet
 
 ``` r

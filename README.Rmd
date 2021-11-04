@@ -23,14 +23,14 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 | Comment/uncomment single/multiple lines:                                   | `Ctrl`+ `Shift` + `c`              |
 | Display command palette:                                                   | `Ctrl`+ `Shift` + `p`              |
 | Auto-indent:                                                               | `Ctrl` + `i`                       |
-| Edit multiple lines simultaneusly (increase the blinking line vertically): | `Ctrl` + `Alt` + `↑ / ↓`       |
-| Duplicate current line:                                                    | `Alt` + `Shift` + `↑ / ↓`      |
+| Edit multiple lines simultaneusly (increase the blinking line vertically): | `Ctrl` + `Alt` + `↑ / ↓`           |
+| Duplicate current line:                                                    | `Alt` + `Shift` + `↑ / ↓`          |
 | Insert assignment (`<-`):                                                  | `Alt` + `-`                        |
 | Insert pipe operator (`%>%`):                                              | `Ctrl` + `Shift` + `m`             |
 | Delete current line:                                                       | `Ctrl` + `d`                       |
 | Multiple word selection:                                                   | `Ctrl` + `Alt` + double left click |
 | Run code from beginning to line                                            | `Ctrl` + `Alt` + `b`               |
-| Move/shift line up/down                                                    | `Alt` + `↑ / ↓`                |
+| Move/shift line up/down                                                    | `Alt` + `↑ / ↓`                    |
 
 # R data structures
 
@@ -132,6 +132,20 @@ list_of_datasets <- list("Sheet name 1" = df1,
                          "Sheet name 3" = df3)
 openxlsx::write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")                    
 ```
+
+## Read dates
+
+When importing dates from Excel into R, dates are represented as days since 1899-12-30.
+Usually this is done automatically, but in some cases there may be text in the columns, then you can use this method (text -\> NA):
+
+``` r
+as.Date(44301, origin = "1899-12-30")
+```
+
+All versions of Excel for Windows calculate dates based on the 1900 date system.
+However for older versions of Mac, the 1904 date system is needed.
+So it is a good idea to double check with the data so that your imported dates look as expected.
+[Link](https://support.microsoft.com/en-us/office/date-systems-in-excel-e7fe7167-48a9-4b96-bb53-5612a800b487 "Date systems in excel")
 
 ## Add a plot to an excel sheet
 
@@ -1126,8 +1140,9 @@ dir C:\Users\emiwes\Documents\experiments -Recurse | Select-String -pattern "my 
 
 ### Rename all files in folder
 
-This example removes all files containing _flags in filename:
-```powershell
+This example removes all files containing \_flags in filename:
+
+``` powershell
 Dir | Rename-Item –NewName { $_.name –replace “_flags“,”” }
 ```
 

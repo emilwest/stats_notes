@@ -120,12 +120,78 @@ xl.read.file(indata, password = "mypswd", write.res.password="mypswd")
 # Write excel files:
 library(openxlsx)
 write.xlsx(df, file = "Output/myfile.xlsx")
+```
 
+## Write multiple data frames as sheets in single excel file
+
+Option 1 (simplest):
+
+``` r
 # Write multiple data frames as sheets in single excel file:
 list_of_datasets <- list("Sheet name 1" = df1, 
                          "Sheet name 2" = df2,
                          "Sheet name 3" = df3)
-openxlsx::write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")                    
+openxlsx::write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")    
+```
+
+Option 2 (more customization):
+
+``` r
+library(openxlsx)
+library(tidyverse)
+ 
+# Split dataframe into list of tables
+dat <- split(mtcars, mtcars$cyl)
+ 
+wb <- createWorkbook()
+ 
+# loop trough list of splitted tables, adding worksheets and styles:
+map2(.x = dat, .y = names(dat),
+     .f = function(data, name) {
+       addWorksheet(wb, name)
+       freezePane(wb, name, firstActiveRow = 2)
+       writeData(wb, name, data, withFilter = TRUE)
+     })
+ 
+saveWorkbook(wb, file = "Output/myfile.xlsx", overwrite = TRUE)
+```
+
+If you don’t need to apply any styling for each sheet you can just do:
+
+``` r
+dat <- split(mtcars, mtcars$cyl)
+openxlsx::write.xlsx(dat, file = "Output/myfile.xlsx")   
+```
+
+## Read dates
+
+When importing dates from Excel into R, dates are represented as days
+since 1899-12-30. Usually this is done automatically, but in some cases
+there may be text in the columns, then you can use this method (text
+-&gt; NA):
+
+``` r
+as.Date(44301, origin = "1899-12-30")
+```
+
+All versions of Excel for Windows calculate dates based on the 1900 date
+system. However for older versions of Mac, the 1904 date system is
+needed. So it is a good idea to double check with the data so that your
+imported dates look as expected.
+[Link](https://support.microsoft.com/en-us/office/date-systems-in-excel-e7fe7167-48a9-4b96-bb53-5612a800b487 "Date systems in excel")
+
+If the column contains both dates and text for some reason, and you want
+to keep the text, use this function:
+
+``` r
+# Function for converting excel-dates in 1900-date system to R-dates, while keeping texts as they are
+# if the column has a mix of texts and dates
+convertd <- function(x) {
+  x <- ifelse(str_detect(x, "^[0-9]+$"), as.character(as.Date(as.numeric(x), origin = "1899-12-30")), x)
+  return(x)
+}
+convertd(c(22,"aa"))
+# [1] "1900-01-21" "aa" 
 ```
 
 ## Add a plot to an excel sheet
@@ -506,6 +572,11 @@ iris %>%
 iris %>%
   mutate(across(where(is.factor), as.character))
 # if converting to factor, use as_factor to preserve order that the factors appear
+
+## perform conversion on a list of dataframes
+dat <- iris %>% as_tibble() %>%  split(.$Species) # list of dataframes split by Species
+dat %>% 
+  map(~ .x %>% mutate(across(where(is_double), as.character)))
 ```
 
 ## Filter function: match string exactly or with regex
@@ -1158,6 +1229,14 @@ form of automation on system files.
 dir C:\Users\emiwes\Documents\experiments -Recurse | Select-String -pattern "my search"
 ```
 
+### Rename all files in folder
+
+This example removes all files containing \_flags in filename:
+
+``` powershell
+Dir | Rename-Item –NewName { $_.name –replace “_flags“,”” }
+```
+
 # Run/execute program/scripts from R using system()
 
 ``` r
@@ -1269,6 +1348,7 @@ rest <- pace %% 60
 mins <- (pace-rest)/60
 str_glue("{mins}m {round(rest,1)}s") %>% print()
 ## 5m 41.2s
+
 # -----------------------------
 
 # calculate with lubridate:

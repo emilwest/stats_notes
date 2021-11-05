@@ -120,12 +120,47 @@ xl.read.file(indata, password = "mypswd", write.res.password="mypswd")
 # Write excel files:
 library(openxlsx)
 write.xlsx(df, file = "Output/myfile.xlsx")
+```
 
+## Write multiple data frames as sheets in single excel file
+
+Option 1 (simplest):
+
+``` r
 # Write multiple data frames as sheets in single excel file:
 list_of_datasets <- list("Sheet name 1" = df1, 
                          "Sheet name 2" = df2,
                          "Sheet name 3" = df3)
-openxlsx::write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")                    
+openxlsx::write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")    
+```
+
+Option 2 (more customization):
+
+``` r
+library(openxlsx)
+library(tidyverse)
+ 
+# Split dataframe into list of tables
+dat <- split(mtcars, mtcars$cyl)
+ 
+wb <- createWorkbook()
+ 
+# loop trough list of splitted tables, adding worksheets and styles:
+map2(.x = dat, .y = names(dat),
+     .f = function(data, name) {
+       addWorksheet(wb, name)
+       freezePane(wb, name, firstActiveRow = 2)
+       writeData(wb, name, data, withFilter = TRUE)
+     })
+ 
+saveWorkbook(wb, file = "Output/myfile.xlsx", overwrite = TRUE)
+```
+
+If you don’t need to apply any styling for each sheet you can just do:
+
+``` r
+dat <- split(mtcars, mtcars$cyl)
+openxlsx::write.xlsx(dat, file = "Output/myfile.xlsx")   
 ```
 
 ## Read dates

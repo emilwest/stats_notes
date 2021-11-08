@@ -101,8 +101,27 @@ plot1 +
 
 ![](README_files/figure-gfm/cdf-1.png)<!-- -->
 
-In this case, for p = 0.5, we get that the quantile equals the mean 50,
-since the normal distribution is symmetric and n is large.
+In this case, for p = 0.5, we get that the quantile equals the mean =
+median = 50, since the normal distribution is symmetric and n is large.
+
+TODO: show qq-lot
+
+## The difference between percentile, quantile and quartile
+
+These are the sets of possible values (domains) for the quantile(x) and
+percentile(x) functions, while the quartile is always between 0-4.
+
+| Quartile | Quantile | Percentile  |
+|----------|----------|-------------|
+| 0        | 0        | 0           |
+| 1        | 0.25     | 25          |
+| 2        | 0.5      | 50 (median) |
+| 3        | 0.75     | 75          |
+| 4        | 1        | 100         |
+
+This does not say that a quantile varies between 0 and 1, and percentile
+between 0 and 100. Quantiles can go from anything to anything.
+[Link](https://stats.stackexchange.com/questions/156778/percentile-vs-quantile-vs-quartile "Percentile vs quantile vs quartile")
 
 # Read/write excel files in R:
 

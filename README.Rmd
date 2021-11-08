@@ -107,7 +107,25 @@ plot1 +
 
 ```
 
-In this case, for p = 0.5, we get that the quantile equals the mean 50, since the normal distribution is symmetric and n is large.
+In this case, for p = 0.5, we get that the quantile equals the mean = median = 50, since the normal distribution is symmetric and n is large.
+
+TODO: show qq-lot
+
+## The difference between percentile, quantile and quartile
+
+These are the sets of possible values (domains) for the quantile(x) and percentile(x) functions, while the quartile is always between 0-4.
+
+| Quartile | Quantile | Percentile  |
+|----------|----------|-------------|
+| 0        | 0        | 0           |
+| 1        | 0.25     | 25          |
+| 2        | 0.5      | 50 (median) |
+| 3        | 0.75     | 75          |
+| 4        | 1        | 100         |
+
+This does not say that a quantile varies between 0 and 1, and percentile between 0 and 100.
+Quantiles can go from anything to anything.
+[Link](https://stats.stackexchange.com/questions/156778/percentile-vs-quantile-vs-quartile "Percentile vs quantile vs quartile")
 
 # Read/write excel files in R:
 
@@ -125,13 +143,13 @@ xl.read.file(indata, password = "mypswd", write.res.password="mypswd")
 # Write excel files:
 library(openxlsx)
 write.xlsx(df, file = "Output/myfile.xlsx")
-
 ```
 
 ## Write multiple data frames as sheets in single excel file
 
 Option 1 (simplest):
-```r
+
+``` r
 # Write multiple data frames as sheets in single excel file:
 list_of_datasets <- list("Sheet name 1" = df1, 
                          "Sheet name 2" = df2,
@@ -140,7 +158,8 @@ openxlsx::write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")
 ```
 
 Option 2 (more customization):
-```r
+
+``` r
 library(openxlsx)
 library(tidyverse)
  
@@ -162,7 +181,7 @@ saveWorkbook(wb, file = "Output/myfile.xlsx", overwrite = TRUE)
 
 If you don't need to apply any styling for each sheet you can just do:
 
-```r
+``` r
 dat <- split(mtcars, mtcars$cyl)
 openxlsx::write.xlsx(dat, file = "Output/myfile.xlsx")   
 ```
@@ -183,7 +202,7 @@ So it is a good idea to double check with the data so that your imported dates l
 
 If the column contains both dates and text for some reason, and you want to keep the text, use this function:
 
-```r
+``` r
 # Function for converting excel-dates in 1900-date system to R-dates, while keeping texts as they are
 # if the column has a mix of texts and dates
 convertd <- function(x) {
@@ -572,7 +591,6 @@ iris %>%
 dat <- iris %>% as_tibble() %>%  split(.$Species) # list of dataframes split by Species
 dat %>% 
   map(~ .x %>% mutate(across(where(is_double), as.character)))
-
 ```
 
 ## Filter function: match string exactly or with regex

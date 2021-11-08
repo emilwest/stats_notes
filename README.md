@@ -598,6 +598,15 @@ dat %>%
   map(~ .x %>% mutate(across(where(is_double), as.character)))
 ```
 
+## Renaming
+
+Rename the last column:
+
+``` r
+bind_rows(sms_tot, mms_tot) %>%
+      dplyr::rename(value = !! last(names(sms_tot)))
+```
+
 ## Filter function: match string exactly or with regex
 
 ``` r

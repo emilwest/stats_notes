@@ -591,8 +591,7 @@ iris %>%
 dat <- iris %>% as_tibble() %>%  split(.$Species) # list of dataframes split by Species
 dat %>% 
   map(~ .x %>% mutate(across(where(is_double), as.character)))
-<<<<<<< HEAD
-=======
+
 ```
 
 ## Renaming
@@ -601,7 +600,6 @@ Rename the last column:
 ```r
 bind_rows(sms_tot, mms_tot) %>%
       dplyr::rename(value = !! last(names(sms_tot)))
->>>>>>> e363db74cdca41b82f1734335c2c249ed6ae4ae7
 ```
 
 ## Filter function: match string exactly or with regex

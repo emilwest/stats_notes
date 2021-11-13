@@ -58,6 +58,8 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 
 For more distributions not included in base R, see the package `extraDistr` .
 
+## Relationships between cdf and inverse cdf, quantiles and sample quantiles
+
 The cdf and the inverse cdf are related by
 
 $p = F(x), 0 \leq p \leq 1$
@@ -65,51 +67,118 @@ $p = F(x), 0 \leq p \leq 1$
 $x = F^{-1}(p)$
 
 I.e. given a number (probability) between 0 and 1, return the p-th quantile, i.e. the x-value on the plot.
+Consider also the difference between the 'theoretical' quantile of the population (q) compared to the observed sample quantile (qs).
 
-```{r cdf, message=F, warning = F}
+```{r cdf, message=F, warning = F, cache=T}
 library(tidyverse)
-n <- 100000
+library(patchwork)
+options(scipen = 999)
+
+plotnn <- function(n, mu, sd) {
+  set.seed(10)
+  X <- rnorm(n, mu, sd) # Generate random variable
+  p <- 0.5 # Let the probability be 50% (the 50th percentile)
+  q <- qnorm(p, mu, sd) # inverse cdf, theoretical quantile
+  cdf <- pnorm(q, mu, sd) # cdf should be equal to p
+  
+  xbar <- mean(X) # sample mean
+  xmedian <- median(X) # sample median
+  sd(X)
+  q_sample <- qnorm(p, xbar, sd(X)) %>% round(3)
+  0.5 == pnorm(q_sample, xbar, sd(X)) # TRUE
+  
+  
+  plot1 <- X %>%
+    enframe() %>%
+    ggplot(aes(x = value)) +
+    geom_density(fill = "gray") +
+    theme_minimal()+
+    theme(legend.position="top")
+  
+  
+  # extract x,y values from plot in order to shade the area
+  d <- ggplot_build(plot1)$data[[1]]
+  d <- d %>% mutate(color = case_when(
+    x <= q & x > q_sample~ "P(X <= q)",
+    x <= q_sample ~ "P(X <= qs)"
+  ))
+  
+  plot1 +
+    geom_area(data = subset(d, x <= q), aes(
+      x = x, y = y,
+      fill = factor(color)
+    )) +
+    annotate("text", x = q + 1, y = 0, label = str_glue("q = {q}")) +
+    annotate("text", x = q - 1, y = 0 + 0.005, label = str_glue("q_sample = {q_sample}")) +
+    geom_vline(xintercept = q, linetype = "dashed") +
+    geom_vline(xintercept = q_sample, linetype = "dotted") + 
+    scale_color_discrete("cdf:") +
+    labs(
+      title = "Relationship between cdf and inverse cdf (the quantile q)",
+      subtitle = str_glue("X ~ N({mu}, {sd}), n = {n}. xbar = {round(xbar,4)}, median = {round(xmedian,4)}"),
+      x = "x",
+      fill = "cdf"
+    ) +
+    scale_fill_manual(breaks = c("P(X <= q)", "P(X <= qs)"),
+                       values = c("#FC4E07","#00AFBB"))
+}
+
 mu <- 50
 sd <- 5
-set.seed(10)
-X <- rnorm(n, mu, sd) # Generate random variable
-p <- 0.5 # Let the probability be 50% (the 50th percentile)
-q <- qnorm(p, mu, sd) # inverse cdf
-cdf <- pnorm(q, mu, sd) # cdf should be approx. equal to p
 
-plot1 <- X %>%
-  enframe() %>%
-  ggplot(aes(x = value)) +
-  geom_density(fill = "gray") +
-  geom_vline(xintercept = q, linetype = "dashed") +
-  annotate("text", x = q + 3, y = 0, label = str_glue("q = {q}")) +
-  theme_minimal()
+plotnn(10, mu, sd)
+plotnn(100, mu, sd)
+plotnn(1000, mu, sd)
+plotnn(100000, mu, sd)
 
-# extract x,y values from plot in order to shade the area
-d <- ggplot_build(plot1)$data[[1]]
-d <- d %>% mutate(color = ifelse(x <= q, "P(X <= x)", "P(X > x)"))
-
-plot1 +
-  geom_area(data = subset(d, x <= q), aes(
-    x = x, y = y,
-    color = factor(color)
-  ), fill = "red") +
-  scale_color_discrete("cdf") +
-  labs(
-    title = "Relationship between cdf and inverse cdf (the quantile q)",
-    subtitle = "X ~ N(50,5)",
-    x = "x"
-  )
 
 ```
 
-In this case, for p = 0.5, we get that the quantile equals the mean = median = 50, since the normal distribution is symmetric and n is large.
+Here is a QQ-plot to illustrate the observed quantiles (y-axis) vs the theoretical quantiles (x-axis).
+This can be used to assess normality.
+Note that the plot looks the same even if the values are z-transformed or not (verify it yourself if you like by changing `ggplot(aes(x = qq, y = x))` to `ggplot(aes(x = qq, y = x_scaled))`).
 
-TODO: show qq-lot
+```{r qq_plot, message=F, warning = F, cache=T}
+
+mu <- 50
+sd <- 5
+
+plotqq <- function(n, mu, sd) {
+  set.seed(10)
+  
+  X <- rnorm(n, mu, sd)
+  d <- X %>% 
+    enframe(name = NULL, value = "x") %>% 
+    mutate(across(x, scale, .names = "{.col}_scaled")) %>% # z-transform to mean zero and unit variance
+    arrange(x) %>% 
+    mutate(j = 1:length(X),
+           prob_level = (j-0.5)/length(X), # 0.5 is the 'continuity' correction
+           qq = qnorm(prob_level) # standard normal quantile,
+    )
+  
+  d %>% 
+    ggplot(aes(x = qq, y = x)) +
+    geom_point() +
+    geom_smooth(method = "lm", formula = y ~ x, se = FALSE) +
+    labs(y = "Observed quantiles",
+         x = "Theoretical quantiles",
+         subtitle = str_glue("n = {n}, mu = {mu}, sd = {sd}")) +
+    theme_light() 
+}
+
+p1 <- plotqq(10,mu,sd)
+p2 <- plotqq(100,mu,sd)
+p3 <- plotqq(1000,mu,sd)
+p4 <- plotqq(100000,mu,sd)
+
+(p1+p2) /
+  (p3+p4)
+
+```
 
 ## The difference between percentile, quantile and quartile
 
-These are the sets of possible values (domains) for the quantile(x) and percentile(x) functions, while the quartile is always between 0-4.
+The table below shows a set of possible values (domains) for the quantile(x) and percentile(x) functions, while the quartile is always between 0-4.
 
 | Quartile | Quantile | Percentile  |
 |----------|----------|-------------|
@@ -122,6 +191,8 @@ These are the sets of possible values (domains) for the quantile(x) and percenti
 This does not say that a quantile varies between 0 and 1, and percentile between 0 and 100.
 Quantiles can go from anything to anything.
 [Link](https://stats.stackexchange.com/questions/156778/percentile-vs-quantile-vs-quartile "Percentile vs quantile vs quartile")
+
+Also note that for samples from the normal distribution, the median may not equal the sample quantile but they should not be far apart.
 
 # Read/write excel files in R:
 

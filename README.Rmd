@@ -23,14 +23,14 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 | Comment/uncomment single/multiple lines:                                   | `Ctrl`+ `Shift` + `c`              |
 | Display command palette:                                                   | `Ctrl`+ `Shift` + `p`              |
 | Auto-indent:                                                               | `Ctrl` + `i`                       |
-| Edit multiple lines simultaneusly (increase the blinking line vertically): | `Ctrl` + `Alt` + `↑ / ↓`           |
-| Duplicate current line:                                                    | `Alt` + `Shift` + `↑ / ↓`          |
+| Edit multiple lines simultaneusly (increase the blinking line vertically): | `Ctrl` + `Alt` + `↑ / ↓`       |
+| Duplicate current line:                                                    | `Alt` + `Shift` + `↑ / ↓`      |
 | Insert assignment (`<-`):                                                  | `Alt` + `-`                        |
 | Insert pipe operator (`%>%`):                                              | `Ctrl` + `Shift` + `m`             |
 | Delete current line:                                                       | `Ctrl` + `d`                       |
 | Multiple word selection:                                                   | `Ctrl` + `Alt` + double left click |
 | Run code from beginning to line                                            | `Ctrl` + `Alt` + `b`               |
-| Move/shift line up/down                                                    | `Alt` + `↑ / ↓`                    |
+| Move/shift line up/down                                                    | `Alt` + `↑ / ↓`                |
 
 # R data structures
 
@@ -125,13 +125,13 @@ xl.read.file(indata, password = "mypswd", write.res.password="mypswd")
 # Write excel files:
 library(openxlsx)
 write.xlsx(df, file = "Output/myfile.xlsx")
-
 ```
 
 ## Write multiple data frames as sheets in single excel file
 
 Option 1 (simplest):
-```r
+
+``` r
 # Write multiple data frames as sheets in single excel file:
 list_of_datasets <- list("Sheet name 1" = df1, 
                          "Sheet name 2" = df2,
@@ -140,7 +140,8 @@ openxlsx::write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")
 ```
 
 Option 2 (more customization):
-```r
+
+``` r
 library(openxlsx)
 library(tidyverse)
  
@@ -162,7 +163,7 @@ saveWorkbook(wb, file = "Output/myfile.xlsx", overwrite = TRUE)
 
 If you don't need to apply any styling for each sheet you can just do:
 
-```r
+``` r
 dat <- split(mtcars, mtcars$cyl)
 openxlsx::write.xlsx(dat, file = "Output/myfile.xlsx")   
 ```
@@ -183,7 +184,7 @@ So it is a good idea to double check with the data so that your imported dates l
 
 If the column contains both dates and text for some reason, and you want to keep the text, use this function:
 
-```r
+``` r
 # Function for converting excel-dates in 1900-date system to R-dates, while keeping texts as they are
 # if the column has a mix of texts and dates
 convertd <- function(x) {
@@ -572,7 +573,6 @@ iris %>%
 dat <- iris %>% as_tibble() %>%  split(.$Species) # list of dataframes split by Species
 dat %>% 
   map(~ .x %>% mutate(across(where(is_double), as.character)))
-
 ```
 
 ## Filter function: match string exactly or with regex
@@ -1290,7 +1290,7 @@ library(tidyverse)
 # calculate without lubridate:
 
 # halvamara in < 2h
-dist <- 21.1
+dist <- 21.0975 # km
 duration <- 120
 s <- 120*60
 s
@@ -1305,7 +1305,7 @@ str_glue("{mins}m {round(rest,1)}s") %>% print()
 
 # calculate with lubridate:
 library(lubridate)
-dist <- 21.1
+dist <- 21.0975 # km
 s <- duration(120, "minutes")
 s
 # pace to complete half marathon in 1:59:59

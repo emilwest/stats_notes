@@ -1335,7 +1335,7 @@ library(tidyverse)
 # calculate without lubridate:
 
 # halvamara in < 2h
-dist <- 21.1
+dist <- 21.0975 # km
 duration <- 120
 s <- 120*60
 s
@@ -1343,7 +1343,7 @@ s
 # pace to complete half marathon in 1:59:59
 pace <- (s-1)/dist
 pace
-## [1] 341.1848
+## [1] 341.2253
 rest <- pace %% 60
 mins <- (pace-rest)/60
 str_glue("{mins}m {round(rest,1)}s") %>% print()
@@ -1353,14 +1353,14 @@ str_glue("{mins}m {round(rest,1)}s") %>% print()
 
 # calculate with lubridate:
 library(lubridate)
-dist <- 21.1
+dist <- 21.0975 # km
 s <- duration(120, "minutes")
 s
 ## [1] "7200s (~2 hours)"
 # pace to complete half marathon in 1:59:59
 pace <- (s-1)/dist
 pace
-## [1] "341.184834123223s (~5.69 minutes)"
+## [1] "341.225263656831s (~5.69 minutes)"
 seconds_to_period(pace) %>% round(1)
 ## [1] "5M 41.2S"
 ```

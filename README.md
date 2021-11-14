@@ -51,7 +51,66 @@ scroll trough.
 For more distributions not included in base R, see the package
 `extraDistr` .
 
-## Relationships between cdf and inverse cdf, quantiles and sample quantiles
+## The Normal Distribution
+
+``` r
+library(tidyverse)
+library(patchwork)
+options(scipen = 999)
+
+mu <- 50
+sd <- 5
+n <- 1000
+set.seed(10)
+df <- tibble(
+  x = seq(1, 100, length.out = n),
+  p = seq(0, 1, length.out = n),
+  pdf = dnorm(x, mean = mu, sd = sd), # f(x) = P(X = x)
+  cdf = pnorm(x, mean = mu, sd = sd), # F(x) = P(X <= x)
+  q = qnorm(p, mean = mu, sd = sd), # F^{-1}(p) = x
+  X = rnorm(n, mean = mu, sd = sd) # generate a random variable
+)
+
+p_pdf <- df %>%
+  ggplot(aes(x = x, y = pdf)) +
+  geom_point(size = 0.5) +
+  theme_light() +
+  labs(
+    title = "The pdf (dnorm): P(X = x)",
+    subtitle = str_glue("n = {nrow(df)}, mu = {mu}, sd = {sd}")
+  )
+p_cdf <- df %>%
+  ggplot(aes(x = x, y = cdf)) +
+  geom_point(size = 0.5) +
+  theme_light() +
+  labs(
+    title = "The cdf (pnorm): F(x) = P(X <= x)",
+    subtitle = str_glue("n = {nrow(df)}, mu = {mu}, sd = {sd}")
+  )
+p_q <- df %>%
+  ggplot(aes(x = x, y = q)) +
+  geom_point(size = 0.5) +
+  theme_light() +
+  labs(
+    title = "The quantile / inverse cdf (qnorm)",
+    subtitle = str_glue("n = {nrow(df)}, mu = {mu}, sd = {sd}")
+  )
+p_X <- df %>%
+  ggplot(aes(x = X)) +
+  geom_density() +
+  theme_light() +
+  labs(
+    title = "Sample generated from X ~ N(50, 5)",
+    subtitle = str_glue("n = {nrow(df)}, mu = {mu}, sd = {sd}")
+  )
+
+(p_cdf + p_q )/
+ ( p_pdf + p_X)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+### Relationships between cdf and inverse cdf, quantiles and sample quantiles
 
 The cdf and the inverse cdf are related by
 
@@ -65,8 +124,6 @@ between the ‘theoretical’ quantile of the population (q) compared to the
 observed sample quantile (qs).
 
 ``` r
-library(tidyverse)
-library(patchwork)
 options(scipen = 999)
 
 plotnn <- function(n, mu, sd) {

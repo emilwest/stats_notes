@@ -599,7 +599,76 @@ out[[i]] <- 1 + i
 }
 ```
 
-# PX files
+# PX
+
+## Retrieve data from PXWeb
+
+After selecting variables for a table, you can choose to retrieve the
+data in some of the following ways.
+
+### Pxweb in R
+
+TODO
+
+### POST request with json query
+
+Note: you can also specify “format”: “px” in the query to get the data
+directly as json.
+
+``` r
+library(httr)
+url <- "https://pxweb.nordicstatistics.org:443/api/v1/en/Nordic Statistics/Geography and climate/Land use/DENS01.px"
+url <- URLencode(url) # convert whitespace to ascii %20
+
+query <- '{
+  "query": [
+    {
+      "code": "time",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "2016",
+          "2017",
+          "2018",
+          "2019"
+        ]
+      }
+    }
+  ],
+  "response": {
+    "format": "px"
+  }
+}'
+
+r <- POST(url, body=query)
+px <- content(r, type="text", encoding = "Windows-1252")
+px
+# Save as px file:
+fileConn <- file("testpx.px")
+writeLines(px, fileConn)
+close(fileConn)
+```
+
+### Tab delimited
+
+Save query -&gt; Update the query with a fixed starting time point and
+the new time periods -&gt; Tab delimited with heading.
+
+This may generate something like this:
+`https://pxweb.nhwstat.org:443/Prod/sq/0978ea50-2b97-4a48-bc58-d4a71806336e`.
+
+To see how it was selected, add `?select`:
+`https://pxweb.nhwstat.org:443/Prod/sq/0978ea50-2b97-4a48-bc58-d4a71806336e?select`.
+
+To download it, add `.relational_table`:
+`https://pxweb.nhwstat.org:443/Prod/sq/0978ea50-2b97-4a48-bc58-d4a71806336e.relational_table`
+
+``` r
+as_tibble(read_delim(
+  "https://pxweb.nhwstat.org:443/Prod/sq/0978ea50-2b97-4a48-bc58-d4a71806336e.relational_table",
+  locale = locale(encoding = "latin1"),
+  delim = "\t" ) )
+```
 
 ## Read a px-file in R
 

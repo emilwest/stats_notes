@@ -442,7 +442,30 @@ df <- list.files(path, full.names = T, include.dirs = F) %>%
          .id = "matris")
 ```
 
-If the csv files has different columns, read directly into a list with map() instead.
+If the csv files has multiple columns with same names, try to merge them together.
+For example, all columns starting with 'SOURCE':
+
+``` r
+# get colnames
+source_cols <- res[str_detect(names(res), "SOURCE.*")] %>% names()
+x <- res[source_cols]
+res$SOURCE <- do.call(paste, c(x, sep = " # ")) # paste all cols together, separate with # in this case 
+res <- res %>% select(-setdiff(source_cols, "SOURCE")) # remove all other columns 
+```
+
+# read_delim : read any character delimited file
+
+This is useful, especially since csv files may in fact be separated with semicolon (;) and not comma, which may be due to the locale and OS used when the csv file was saved. For example, in Swedish, comma (,) is used as a decimal separator.
+
+``` r
+res <- list.files(path = indir, pattern = "*.csv", full.names = TRUE) %>%
+  map_df(read_delim,
+         delim = ";", 
+         col_types = cols(.default = "c"), # read all cols as chr
+         locale = locale(encoding = "iso-8859-15"), # specify locale if needed, in this case  ISO Latin 9 (western europe)
+         id="filename")
+```
+
 
 # System handling in R
 

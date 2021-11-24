@@ -612,7 +612,7 @@ TODO
 
 ### POST request with json query
 
-Note: you can also specify “format”: “px” in the query to get the data
+Note: you can also specify “format”: “json” in the query to get the data
 directly as json.
 
 ``` r

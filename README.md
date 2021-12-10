@@ -813,6 +813,18 @@ dataframe of all combinations and iterate through it.
 expand.grid(letters[1:2], 1:3, c("+", "-"))
 ```
 
+# Advanced programming in R
+
+### Convert variable name into a string
+
+Using deparse + substitute
+
+``` r
+print_path <- function(path) {
+  print(stringr::str_glue("{deparse(substitute(path))} = {path}"))
+}
+```
+
 # Dplyr
 
 ## Mutate columns to other format
@@ -839,6 +851,10 @@ dat %>%
 Rename the last column:
 
 ``` r
+bind_rows(sms_tot, mms_tot) %>%
+      dplyr::rename(value = last_col())
+      
+# alternatively if you like to overcomplicate things:
 bind_rows(sms_tot, mms_tot) %>%
       dplyr::rename(value = !! last(names(sms_tot)))
 ```
@@ -1628,3 +1644,8 @@ pace
 seconds_to_period(pace) %>% round(1)
 ## [1] "5M 41.2S"
 ```
+
+# Regex
+
+Find only numbers in px files: `[0-9]+\.?[0-9]{0,}` and replace with
+`..`.

@@ -434,6 +434,24 @@ df <- dir(pattern = "xlsx") %>%
                   .id = "level")
 ```
 
+# Excel
+
+## Useful excel formulas
+
+### Split number+text pattern
+
+For example, ‘108 Denmark’ becomes two columns: ‘108’, ‘Denmark’:
+
+``` excel
+=LEFT(D6; SUM(LEN(D6) - LEN(SUBSTITUTE(D6; {"0";"1";"2";"3";"4";"5";"6";"7";"8";"9"}; ""))))
+```
+
+### Split text+number pattern
+
+``` excel
+=RIGHT(D6; SUM(LEN(D6) - LEN(SUBSTITUTE(D6; {"0";"1";"2";"3";"4";"5";"6";"7";"8";"9"}; ""))))
+```
+
 # Read CSV files in R
 
 Read multiple csv files in directory using summarise.

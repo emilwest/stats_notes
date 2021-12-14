@@ -440,16 +440,30 @@ df <- dir(pattern = "xlsx") %>%
 
 ### Split number+text pattern
 
-For example, ‘108 Denmark’ becomes two columns: ‘108’, ‘Denmark’:
+For example, D6 is ‘108 Denmark’ becomes ‘108’:
 
 ``` excel
 =LEFT(D6; SUM(LEN(D6) - LEN(SUBSTITUTE(D6; {"0";"1";"2";"3";"4";"5";"6";"7";"8";"9"}; ""))))
 ```
 
+Extract the text part, where E5 is ‘108 Denmark’ and C5 is ‘108’:
+
+``` excel
+=RIGHT(E5;LEN(E5)-LEN(C5))
+```
+
 ### Split text+number pattern
+
+Extract the number part, where D6 is ‘Denmark 108’:
 
 ``` excel
 =RIGHT(D6; SUM(LEN(D6) - LEN(SUBSTITUTE(D6; {"0";"1";"2";"3";"4";"5";"6";"7";"8";"9"}; ""))))
+```
+
+Extract the text, where E5 is ‘Denmark 108’ and C5 is ‘108’:
+
+``` excel
+=LEFT(E5,LEN(E5)-LEN(C5))
 ```
 
 # Read CSV files in R

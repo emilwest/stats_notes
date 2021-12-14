@@ -452,6 +452,8 @@ Extract the text part, where E5 is ‘108 Denmark’ and C5 is ‘108’:
 =RIGHT(E5;LEN(E5)-LEN(C5))
 ```
 
+Note: add -1 to exclude the whitespace.
+
 ### Split text+number pattern
 
 Extract the number part, where D6 is ‘Denmark 108’:
@@ -465,6 +467,8 @@ Extract the text, where E5 is ‘Denmark 108’ and C5 is ‘108’:
 ``` excel
 =LEFT(E5,LEN(E5)-LEN(C5))
 ```
+
+Note: add -1 to exclude the whitespace.
 
 # Read CSV files in R
 

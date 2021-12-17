@@ -250,7 +250,39 @@ Quantiles can go from anything to anything.
 
 Also note that for samples from the normal distribution, the median may not equal the sample quantile but they should not be far apart.
 
-# Read/write excel files in R:
+# Create/write/load/manipulate excel files in R
+
+## Load specific excel sheet and write to it without overwriting other sheets
+
+Note: for this to work, the file obviously needs to exist beforehand. If needed, create an empty workbook beforehand:
+
+```r
+wb <- createWorkbook(title = str_glue("Månadsuppdatering {upp_datum}"))
+addWorksheet(wb, "Session_info")
+addWorksheet(wb, "Log")
+saveWorkbook(wb, file = path_to_file, overwrite = TRUE)
+```
+
+Now if we want to update the 'Log'-sheet only and not overwrite anything else:
+
+```r
+library(openxlsx)
+library(tidyverse) # (optional, for using tibble etc)
+wb <- loadWorkbook(path_to_file)
+df <- readWorkbook(wb, sheet = "Log")
+df <- as_tibble(df)
+# * do stuff to df*
+# write data to the same sheet
+openxlsx::writeData(wb = wb, sheet = "Log", x = df)
+# save it:
+saveWorkbook(wb, path_to_file, overwrite = TRUE)
+```
+
+This is the absolutely best method if you want to add more sheets as time goes and gives the most flexibility. It also preserves the original formatting of the file that is loaded and allows you to add any styling you want at any time.
+
+## Read excel files in R
+
+If you're just interested in reading the excel data without manipulating it too much (when saving it), these are some of the simplest options.
 
 ``` r
 # Read xlsx/xls:

@@ -899,6 +899,17 @@ print_path <- function(path) {
 }
 ```
 
+# Conversions
+
+## Terajoule (TJ) to (thousand) tons of oil equivalent
+
+``` r
+tj_to_ttoe <- function(tj) {
+  # For converting Terajoule to Thousand tons of oil equivalent
+  tj/(0.041868*1000)
+}
+```
+
 # Dplyr
 
 ## Mutate columns to other format

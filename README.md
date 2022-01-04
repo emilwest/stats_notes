@@ -563,6 +563,37 @@ res <- list.files(path = indir, pattern = "*.csv", full.names = TRUE) %>%
          id="filename")
 ```
 
+# Data wrangling
+
+## Split delimited strings in a column and insert as new rows
+
+Consider
+
+| A   | B                   |
+|-----|---------------------|
+| 1   | apple, banana, pear |
+| 2   | watermelon, apple   |
+
+``` r
+library(tidyverse)
+df <- tribble(
+  ~A, ~B,
+  1, c("apple, banana, pear"),
+  2, c("watermelon, apple")
+)
+df %>% 
+  separate_rows(B)
+```
+
+    ## # A tibble: 5 x 2
+    ##       A B         
+    ##   <dbl> <chr>     
+    ## 1     1 apple     
+    ## 2     1 banana    
+    ## 3     1 pear      
+    ## 4     2 watermelon
+    ## 5     2 apple
+
 # System handling in R
 
 ## Remove all files and subdirectories under path/\* (without deleting path/)

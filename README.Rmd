@@ -254,9 +254,10 @@ Also note that for samples from the normal distribution, the median may not equa
 
 ## Load specific excel sheet and write to it without overwriting other sheets
 
-Note: for this to work, the file obviously needs to exist beforehand. If needed, create an empty workbook beforehand:
+Note: for this to work, the file obviously needs to exist beforehand.
+If needed, create an empty workbook beforehand:
 
-```r
+``` r
 wb <- createWorkbook(title = str_glue("Månadsuppdatering {upp_datum}"))
 addWorksheet(wb, "Session_info")
 addWorksheet(wb, "Log")
@@ -265,7 +266,7 @@ saveWorkbook(wb, file = path_to_file, overwrite = TRUE)
 
 Now if we want to update the 'Log'-sheet only and not overwrite anything else:
 
-```r
+``` r
 library(openxlsx)
 library(tidyverse) # (optional, for using tibble etc)
 wb <- loadWorkbook(path_to_file)
@@ -278,7 +279,8 @@ openxlsx::writeData(wb = wb, sheet = "Log", x = df)
 saveWorkbook(wb, path_to_file, overwrite = TRUE)
 ```
 
-This is the absolutely best method if you want to add more sheets as time goes and gives the most flexibility. It also preserves the original formatting of the file that is loaded and allows you to add any styling you want at any time.
+This is the absolutely best method if you want to add more sheets as time goes and gives the most flexibility.
+It also preserves the original formatting of the file that is loaded and allows you to add any styling you want at any time.
 
 ## Read excel files in R
 
@@ -453,27 +455,33 @@ df <- dir(pattern = "xlsx") %>%
 
 For example, D6 is '108 Denmark' becomes '108':
 
-```excel
+``` excel
 =LEFT(D6; SUM(LEN(D6) - LEN(SUBSTITUTE(D6; {"0";"1";"2";"3";"4";"5";"6";"7";"8";"9"}; ""))))
 ```
+
 Extract the text part, where E5 is '108 Denmark' and C5 is '108':
-```excel
+
+``` excel
 =RIGHT(E5;LEN(E5)-LEN(C5))
 ```
+
 Note: add -1 to exclude the whitespace.
 
 ### Split text+number pattern
 
 Extract the number part, where D6 is 'Denmark 108':
-```excel
+
+``` excel
 =RIGHT(D6; SUM(LEN(D6) - LEN(SUBSTITUTE(D6; {"0";"1";"2";"3";"4";"5";"6";"7";"8";"9"}; ""))))
 ```
+
 Extract the text, where E5 is 'Denmark 108' and C5 is '108':
-```excel
+
+``` excel
 =LEFT(E5,LEN(E5)-LEN(C5))
 ```
-Note: add -1 to exclude the whitespace.
 
+Note: add -1 to exclude the whitespace.
 
 # Read CSV files in R
 
@@ -526,6 +534,28 @@ res <- list.files(path = indir, pattern = "*.csv", full.names = TRUE) %>%
          col_types = cols(.default = "c"), # read all cols as chr
          locale = locale(encoding = "iso-8859-15"), # specify locale if needed, in this case  ISO Latin 9 (western europe)
          id="filename")
+```
+
+# Data wrangling
+
+## Split delimited strings in a column and insert as new rows
+
+Consider
+
+| A   | B                   |
+|-----|---------------------|
+| 1   | apple, banana, pear |
+| 2   | watermelon, apple   |
+
+```{r, message=F, warning = F}
+library(tidyverse)
+df <- tribble(
+  ~A, ~B,
+  1, c("apple, banana, pear"),
+  2, c("watermelon, apple")
+)
+df %>% 
+  separate_rows(B)
 ```
 
 # System handling in R
@@ -651,7 +681,7 @@ TODO
 
 Note: you can also specify "format": "json" in the query to get the data directly as json.
 
-```r
+``` r
 library(httr)
 url <- "https://pxweb.nordicstatistics.org:443/api/v1/en/Nordic Statistics/Geography and climate/Land use/DENS01.px"
 url <- URLencode(url) # convert whitespace to ascii %20
@@ -684,7 +714,6 @@ fileConn <- file("testpx.px")
 writeLines(px, fileConn)
 close(fileConn)
 ```
-
 
 ### Tab delimited
 
@@ -850,7 +879,7 @@ expand.grid(letters[1:2], 1:3, c("+", "-"))
 
 Using deparse + substitute
 
-```r 
+``` r
 print_path <- function(path) {
   print(stringr::str_glue("{deparse(substitute(path))} = {path}"))
 }
@@ -860,15 +889,12 @@ print_path <- function(path) {
 
 ## Terajoule (TJ) to (thousand) tons of oil equivalent
 
-```r
+``` r
 tj_to_ttoe <- function(tj) {
   # For converting Terajoule to Thousand tons of oil equivalent
   tj/(0.041868*1000)
 }
 ```
-
-
-
 
 # Dplyr
 
@@ -1643,8 +1669,6 @@ pace
 seconds_to_period(pace) %>% round(1)
 ```
 
-
-
 # Regex
 
-Find only numbers in px files: ```[0-9]+\.?[0-9]{0,}``` and replace with `..`.
+Find only numbers in px files: `[0-9]+\.?[0-9]{0,}` and replace with `..`.

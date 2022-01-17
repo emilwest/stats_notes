@@ -930,6 +930,30 @@ bind_rows(sms_tot, mms_tot) %>%
       dplyr::rename(value = !! last(names(sms_tot)))
 ```
 
+
+## Create several new empty columns using `dplyr::mutate` from names in character vector
+
+https://stackoverflow.com/questions/49119794/using-dplyrmutate-to-create-several-new-variables-from-names-specified-in
+
+```r
+add_columns <- function(df, columns){
+  new <- rep(NA_character_, length(columns))
+  names(new) <- columns
+  mutate(df, !!!new)
+}
+
+sourcecols_in_meta <- str_extract(names(meta),"SOURCE.*") %>% na.omit %>% unique()
+sourcecols_in_df_final <- str_extract(names(df_final),"SOURCE.*") %>% na.omit %>% unique()
+# cols in meta not in df_final:
+diffcols <- setdiff(sourcecols_in_meta, sourcecols_in_df_final)
+
+df_final <- df_final %>% 
+    add_columns(diffcols)
+
+```
+
+
+
 ## Filter function: match string exactly or with regex
 
 ```{r, message = F, warning = F}

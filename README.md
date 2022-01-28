@@ -594,6 +594,24 @@ df %>%
     ## 4     2 watermelon
     ## 5     2 apple
 
+## Complete missing values in a column in df given a reference data frame
+
+``` r
+# Function for completing missing values for a column, given a reference df
+complete_missing <- function(.x, .reference_df, .colname) {
+
+  ax <- deparse(substitute(.colname)) # convert .colname to string
+  missingl <- setdiff(.reference_df[[ax]], .x[[ax]]) # missing levels
+
+  a <- rlang::enquo(.colname) #
+  .x %>%
+    mutate(!!a := fct_expand(!!a, missingl)) %>%
+    complete(!!! syms(setdiff(names(.reference_df), "value")))
+
+}
+# complete_missing(d, px_df, unit)
+```
+
 # System handling in R
 
 ## Remove all files and subdirectories under path/\* (without deleting path/)

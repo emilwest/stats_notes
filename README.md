@@ -594,9 +594,16 @@ df %>%
     ## 4     2 watermelon
     ## 5     2 apple
 
-## Complete missing values in a column in df given a reference data frame
+## Complete missing values in a column in df given a reference data frame (for long format)
+
+Turn implicit missing values into explicit missing values. The following
+function works for data frames in long format where there is a ‘value’
+column. If you supply a reference data frame, this function detects
+which values in the supplied column are missing and adds them with
+values as NA.
 
 ``` r
+library(tidyverse)
 # Function for completing missing values for a column, given a reference df
 complete_missing <- function(.x, .reference_df, .colname) {
 
@@ -609,7 +616,57 @@ complete_missing <- function(.x, .reference_df, .colname) {
     complete(!!! syms(setdiff(names(.reference_df), "value")))
 
 }
-# complete_missing(d, px_df, unit)
+```
+
+Example:
+
+``` r
+x <- tribble(~Sepal.Length, ~Sepal.Width, ~Petal.Length, ~Petal.Width,    ~Species,
+        1, 2, 3, 4, "setosa"
+        ) 
+# Convert to long formats:
+x_long <- x %>% 
+  pivot_longer(-Species)
+iris_long <- iris %>% 
+  pivot_longer(-Species)
+
+x_long
+```
+
+    ## # A tibble: 4 x 3
+    ##   Species name         value
+    ##   <chr>   <chr>        <dbl>
+    ## 1 setosa  Sepal.Length     1
+    ## 2 setosa  Sepal.Width      2
+    ## 3 setosa  Petal.Length     3
+    ## 4 setosa  Petal.Width      4
+
+``` r
+x_long %>% 
+  complete_missing(iris_long, Species)
+```
+
+    ## # A tibble: 12 x 3
+    ##    Species    name         value
+    ##    <fct>      <chr>        <dbl>
+    ##  1 setosa     Petal.Length     3
+    ##  2 setosa     Petal.Width      4
+    ##  3 setosa     Sepal.Length     1
+    ##  4 setosa     Sepal.Width      2
+    ##  5 versicolor Petal.Length    NA
+    ##  6 versicolor Petal.Width     NA
+    ##  7 versicolor Sepal.Length    NA
+    ##  8 versicolor Sepal.Width     NA
+    ##  9 virginica  Petal.Length    NA
+    ## 10 virginica  Petal.Width     NA
+    ## 11 virginica  Sepal.Length    NA
+    ## 12 virginica  Sepal.Width     NA
+
+``` r
+# Is equivalent to:
+# x_long %>% 
+#     mutate(Species := fct_expand(Species, c("versicolor", "virginica"))) %>%
+#     complete(!!! syms(setdiff(names(iris_long), "value")))
 ```
 
 # System handling in R

@@ -603,7 +603,7 @@ x_long %>%
 
 # Is equivalent to:
 # x_long %>% 
-#     mutate(Species := fct_expand(Species, c("versicolor", "virginica"))) %>%
+#     mutate(Species = fct_expand(Species, c("versicolor", "virginica"))) %>%
 #     complete(!!! syms(setdiff(names(iris_long), "value")))
 ```
 

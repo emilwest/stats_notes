@@ -1,0 +1,239 @@
+---
+title: "sql_problems"
+author: "Emil Westin"
+date: '2022-02-18'
+output: 
+  github_document
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# <https://leetcode.com/problems/combine-two-tables/>
+
+Write an SQL query to report the first name, last name, city, and state of each person in the Person table.
+If the address of a personId is not present in the Address table, report null instead.
+
+Person table:
+
+| personId  | int     |
+|-----------|---------|
+| lastName  | varchar |
+| firstName | varchar |
+
+Address table:
+
+| addressId | int     |
+|-----------|---------|
+| personId  | int     |
+| city      | varchar |
+| state     | varchar |
+
+Expected:
+
+| firstName | lastName | city          | state    |
+|-----------|----------|---------------|----------|
+| Allen     | Wang     | Null          | Null     |
+| Bob       | Alice    | New York City | New York |
+
+``` {.sql}
+select FirstName, LastName, City, State from Person p
+left join Address d
+on p.personId = d.personId;
+```
+
+We are keeping everything from Person table and getting matching records from Address table or putting NULL otherwise.
+
+# <https://leetcode.com/problems/employees-earning-more-than-their-managers/>
+
+Table Employee:
+
+| Column Name | Type    |
+|-------------|---------|
+| id          | int     |
+| name        | varchar |
+| salary      | int     |
+| managerId   | int     |
+
+id is the primary key column for this table.
+Each row of this table indicates the ID of an employee, their name, salary, and the ID of their manager.
+
+Write an SQL query to find the employees who earn more than their managers.
+
+``` {.sql}
+select emp.name as Employee 
+from Employee as emp 
+left join Employee as e
+on emp.managerId = e.id
+where emp.managerId is not null
+and emp.salary > e.salary;
+```
+
+Alternative solution:
+
+``` {.sql}
+SELECT
+    *
+FROM
+    Employee AS a,
+    Employee AS b
+WHERE
+    a.ManagerId = b.Id
+        AND a.Salary > b.Salary
+;
+```
+
+Select from two tables will get the Cartesian product of these two tables.
+In this case, the output will be 4\*4 = 16 records.
+However, what we interest is the employee's salary higher than his/her manager.
+So we should add two conditions in a WHERE clause like below.
+
+# <https://leetcode.com/problems/duplicate-emails/>
+
+Write an SQL query to report all the duplicate emails.
+
+Input: Person table:
+
+| id  | email                              |
+|-----|------------------------------------|
+| 1   | [a\@b.com](mailto:a@b.com){.email} |
+| 2   | [c\@d.com](mailto:c@d.com){.email} |
+| 3   | [a\@b.com](mailto:a@b.com){.email} |
+
+Output:
+
+| Email                              |
+|------------------------------------|
+| [a\@b.com](mailto:a@b.com){.email} |
+
+``` {.sql}
+select email as Email
+from Person 
+group by Email
+having count(Email) > 1;
+```
+
+
+
+
+# https://leetcode.com/problems/customers-who-never-order/submissions/
+
+Write an SQL query to report all customers who never order anything.
+
+Input: 
+Customers table:
+
+| id | name  |
+|----|-------|
+| 1  | Joe   |
+| 2  | Henry |
+| 3  | Sam   |
+| 4  | Max   |
+
+Each row of this table indicates the ID and name of a customer.
+
+Orders table:
+
+| id | customerId |
+|----|------------|
+| 1  | 3          |
+| 2  | 1          |
+
+Each row of this table indicates the ID of an order and the ID of the customer who ordered it.
+
+Output: 
+
+| Customers |
+|-----------|
+| Henry     |
+| Max       |
+
+
+```sql
+select c.name as Customers from Customers c
+left join Orders o 
+on c.id = o.customerId
+where customerId is null;
+```
+
+Alternative:
+
+```sql
+select customers.name as 'Customers'
+from customers
+where customers.id not in
+(
+    select customerid from orders
+);
+```
+
+
+# https://leetcode.com/problems/delete-duplicate-emails/
+
+Write an SQL query to delete all the duplicate emails, keeping only one unique email with the smallest id. Note that you are supposed to write a DELETE statement and not a SELECT one.
+
+Input: 
+Person table:
+
+| id | email            |
+|----|------------------|
+| 1  | john@example.com |
+| 2  | bob@example.com  |
+| 3  | john@example.com |
+
+Output: 
+
+| id | email            |
+|----|------------------|
+| 1  | john@example.com |
+| 2  | bob@example.com  |
+
+
+```sql
+delete p1 from Person p1
+inner join Person p2
+where 
+p1.id > p2.id and
+p1.email = p2.email;
+```
+
+
+
+
+# https://leetcode.com/problems/rising-temperature/
+
+
+Write an SQL query to find all dates' Id with higher temperatures compared to its previous dates (yesterday).
+
+Input: 
+Weather table:
+
+| id | recordDate | temperature |
+|----|------------|-------------|
+| 1  | 2015-01-01 | 10          |
+| 2  | 2015-01-02 | 25          |
+| 3  | 2015-01-03 | 20          |
+| 4  | 2015-01-04 | 30          |
+
+Output: 
+
+| id |
+|----|
+| 2  |
+| 4  |
+
+
+
+```sql
+SELECT 
+a.Id FROM Weather a
+INNER JOIN Weather b
+ON a.RecordDate = DATEADD(day, 1, b.RecordDate)
+AND a.Temperature > b.Temperature
+;
+```
+

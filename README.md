@@ -594,6 +594,96 @@ df %>%
     ## 4     2 watermelon
     ## 5     2 apple
 
+## Self join / cross-join
+
+Table band\_members:
+
+| name | band    |
+|------|---------|
+| Mick | Stones  |
+| John | Beatles |
+| Paul | Beatles |
+
+To perform a self-join in R, i.e. a Cartesian product of all
+combinations of a table, supply `by = character()`
+
+``` r
+library(tidyverse)
+band_members %>% 
+  left_join(band_members, by = character())
+```
+
+    ## # A tibble: 9 x 4
+    ##   name.x band.x  name.y band.y 
+    ##   <chr>  <chr>   <chr>  <chr>  
+    ## 1 Mick   Stones  Mick   Stones 
+    ## 2 Mick   Stones  John   Beatles
+    ## 3 Mick   Stones  Paul   Beatles
+    ## 4 John   Beatles Mick   Stones 
+    ## 5 John   Beatles John   Beatles
+    ## 6 John   Beatles Paul   Beatles
+    ## 7 Paul   Beatles Mick   Stones 
+    ## 8 Paul   Beatles John   Beatles
+    ## 9 Paul   Beatles Paul   Beatles
+
+Compare with a SQL self-join:
+
+``` sql
+select * from band_members b1, band_members b2
+```
+
+``` r
+band_members %>% inner_join(band_instruments)
+```
+
+    ## Joining, by = "name"
+
+    ## # A tibble: 2 x 3
+    ##   name  band    plays 
+    ##   <chr> <chr>   <chr> 
+    ## 1 John  Beatles guitar
+    ## 2 Paul  Beatles bass
+
+``` r
+band_members %>% left_join(band_instruments)
+```
+
+    ## Joining, by = "name"
+
+    ## # A tibble: 3 x 3
+    ##   name  band    plays 
+    ##   <chr> <chr>   <chr> 
+    ## 1 Mick  Stones  <NA>  
+    ## 2 John  Beatles guitar
+    ## 3 Paul  Beatles bass
+
+``` r
+band_members %>% right_join(band_instruments)
+```
+
+    ## Joining, by = "name"
+
+    ## # A tibble: 3 x 3
+    ##   name  band    plays 
+    ##   <chr> <chr>   <chr> 
+    ## 1 John  Beatles guitar
+    ## 2 Paul  Beatles bass  
+    ## 3 Keith <NA>    guitar
+
+``` r
+band_members %>% full_join(band_instruments)
+```
+
+    ## Joining, by = "name"
+
+    ## # A tibble: 4 x 3
+    ##   name  band    plays 
+    ##   <chr> <chr>   <chr> 
+    ## 1 Mick  Stones  <NA>  
+    ## 2 John  Beatles guitar
+    ## 3 Paul  Beatles bass  
+    ## 4 Keith <NA>    guitar
+
 ## Complete missing values in a column in df given a reference data frame (for long format)
 
 Turn implicit missing values into explicit missing values. The following
@@ -665,7 +755,7 @@ x_long %>%
 ``` r
 # Is equivalent to:
 # x_long %>% 
-#     mutate(Species := fct_expand(Species, c("versicolor", "virginica"))) %>%
+#     mutate(Species = fct_expand(Species, c("versicolor", "virginica"))) %>%
 #     complete(!!! syms(setdiff(names(iris_long), "value")))
 ```
 

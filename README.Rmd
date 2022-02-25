@@ -558,15 +558,46 @@ df %>%
   separate_rows(B)
 ```
 
+## Self join / cross-join
+
+Table band_members:
+
+| name | band |
+|------|------|
+|  Mick    |  Stones    |
+|   John   |  Beatles    |
+|   Paul   |  Beatles    |
+
+To perform a self-join in R, i.e. a Cartesian product of all combinations of a table, supply `by = character()`
+
+```{r, message=F, warning = F}
+library(tidyverse)
+band_members %>% 
+  left_join(band_members, by = character())
+```
+
+Compare with a SQL self-join:
+
+```sql
+select * from band_members b1, band_members b2
+```
+
+
+```{r}
+band_members %>% inner_join(band_instruments)
+band_members %>% left_join(band_instruments)
+band_members %>% right_join(band_instruments)
+band_members %>% full_join(band_instruments)
+```
+
 
 
 
 ## Complete missing values in a column in df given a reference data frame (for long format)
 
-Turn implicit missing values into explicit missing values. 
-The following function works for data frames in long format where there is a 'value'
-column. If you supply a reference data frame, this function detects which values in 
-the supplied column are missing and adds them with values as NA.
+Turn implicit missing values into explicit missing values.
+The following function works for data frames in long format where there is a 'value' column.
+If you supply a reference data frame, this function detects which values in the supplied column are missing and adds them with values as NA.
 
 ```{r complete_missing, message=F, warning = F}
 library(tidyverse)
@@ -606,11 +637,6 @@ x_long %>%
 #     mutate(Species = fct_expand(Species, c("versicolor", "virginica"))) %>%
 #     complete(!!! syms(setdiff(names(iris_long), "value")))
 ```
-
-
-
-
-
 
 # System handling in R
 
@@ -984,12 +1010,11 @@ bind_rows(sms_tot, mms_tot) %>%
       dplyr::rename(value = !! last(names(sms_tot)))
 ```
 
-
 ## Create several new empty columns using `dplyr::mutate` from names in character vector
 
-https://stackoverflow.com/questions/49119794/using-dplyrmutate-to-create-several-new-variables-from-names-specified-in
+<https://stackoverflow.com/questions/49119794/using-dplyrmutate-to-create-several-new-variables-from-names-specified-in>
 
-```r
+``` r
 add_columns <- function(df, columns){
   new <- rep(NA_character_, length(columns))
   names(new) <- columns
@@ -1003,10 +1028,7 @@ diffcols <- setdiff(sourcecols_in_meta, sourcecols_in_df_final)
 
 df_final <- df_final %>% 
     add_columns(diffcols)
-
 ```
-
-
 
 ## Filter function: match string exactly or with regex
 

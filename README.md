@@ -626,17 +626,25 @@ band_members %>%
     ## 8 Paul   Beatles John   Beatles
     ## 9 Paul   Beatles Paul   Beatles
 
-Compare with a SQL self-join:
+This is basically the R/dplyr equivalent of a SQL self-join:
 
 ``` sql
 select * from band_members b1, band_members b2
 ```
 
+## Other joins
+
+Table band instruments:
+
+| name  | plays  |
+|-------|--------|
+| John  | guitar |
+| Paul  | bass   |
+| Keith | guitar |
+
 ``` r
 band_members %>% inner_join(band_instruments)
 ```
-
-    ## Joining, by = "name"
 
     ## # A tibble: 2 x 3
     ##   name  band    plays 
@@ -647,8 +655,6 @@ band_members %>% inner_join(band_instruments)
 ``` r
 band_members %>% left_join(band_instruments)
 ```
-
-    ## Joining, by = "name"
 
     ## # A tibble: 3 x 3
     ##   name  band    plays 
@@ -661,8 +667,6 @@ band_members %>% left_join(band_instruments)
 band_members %>% right_join(band_instruments)
 ```
 
-    ## Joining, by = "name"
-
     ## # A tibble: 3 x 3
     ##   name  band    plays 
     ##   <chr> <chr>   <chr> 
@@ -673,8 +677,6 @@ band_members %>% right_join(band_instruments)
 ``` r
 band_members %>% full_join(band_instruments)
 ```
-
-    ## Joining, by = "name"
 
     ## # A tibble: 4 x 3
     ##   name  band    plays 

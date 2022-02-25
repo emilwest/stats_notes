@@ -576,14 +576,26 @@ band_members %>%
   left_join(band_members, by = character())
 ```
 
-Compare with a SQL self-join:
+This is basically the R/dplyr equivalent of a SQL self-join:
 
 ```sql
 select * from band_members b1, band_members b2
 ```
 
 
-```{r}
+## Other joins
+
+
+Table band instruments:
+
+| name | plays |
+|------|-------|
+| John |guitar |
+| Paul |bass   |
+| Keith|guitar |
+
+
+```{r, message=F, warning = F}
 band_members %>% inner_join(band_instruments)
 band_members %>% left_join(band_instruments)
 band_members %>% right_join(band_instruments)

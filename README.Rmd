@@ -1,7 +1,7 @@
 ---
 output: 
   github_document:
-    pandoc_args: --webtex=https://latex.codecogs.com/svg.latex?
+   # pandoc_args: --webtex=https://latex.codecogs.com/svg.latex?
 
 editor_options: 
   markdown: 
@@ -562,11 +562,11 @@ df %>%
 
 Table band_members:
 
-| name | band |
-|------|------|
-|  Mick    |  Stones    |
-|   John   |  Beatles    |
-|   Paul   |  Beatles    |
+| name | band    |
+|------|---------|
+| Mick | Stones  |
+| John | Beatles |
+| Paul | Beatles |
 
 To perform a self-join in R, i.e. a Cartesian product of all combinations of a table, supply `by = character()`
 
@@ -578,22 +578,19 @@ band_members %>%
 
 This is basically the R/dplyr equivalent of a SQL self-join:
 
-```sql
+``` sql
 select * from band_members b1, band_members b2
 ```
 
-
 ## Other joins
-
 
 Table band instruments:
 
-| name | plays |
-|------|-------|
-| John |guitar |
-| Paul |bass   |
-| Keith|guitar |
-
+| name  | plays  |
+|-------|--------|
+| John  | guitar |
+| Paul  | bass   |
+| Keith | guitar |
 
 ```{r, message=F, warning = F}
 band_members %>% inner_join(band_instruments)
@@ -601,9 +598,6 @@ band_members %>% left_join(band_instruments)
 band_members %>% right_join(band_instruments)
 band_members %>% full_join(band_instruments)
 ```
-
-
-
 
 ## Complete missing values in a column in df given a reference data frame (for long format)
 
@@ -1752,34 +1746,121 @@ Pros of using `lubridate`: more informative output, no need to re-invent the whe
 
 Pros of doing manual calculation: more control/understanding how it is calculated.
 
-```{r targetpace, warning=F, message=F, collapse=TRUE}
+``` .r
 library(tidyverse)
-# calculate without lubridate:
-
-# halvamara in < 2h
-dist <- 21.0975 # km
-duration <- 120
-s <- 120*60
-s
-# pace to complete half marathon in 1:59:59
-pace <- (s-1)/dist
-pace
-rest <- pace %% 60
-mins <- (pace-rest)/60
-str_glue("{mins}m {round(rest,1)}s") %>% print()
-
-# -----------------------------
-
-# calculate with lubridate:
 library(lubridate)
-dist <- 21.0975 # km
-s <- duration(120, "minutes")
-s
-# pace to complete half marathon in 1:59:59
-pace <- (s-1)/dist
-pace
-seconds_to_period(pace) %>% round(1)
+get_pace <- function(distance, target_duration, decimals = 1, style = "below") {
+  
+  if (distance == "marathon") dist <- 42.195 # km 
+  if (distance == "half marathon") dist <- 21.0975
+  if (str_detect(distance, "[0-9.]+")) dist <- as.numeric(distance)
+  
+  s <- target_duration*60 # convert to seconds
+  
+  if (style == "below") pace <- (s-1)/dist
+  if (style == "exact") pace <- s/dist
+  
+  
+  
+  res <- seconds_to_period(pace) 
+  return(res %>% round(decimals))
+}
+# pace to complete marathon under  4h 30min (4h 29min 59 seconds)
+get_pace("marathon", 270)
+# "6M 24S"
+# works with kilometers as well 
+get_pace(42.195, 270)
+# "6M 24S"
+# and miles
+get_pace(26.2, 270)
+# "10M 18S"
+# supply number of decimals for more details
+get_pace("marathon", 270, decimals = 2)
+# "6M 23.91S"
+# pace to complete marathon in exactly 4h 30min 
+get_pace("marathon", 270, 2, "exact")
+# "6M 23.93S"
+
+# generate a table 
+library(kableExtra)
+options(knitr.kable.NA = '')
+tibble(minutes = 
+         c(
+           seq(from = 13, to = 25, by = 1),
+           seq(from = 27.5, to = 30, by = 2.5),
+           seq(from = 35, to = 60, by = 5),
+           seq(from = 65, to = 115, by = 5),
+           seq(from = 120, to = 360, by = 15)
+         )
+       ,
+       parsed_time = seconds_to_period(duration(minutes, "minutes")-1) %>% as.character() %>% str_remove(" 0S"),
+       marathon = get_pace("marathon", minutes) %>% as.character(),
+       halfmarathon = get_pace("half marathon", minutes) %>% as.character(),
+       `10k` = get_pace(10, minutes) %>% as.character(),
+       `5k` = get_pace(5, minutes) %>% as.character()
+       ) %>% 
+  mutate(marathon = ifelse(between(minutes, 120, 360), marathon, NA_character_)) %>% 
+  mutate(halfmarathon = ifelse(between(minutes, 60, 180), halfmarathon, NA_character_)) %>% 
+  mutate(`10k` = ifelse(between(minutes, 25, 80), `10k`, NA_character_)) %>% 
+  mutate(`5k` = ifelse(between(minutes, 10, 40), `5k`, NA_character_)) %>% 
+  select(-minutes) %>% 
+  kableExtra::kable(format = "pipe")
 ```
+
+The following is a table of target times for kilometer paces (one second below the given target time).
+
+
+|target time |marathon |halfmarathon |10k      |5k       |
+|:-----------|:--------|:------------|:--------|:--------|
+|13M         |         |             |         |2M 35.8S |
+|14M         |         |             |         |2M 47.8S |
+|15M         |         |             |         |2M 59.8S |
+|16M         |         |             |         |3M 11.8S |
+|17M         |         |             |         |3M 23.8S |
+|18M         |         |             |         |3M 35.8S |
+|19M         |         |             |         |3M 47.8S |
+|20M         |         |             |         |3M 59.8S |
+|21M         |         |             |         |4M 11.8S |
+|22M         |         |             |         |4M 23.8S |
+|23M         |         |             |         |4M 35.8S |
+|24M         |         |             |         |4M 47.8S |
+|25M         |         |             |2M 29.9S |4M 59.8S |
+|27M 30S     |         |             |2M 44.9S |5M 29.8S |
+|30M         |         |             |2M 59.9S |5M 59.8S |
+|35M         |         |             |3M 29.9S |6M 59.8S |
+|40M         |         |             |3M 59.9S |7M 59.8S |
+|45M         |         |             |4M 29.9S |         |
+|50M         |         |             |4M 59.9S |         |
+|55M         |         |             |5M 29.9S |         |
+|1H 0M       |         |2M 50.6S     |5M 59.9S |         |
+|1H 5M       |         |3M 4.8S      |6M 29.9S |         |
+|1H 10M      |         |3M 19S       |6M 59.9S |         |
+|1H 15M      |         |3M 33.2S     |7M 29.9S |         |
+|1H 20M      |         |3M 47.5S     |7M 59.9S |         |
+|1H 25M      |         |4M 1.7S      |         |         |
+|1H 30M      |         |4M 15.9S     |         |         |
+|1H 35M      |         |4M 30.1S     |         |         |
+|1H 40M      |         |4M 44.3S     |         |         |
+|1H 45M      |         |4M 58.6S     |         |         |
+|1H 50M      |         |5M 12.8S     |         |         |
+|1H 55M      |         |5M 27S       |         |         |
+|2H 0M       |2M 50.6S |5M 41.2S     |         |         |
+|2H 15M      |3M 11.9S |6M 23.9S     |         |         |
+|2H 30M      |3M 33.3S |7M 6.5S      |         |         |
+|2H 45M      |3M 54.6S |7M 49.2S     |         |         |
+|3H 0M       |4M 15.9S |8M 31.9S     |         |         |
+|3H 15M      |4M 37.3S |             |         |         |
+|3H 30M      |4M 58.6S |             |         |         |
+|3H 45M      |5M 19.9S |             |         |         |
+|4H 0M       |5M 41.2S |             |         |         |
+|4H 15M      |6M 2.6S  |             |         |         |
+|4H 30M      |6M 23.9S |             |         |         |
+|4H 45M      |6M 45.2S |             |         |         |
+|5H 0M       |7M 6.6S  |             |         |         |
+|5H 15M      |7M 27.9S |             |         |         |
+|5H 30M      |7M 49.2S |             |         |         |
+|5H 45M      |8M 10.6S |             |         |         |
+|6H 0M       |8M 31.9S |             |         |         |
 
 # Regex
 

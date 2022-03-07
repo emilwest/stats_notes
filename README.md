@@ -1493,6 +1493,24 @@ summary(fit1)
 
 # ggplot2
 
+### Time series with lubridate
+
+To plot times/dates in ggplot with lubridate, the period needs to be
+converted to seconds using for example the duration function. The to set
+the scales, use `scale_x_time`/`scale_y_time`. To customize breaks and
+labels, use the `scales` library. In this case we use
+`breaks = scales::breaks_width("15 min"), labels =scales::label_time(format = "%H:%M")`.
+
+``` r
+tibble(minutes = 100:290,
+       time_parsed = seconds_to_period(dminutes(minutes)) %>% as.numeric() %>% duration) %>% 
+  mutate(pace = get_pace("marathon", minutes) %>% as.numeric()%>% duration) %>% 
+  ggplot(aes(x= time_parsed, y = pace)) +
+  geom_line() +
+  scale_x_time(breaks = scales::breaks_width("15 min"), labels =scales::label_time(format = "%H:%M")) +
+  scale_y_time(breaks = scales::breaks_width("0.25 min"), labels =scales::label_time(format = "%M:%S"))
+```
+
 ### Arrange plots
 
 ``` r

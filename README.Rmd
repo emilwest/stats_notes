@@ -293,6 +293,12 @@ readxl::read_xls(name_of_file) # or readxl::read_excel(name_of_file) for guessin
 # Read xlsx:
 openxlsx::read.xlsx(name_of_file) # only for xlsx
 
+# The following library is the best for ensuring the encoding is correct. 
+# Especially when the columns contain messy data, maybe there is is a mix of , or . in a number column. 
+# This function will ensure it is read exactly as it is written in the excel-file. Requires name or index of sheet.
+library(xlsx)
+xlsx::read.xlsx(name_of_file, sheetIndex = 1, encoding = "UTF-8")
+
 # Password protected excel:
 library("excel.link")
 xl.read.file(indata, password = "mypswd", write.res.password="mypswd")
@@ -423,7 +429,7 @@ in_path <- "path/to/excelfile.xlsx"
 
 # read multiple sheets and join them into single dataframe:
 df <- in_path %>%
-  excel_sheets() %>% # vector containing name of sheets
+  readxl::excel_sheets() %>% # vector containing name of sheets
   set_names() %>% # sets the names of vector with names of sheets
   # map_df: a list of tables joined with bind_rows into single dataframe:
   purrr::map_df(readxl::read_excel,
@@ -437,7 +443,7 @@ df <- in_path %>%
 ``` r
 read_multiple_excel_sheets <- function(path) {
   path %>%
-    excel_sheets() %>% 
+    readxl::excel_sheets() %>% 
     set_names() %>% 
   map_df(read_excel, path = path)
 }

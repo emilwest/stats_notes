@@ -369,6 +369,24 @@ dat <- split(mtcars, mtcars$cyl)
 openxlsx::write.xlsx(dat, file = "Output/myfile.xlsx")   
 ```
 
+## Add comments to cells
+
+``` r
+comments <- c("comment 1",
+"comment 2",
+"comment 3")
+# add comments to columns:
+map(1:length(comments),
+      ~ writeComment(wb, 1, col = .x, row = 1, 
+                     comment = createComment(comment = comments[.x], visible = F)))
+
+# add comments to rows:
+map(1:length(comments),
+      ~ writeComment(wb, 1, col = 1, row = .x, 
+                     comment = createComment(comment = comments[.x], visible = F)))
+                     
+```
+
 ## Read dates
 
 When importing dates from Excel into R, dates are represented as days

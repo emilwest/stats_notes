@@ -1074,6 +1074,123 @@ flextable::flextable(tableone2df(table_1)  %>% rownames_to_column("Variable"))
 tab <- addmargins(table(df$Company,df$Marital), 2)
 ```
 
+## Contingency tables / Cross tables in dplyr
+
+``` r
+library(tidyverse)
+library(janitor)
+
+
+crosstable <- function(.data, x, y, add_margins = NULL, custom_name = NULL) {
+  
+  if (!is.null(custom_name)) {
+    newname <- custom_name
+  } else {
+    newname <- str_glue("{deparse(substitute(x))} / {deparse(substitute(y))}") %>%
+      as.character()
+  }
+  
+  x <- rlang::enquo(x)
+  y <- rlang::enquo(y)
+  
+  tmp <- .data %>% 
+    dplyr::count(!!x, !!y) %>%
+    tidyr::pivot_wider(names_from = !!y, values_from = "n", values_fill = 0) 
+  
+  # adds row/col totals
+  if (!is.null(add_margins)) {
+    if (add_margins == "both") tmp <- tmp %>% janitor::adorn_totals(where = c("row", "col")) 
+    if (add_margins == "row") tmp <- tmp %>% janitor::adorn_totals(where = c("row")) 
+    if (add_margins == "col") tmp <- tmp %>% janitor::adorn_totals(where = c("col")) 
+  }
+  
+  tmp %>% 
+    dplyr::as_tibble() %>%
+    dplyr::mutate(dplyr::across(where(is.double), as.integer)) %>% 
+    dplyr::rename("{newname}" := !!x)
+}
+
+crosstable(mtcars, gear, cyl)
+```
+
+    ## # A tibble: 3 x 4
+    ##   `gear / cyl`   `4`   `6`   `8`
+    ##          <int> <int> <int> <int>
+    ## 1            3     1     2    12
+    ## 2            4     8     4     0
+    ## 3            5     2     1     2
+
+``` r
+crosstable(mtcars, gear, cyl, add_margins = "both")
+```
+
+    ## # A tibble: 4 x 5
+    ##   `gear / cyl`   `4`   `6`   `8` Total
+    ##   <chr>        <int> <int> <int> <int>
+    ## 1 3                1     2    12    15
+    ## 2 4                8     4     0    12
+    ## 3 5                2     1     2     5
+    ## 4 Total           11     7    14    32
+
+``` r
+crosstable(mtcars, gear, cyl, "row")
+```
+
+    ## # A tibble: 4 x 4
+    ##   `gear / cyl`   `4`   `6`   `8`
+    ##   <chr>        <int> <int> <int>
+    ## 1 3                1     2    12
+    ## 2 4                8     4     0
+    ## 3 5                2     1     2
+    ## 4 Total           11     7    14
+
+``` r
+crosstable(mtcars, gear, cyl, "col")
+```
+
+    ## # A tibble: 3 x 5
+    ##   `gear / cyl`   `4`   `6`   `8` Total
+    ##          <int> <int> <int> <int> <int>
+    ## 1            3     1     2    12    15
+    ## 2            4     8     4     0    12
+    ## 3            5     2     1     2     5
+
+``` r
+crosstable(mtcars, gear, cyl, custom_name = "row=gear, col=cyl")
+```
+
+    ## # A tibble: 3 x 4
+    ##   `row=gear, col=cyl`   `4`   `6`   `8`
+    ##                 <int> <int> <int> <int>
+    ## 1                   3     1     2    12
+    ## 2                   4     8     4     0
+    ## 3                   5     2     1     2
+
+# Set reference category in categorical variable
+
+To set a reference category for a categorical variable in regression
+models, you move that category to the first position of the levels. If
+you want “Mid” to be the reference and the levels are “Low”, “Mid”,
+“High”, you simply want to change the order of levels to “Mid”, “Low”,
+“High”.
+
+``` r
+# relevel single variable
+df %>% 
+  dplyr::mutate(q_mycat = fct_relevel(q_mycat, "Mid")))
+  
+# explicitly same as:
+df %>% 
+  dplyr::mutate(q_mycat = factor(q_mycat, c("Mid", "Low", "High")))
+
+# using stats::relevel:
+df$q_mycat <- relevel(df$q_mycat, ref = "Mid")
+
+# relevel multiple variables (assuming they have the same factors levels):
+df %>% 
+  dplyr::mutate(across(starts_with("q_"), ~ fct_relevel(.x, "Mid")))
+```
+
 # Merge multiple dataframes
 
 From

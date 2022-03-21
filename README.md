@@ -1166,6 +1166,14 @@ crosstable(mtcars, gear, cyl, custom_name = "row=gear, col=cyl")
     ## 2                   4     8     4     0
     ## 3                   5     2     1     2
 
+The advantage by having the crosstable as a tibble, it can be exported
+as-is to an excel sheet compatible with openxlsx:
+
+``` r
+t1 <- crosstable(mtcars, gear, cyl, add_margins = "both")
+writeDataTable(wb, currsheet, t1, startRow = 1, withFilter = F)
+```
+
 # Set reference category in categorical variable
 
 To set a reference category for a categorical variable in regression
@@ -1177,7 +1185,7 @@ you want “Mid” to be the reference and the levels are “Low”, “Mid”,
 ``` r
 # relevel single variable
 df %>% 
-  dplyr::mutate(q_mycat = fct_relevel(q_mycat, "Mid")))
+  dplyr::mutate(q_mycat = fct_relevel(q_mycat, "Mid"))
   
 # explicitly same as:
 df %>% 

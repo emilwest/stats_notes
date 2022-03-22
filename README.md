@@ -1869,6 +1869,16 @@ mods <- by_cyl %>% map(~ lm(mpg ~ wt, data = .)) # in each df, create linear mod
 Why use map instead of lapply?
 <https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply>
 
+### Create an empty tibble with column names from vector and 0 rows
+
+``` r
+default_cols <- c("Survey", "sub_area", "Insats")
+
+default_df <- default_cols %>% purrr::map_dfc(setNames, object = list(character()))
+# A tibble: 0 x 3
+# ... with 3 variables: Survey <chr>, sub_area <chr>, Insats <chr>
+```
+
 ### Nest: split dataframe into list of dataframes
 
 ``` r

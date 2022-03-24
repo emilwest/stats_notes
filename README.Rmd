@@ -299,6 +299,22 @@ openxlsx::read.xlsx(name_of_file) # only for xlsx
 library(xlsx)
 xlsx::read.xlsx(name_of_file, sheetIndex = 1, encoding = "UTF-8")
 
+# Custom function useful when used for reading multiple excel files in purrr::map() 
+read_my_excel <- function(x) {
+  print(str_glue("Reading {x}"))
+  # try(openxlsx::read.xlsx(x, sep.names = " ") %>% 
+  #       as_tibble())
+  try(xlsx::read.xlsx(x, sheetIndex = 1, encoding = "UTF-8") %>% 
+        as_tibble())
+}
+# something like this: (saved as df)
+excel_df <- list.files(dir_where_excel_files_are, full.names = T) %>% 
+  set_names(~basename(.) %>% str_remove(".xlsx")) %>% 
+  enframe(name = "filename") %>% 
+  mutate(excel_in = map(value, read_my_excel))
+
+
+
 # Password protected excel:
 library("excel.link")
 xl.read.file(indata, password = "mypswd", write.res.password="mypswd")

@@ -476,11 +476,12 @@ df <- in_path %>%
 ## Read multiple excel sheets for multiple excel files into a single data frame
 
 ``` r
-read_multiple_excel_sheets <- function(path) {
+read_multiple_excel_sheets <- function(path, idname = "sheet") {
+  print(str_glue("Reading {path} with id = {idname} for each sheet"))
   path %>%
     readxl::excel_sheets() %>% 
     set_names() %>% 
-  map_df(read_excel, path = path)
+  map_df(read_excel, path = path, .id = idname)
 }
 
 df <- dir(pattern = "xlsx") %>% 

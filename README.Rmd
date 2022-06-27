@@ -18,7 +18,7 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 # RStudio useful shortcuts
 
 |                                                                            | Command                            |
-|----------------------------------------------------------------------------|------------------------------------|
+|------------------------------------------------|------------------------|
 | Restart R-session and unload packages:                                     | `Command`/`Ctrl` + `Shift` + `F10` |
 | Comment/uncomment single/multiple lines:                                   | `Ctrl`+ `Shift` + `c`              |
 | Display command palette:                                                   | `Ctrl`+ `Shift` + `p`              |
@@ -35,7 +35,7 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 # Probability distributions in R
 
 | Distribution                   | cdf $F(x) = P(X \leq x)$ | Inverse cdf/quantile $F^{-1}(p) = x$ | pdf $f(x) = P(X = x)$ | Generate a random variable |
-|--------------------------------|--------------------------|--------------------------------------|-----------------------|----------------------------|
+|---------------|---------------|---------------|---------------|---------------|
 | Beta                           | `pbeta`                  | `qbeta`                              | `dbeta`               | `rbeta`                    |
 | Binomial                       | `pbinom`                 | `qbinom`                             | `dbinom`              | `rbinom`                   |
 | Chi-Square                     | `pchisq`                 | `qchisq`                             | `dchisq`              | `rchisq`                   |
@@ -367,7 +367,7 @@ openxlsx::write.xlsx(dat, file = "Output/myfile.xlsx")
 
 ## Add comments to cells
 
-```r
+``` r
 comments <- c("comment 1",
 "comment 2",
 "comment 3")
@@ -383,6 +383,44 @@ map(1:length(comments),
                      
 ```
 
+## Openxlsx template
+
+``` r
+# header style
+hs1 <- openxlsx::createStyle(
+  fontColour = "#ffffff", fgFill = "#4F80BD",
+  halign = "center", valign = "center", textDecoration = "bold",
+  border = "TopBottomLeftRight", fontSize = 14
+)
+
+curr_sheetname <- str_glue("<insert_sheetname_here>")
+wb <- openxlsx::createWorkbook()
+openxlsx::addWorksheet(wb, curr_sheetname)
+
+# If you want to change base font: 
+openxlsx::modifyBaseFont(wb, fontSize = 12, fontColour = "black", fontName = "Arial Narrow")
+
+# Write data
+openxlsx::writeData(wb, sheet = curr_sheetname, data, withFilter = T, headerStyle = hs1)
+openxlsx::freezePane(wb, sheet = curr_sheetname, firstRow = T)
+openxlsx::setColWidths(wb, 1, cols = 1:ncol(data), widths = "auto")
+
+# Optional styling
+# Add bgcolor based on cell values. Based on min/max when rule=NULL
+conditionalFormatting(wb, 
+                      curr_sheetname,
+                      cols = ncol(data)-3, 
+                      rows = 2:(nrow(data)+1),
+                      style = c("lightblue", "darkred"),
+                      rule = NULL,
+                      type = "colourScale"
+)
+
+openxlsx::saveWorkbook(wb, file = str_glue("Output/insert_name.xlsx"), overwrite = T)
+
+
+
+```
 
 ## Read dates
 
@@ -647,7 +685,7 @@ Turn implicit missing values into explicit missing values.
 The following function works for data frames in long format where there is a 'value' column.
 If you supply a reference data frame, this function detects which values in the supplied column are missing and adds them with values as NA.
 
-```{r complete_missing, message=F, warning = F}
+```{r complete_missing1, message=F, warning = F}
 library(tidyverse)
 # Function for completing missing values for a column, given a reference df
 complete_missing <- function(.x, .reference_df, .colname) {
@@ -660,6 +698,18 @@ complete_missing <- function(.x, .reference_df, .colname) {
     mutate(!!a := fct_expand(!!a, missingl)) %>%
     complete(!!! syms(setdiff(names(.reference_df), "value")))
 
+}
+```
+
+Or if you want to complete a column with a value you specify yourself:
+
+```{r complete_missing2, message=F, warning = F}
+library(tidyverse)
+complete_col <- function(.x, .colname, .levels) {
+  a <- rlang::enquo(.colname)
+  .x %>%
+    mutate(!!a := fct_expand(!!a, .levels)) %>%
+    complete(!!! syms(setdiff(names(.x), "value")))
 }
 ```
 
@@ -970,7 +1020,6 @@ tab <- addmargins(table(df$Company,df$Marital), 2)
 
 ## Contingency tables / Cross tables in dplyr
 
-
 ```{r cross_table, message=F, warning = F}
 library(tidyverse)
 library(janitor)
@@ -1014,17 +1063,17 @@ crosstable(mtcars, gear, cyl, custom_name = "row=gear, col=cyl")
 
 The advantage by having the crosstable as a tibble, it can be exported as-is to an excel sheet compatible with openxlsx:
 
-```r
+``` r
 t1 <- crosstable(mtcars, gear, cyl, add_margins = "both")
 writeDataTable(wb, currsheet, t1, startRow = 1, withFilter = F)
 ```
 
-
 # Set reference category in categorical variable
 
-To set a reference category for a categorical variable in regression models, you move that category to the first position of the levels. If you want "Mid" to be the reference and the levels are "Low", "Mid", "High", you simply want to change the order of levels to "Mid", "Low", "High".
+To set a reference category for a categorical variable in regression models, you move that category to the first position of the levels.
+If you want "Mid" to be the reference and the levels are "Low", "Mid", "High", you simply want to change the order of levels to "Mid", "Low", "High".
 
-```r
+``` r
 # relevel single variable
 df %>% 
   dplyr::mutate(q_mycat = fct_relevel(q_mycat, "Mid"))
@@ -1040,7 +1089,6 @@ df$q_mycat <- relevel(df$q_mycat, ref = "Mid")
 df %>% 
   dplyr::mutate(across(starts_with("q_"), ~ fct_relevel(.x, "Mid")))
 ```
-
 
 # Merge multiple dataframes
 
@@ -1461,12 +1509,14 @@ summary(fit1)
 
 # ggplot2
 
-
 ### Time series with lubridate
 
-To plot times/dates in ggplot with lubridate, the period needs to be converted to seconds using for example the duration function. The to set the scales, use `scale_x_time`/`scale_y_time`. To customize breaks and labels, use the `scales` library. In this case we use `breaks = scales::breaks_width("15 min"), labels =scales::label_time(format = "%H:%M")`.
+To plot times/dates in ggplot with lubridate, the period needs to be converted to seconds using for example the duration function.
+The to set the scales, use `scale_x_time`/`scale_y_time`.
+To customize breaks and labels, use the `scales` library.
+In this case we use `breaks = scales::breaks_width("15 min"), labels =scales::label_time(format = "%H:%M")`.
 
-```r
+``` r
 tibble(minutes = 100:290,
        time_parsed = seconds_to_period(dminutes(minutes)) %>% as.numeric() %>% duration) %>% 
   mutate(pace = get_pace("marathon", minutes) %>% as.numeric()%>% duration) %>% 
@@ -1681,19 +1731,15 @@ mods <- by_cyl %>% map(~ lm(mpg ~ wt, data = .)) # in each df, create linear mod
 Why use map instead of lapply?
 <https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply>
 
-
 ### Create an empty tibble with column names from vector and 0 rows
 
-```r
+``` r
 default_cols <- c("Survey", "sub_area", "Insats")
 
 default_df <- default_cols %>% purrr::map_dfc(setNames, object = list(character()))
 # A tibble: 0 x 3
 # ... with 3 variables: Survey <chr>, sub_area <chr>, Insats <chr>
 ```
-
-
-
 
 ### Nest: split dataframe into list of dataframes
 
@@ -1820,6 +1866,17 @@ system("powershell (ls H:\\Documents\\multiple_tests\\*) |
        Set-Content $f.PSPath
        }
        ")
+```
+
+### Convert all files to utf-8
+
+Run this in the folder you want to make changes in
+
+``` powershell
+foreach($i in ls -recurse -filter "*.R") {
+     $temp = Get-Content $i.fullname
+     Out-File -filepath $i.fullname -inputobject $temp -encoding utf8 -force
+ }
 ```
 
 # Git
@@ -1954,58 +2011,57 @@ tibble(minutes =
 
 The following is a table of target times for kilometer paces (one second below the given target time).
 
-
-|target time |marathon |halfmarathon |10k      |5k       |
-|:-----------|:--------|:------------|:--------|:--------|
-|13M         |         |             |         |2M 35.8S |
-|14M         |         |             |         |2M 47.8S |
-|15M         |         |             |         |2M 59.8S |
-|16M         |         |             |         |3M 11.8S |
-|17M         |         |             |         |3M 23.8S |
-|18M         |         |             |         |3M 35.8S |
-|19M         |         |             |         |3M 47.8S |
-|20M         |         |             |         |3M 59.8S |
-|21M         |         |             |         |4M 11.8S |
-|22M         |         |             |         |4M 23.8S |
-|23M         |         |             |         |4M 35.8S |
-|24M         |         |             |         |4M 47.8S |
-|25M         |         |             |2M 29.9S |4M 59.8S |
-|27M 30S     |         |             |2M 44.9S |5M 29.8S |
-|30M         |         |             |2M 59.9S |5M 59.8S |
-|35M         |         |             |3M 29.9S |6M 59.8S |
-|40M         |         |             |3M 59.9S |7M 59.8S |
-|45M         |         |             |4M 29.9S |         |
-|50M         |         |             |4M 59.9S |         |
-|55M         |         |             |5M 29.9S |         |
-|1H 0M       |         |2M 50.6S     |5M 59.9S |         |
-|1H 5M       |         |3M 4.8S      |6M 29.9S |         |
-|1H 10M      |         |3M 19S       |6M 59.9S |         |
-|1H 15M      |         |3M 33.2S     |7M 29.9S |         |
-|1H 20M      |         |3M 47.5S     |7M 59.9S |         |
-|1H 25M      |         |4M 1.7S      |         |         |
-|1H 30M      |         |4M 15.9S     |         |         |
-|1H 35M      |         |4M 30.1S     |         |         |
-|1H 40M      |         |4M 44.3S     |         |         |
-|1H 45M      |         |4M 58.6S     |         |         |
-|1H 50M      |         |5M 12.8S     |         |         |
-|1H 55M      |         |5M 27S       |         |         |
-|2H 0M       |2M 50.6S |5M 41.2S     |         |         |
-|2H 15M      |3M 11.9S |6M 23.9S     |         |         |
-|2H 30M      |3M 33.3S |7M 6.5S      |         |         |
-|2H 45M      |3M 54.6S |7M 49.2S     |         |         |
-|3H 0M       |4M 15.9S |8M 31.9S     |         |         |
-|3H 15M      |4M 37.3S |             |         |         |
-|3H 30M      |4M 58.6S |             |         |         |
-|3H 45M      |5M 19.9S |             |         |         |
-|4H 0M       |5M 41.2S |             |         |         |
-|4H 15M      |6M 2.6S  |             |         |         |
-|4H 30M      |6M 23.9S |             |         |         |
-|4H 45M      |6M 45.2S |             |         |         |
-|5H 0M       |7M 6.6S  |             |         |         |
-|5H 15M      |7M 27.9S |             |         |         |
-|5H 30M      |7M 49.2S |             |         |         |
-|5H 45M      |8M 10.6S |             |         |         |
-|6H 0M       |8M 31.9S |             |         |         |
+| target time | marathon | halfmarathon | 10k      | 5k       |
+|:------------|:---------|:-------------|:---------|:---------|
+| 13M         |          |              |          | 2M 35.8S |
+| 14M         |          |              |          | 2M 47.8S |
+| 15M         |          |              |          | 2M 59.8S |
+| 16M         |          |              |          | 3M 11.8S |
+| 17M         |          |              |          | 3M 23.8S |
+| 18M         |          |              |          | 3M 35.8S |
+| 19M         |          |              |          | 3M 47.8S |
+| 20M         |          |              |          | 3M 59.8S |
+| 21M         |          |              |          | 4M 11.8S |
+| 22M         |          |              |          | 4M 23.8S |
+| 23M         |          |              |          | 4M 35.8S |
+| 24M         |          |              |          | 4M 47.8S |
+| 25M         |          |              | 2M 29.9S | 4M 59.8S |
+| 27M 30S     |          |              | 2M 44.9S | 5M 29.8S |
+| 30M         |          |              | 2M 59.9S | 5M 59.8S |
+| 35M         |          |              | 3M 29.9S | 6M 59.8S |
+| 40M         |          |              | 3M 59.9S | 7M 59.8S |
+| 45M         |          |              | 4M 29.9S |          |
+| 50M         |          |              | 4M 59.9S |          |
+| 55M         |          |              | 5M 29.9S |          |
+| 1H 0M       |          | 2M 50.6S     | 5M 59.9S |          |
+| 1H 5M       |          | 3M 4.8S      | 6M 29.9S |          |
+| 1H 10M      |          | 3M 19S       | 6M 59.9S |          |
+| 1H 15M      |          | 3M 33.2S     | 7M 29.9S |          |
+| 1H 20M      |          | 3M 47.5S     | 7M 59.9S |          |
+| 1H 25M      |          | 4M 1.7S      |          |          |
+| 1H 30M      |          | 4M 15.9S     |          |          |
+| 1H 35M      |          | 4M 30.1S     |          |          |
+| 1H 40M      |          | 4M 44.3S     |          |          |
+| 1H 45M      |          | 4M 58.6S     |          |          |
+| 1H 50M      |          | 5M 12.8S     |          |          |
+| 1H 55M      |          | 5M 27S       |          |          |
+| 2H 0M       | 2M 50.6S | 5M 41.2S     |          |          |
+| 2H 15M      | 3M 11.9S | 6M 23.9S     |          |          |
+| 2H 30M      | 3M 33.3S | 7M 6.5S      |          |          |
+| 2H 45M      | 3M 54.6S | 7M 49.2S     |          |          |
+| 3H 0M       | 4M 15.9S | 8M 31.9S     |          |          |
+| 3H 15M      | 4M 37.3S |              |          |          |
+| 3H 30M      | 4M 58.6S |              |          |          |
+| 3H 45M      | 5M 19.9S |              |          |          |
+| 4H 0M       | 5M 41.2S |              |          |          |
+| 4H 15M      | 6M 2.6S  |              |          |          |
+| 4H 30M      | 6M 23.9S |              |          |          |
+| 4H 45M      | 6M 45.2S |              |          |          |
+| 5H 0M       | 7M 6.6S  |              |          |          |
+| 5H 15M      | 7M 27.9S |              |          |          |
+| 5H 30M      | 7M 49.2S |              |          |          |
+| 5H 45M      | 8M 10.6S |              |          |          |
+| 6H 0M       | 8M 31.9S |              |          |          |
 
 # Regex
 

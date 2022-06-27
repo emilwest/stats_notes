@@ -286,14 +286,15 @@ else:
 ``` r
 library(openxlsx)
 library(tidyverse) # (optional, for using tibble etc)
-wb <- loadWorkbook(path_to_file)
-df <- readWorkbook(wb, sheet = "Log")
+wb <- openxlsx::loadWorkbook(path_to_file)
+df <- openxlsx::readWorkbook(wb, sheet = "Log")
 df <- as_tibble(df)
+
 # * do stuff to df*
 # write data to the same sheet
 openxlsx::writeData(wb = wb, sheet = "Log", x = df)
 # save it:
-saveWorkbook(wb, path_to_file, overwrite = TRUE)
+openxlsx::saveWorkbook(wb, path_to_file, overwrite = TRUE)
 ```
 
 This is the absolutely best method if you want to add more sheets as
@@ -400,7 +401,6 @@ map(1:length(comments),
 map(1:length(comments),
       ~ writeComment(wb, 1, col = 1, row = .x, 
                      comment = createComment(comment = comments[.x], visible = F)))
-                     
 ```
 
 ## Openxlsx template
@@ -436,9 +436,35 @@ conditionalFormatting(wb,
                       type = "colourScale"
 )
 
+# Change format of columns
+openxlsx::addStyle(wb, sheet = curr_sheetname, createStyle(numFmt = "NUMBER"), rows = 2:nrow(tmp), cols = 1)
+# map(cols_to_format,
+#         ~openxlsx::addStyle(wb, sheet = curr_enkät, createStyle(numFmt = "NUMBER"), rows = 2:nrow(tmp), cols = .x))
+
 openxlsx::saveWorkbook(wb, file = str_glue("Output/insert_name.xlsx"), overwrite = T)
+```
 
+## Openxlsx write one table after another on the same sheet
 
+``` r
+counter <- 1
+for (i in seq_along(x)) {
+  startindex <- counter
+  tmp <- x[[i]]
+  n <- nrow(tmp)+1 # antal rader + en rad för kolumnen
+  title <- str_remove(names(x[i]), "X") # enkätfrågan + ta bort X
+  
+  openxlsx::writeData(wb, curr_enkät, title, startRow = startindex, startCol = 1)
+  openxlsx::addStyle(wb, curr_enkät, style, rows = startindex, cols = 1)
+  openxlsx::writeDataTable(wb, curr_enkät, tmp, startRow = startindex+1, startCol = 1)
+  
+  counter <- counter + n + 1 + 1
+  
+  rm(tmp)
+  rm(title)
+  rm(startindex)
+  rm(n)
+}
 ```
 
 ## Read dates
@@ -664,15 +690,6 @@ df %>%
   separate_rows(B)
 ```
 
-    ## # A tibble: 5 × 2
-    ##       A B         
-    ##   <dbl> <chr>     
-    ## 1     1 apple     
-    ## 2     1 banana    
-    ## 3     1 pear      
-    ## 4     2 watermelon
-    ## 5     2 apple
-
 ## Self join / cross-join
 
 Table band_members:
@@ -692,19 +709,6 @@ band_members %>%
   left_join(band_members, by = character())
 ```
 
-    ## # A tibble: 9 × 4
-    ##   name.x band.x  name.y band.y 
-    ##   <chr>  <chr>   <chr>  <chr>  
-    ## 1 Mick   Stones  Mick   Stones 
-    ## 2 Mick   Stones  John   Beatles
-    ## 3 Mick   Stones  Paul   Beatles
-    ## 4 John   Beatles Mick   Stones 
-    ## 5 John   Beatles John   Beatles
-    ## 6 John   Beatles Paul   Beatles
-    ## 7 Paul   Beatles Mick   Stones 
-    ## 8 Paul   Beatles John   Beatles
-    ## 9 Paul   Beatles Paul   Beatles
-
 This is basically the R/dplyr equivalent of a SQL self-join:
 
 ``` sql
@@ -723,47 +727,10 @@ Table band instruments:
 
 ``` r
 band_members %>% inner_join(band_instruments)
-```
-
-    ## # A tibble: 2 × 3
-    ##   name  band    plays 
-    ##   <chr> <chr>   <chr> 
-    ## 1 John  Beatles guitar
-    ## 2 Paul  Beatles bass
-
-``` r
 band_members %>% left_join(band_instruments)
-```
-
-    ## # A tibble: 3 × 3
-    ##   name  band    plays 
-    ##   <chr> <chr>   <chr> 
-    ## 1 Mick  Stones  <NA>  
-    ## 2 John  Beatles guitar
-    ## 3 Paul  Beatles bass
-
-``` r
 band_members %>% right_join(band_instruments)
-```
-
-    ## # A tibble: 3 × 3
-    ##   name  band    plays 
-    ##   <chr> <chr>   <chr> 
-    ## 1 John  Beatles guitar
-    ## 2 Paul  Beatles bass  
-    ## 3 Keith <NA>    guitar
-
-``` r
 band_members %>% full_join(band_instruments)
 ```
-
-    ## # A tibble: 4 × 3
-    ##   name  band    plays 
-    ##   <chr> <chr>   <chr> 
-    ## 1 Mick  Stones  <NA>  
-    ## 2 John  Beatles guitar
-    ## 3 Paul  Beatles bass  
-    ## 4 Keith <NA>    guitar
 
 ## Complete missing values in a column in df given a reference data frame (for long format)
 
@@ -814,38 +781,10 @@ iris_long <- iris %>%
   pivot_longer(-Species)
 
 x_long
-```
 
-    ## # A tibble: 4 × 3
-    ##   Species name         value
-    ##   <chr>   <chr>        <dbl>
-    ## 1 setosa  Sepal.Length     1
-    ## 2 setosa  Sepal.Width      2
-    ## 3 setosa  Petal.Length     3
-    ## 4 setosa  Petal.Width      4
-
-``` r
 x_long %>% 
   complete_missing(iris_long, Species)
-```
 
-    ## # A tibble: 12 × 3
-    ##    Species    name         value
-    ##    <fct>      <chr>        <dbl>
-    ##  1 setosa     Petal.Length     3
-    ##  2 setosa     Petal.Width      4
-    ##  3 setosa     Sepal.Length     1
-    ##  4 setosa     Sepal.Width      2
-    ##  5 versicolor Petal.Length    NA
-    ##  6 versicolor Petal.Width     NA
-    ##  7 versicolor Sepal.Length    NA
-    ##  8 versicolor Sepal.Width     NA
-    ##  9 virginica  Petal.Length    NA
-    ## 10 virginica  Petal.Width     NA
-    ## 11 virginica  Sepal.Length    NA
-    ## 12 virginica  Sepal.Width     NA
-
-``` r
 # Is equivalent to:
 # x_long %>% 
 #     mutate(Species = fct_expand(Species, c("versicolor", "virginica"))) %>%
@@ -1062,9 +1001,6 @@ pxweb::pxweb_interactive() # interactively browse statistical databases and down
 
 To do.
 
-``` r
-```
-
 # Check outliers in boxplots:
 
 ``` r
@@ -1178,60 +1114,11 @@ crosstable <- function(.data, x, y, add_margins = NULL, custom_name = NULL) {
 }
 
 crosstable(mtcars, gear, cyl)
-```
-
-    ## # A tibble: 3 × 4
-    ##   `gear / cyl`   `4`   `6`   `8`
-    ##          <int> <int> <int> <int>
-    ## 1            3     1     2    12
-    ## 2            4     8     4     0
-    ## 3            5     2     1     2
-
-``` r
 crosstable(mtcars, gear, cyl, add_margins = "both")
-```
-
-    ## # A tibble: 4 × 5
-    ##   `gear / cyl`   `4`   `6`   `8` Total
-    ##   <chr>        <int> <int> <int> <int>
-    ## 1 3                1     2    12    15
-    ## 2 4                8     4     0    12
-    ## 3 5                2     1     2     5
-    ## 4 Total           11     7    14    32
-
-``` r
 crosstable(mtcars, gear, cyl, "row")
-```
-
-    ## # A tibble: 4 × 4
-    ##   `gear / cyl`   `4`   `6`   `8`
-    ##   <chr>        <int> <int> <int>
-    ## 1 3                1     2    12
-    ## 2 4                8     4     0
-    ## 3 5                2     1     2
-    ## 4 Total           11     7    14
-
-``` r
 crosstable(mtcars, gear, cyl, "col")
-```
-
-    ## # A tibble: 3 × 5
-    ##   `gear / cyl`   `4`   `6`   `8` Total
-    ##          <int> <int> <int> <int> <int>
-    ## 1            3     1     2    12    15
-    ## 2            4     8     4     0    12
-    ## 3            5     2     1     2     5
-
-``` r
 crosstable(mtcars, gear, cyl, custom_name = "row=gear, col=cyl")
 ```
-
-    ## # A tibble: 3 × 4
-    ##   `row=gear, col=cyl`   `4`   `6`   `8`
-    ##                 <int> <int> <int> <int>
-    ## 1                   3     1     2    12
-    ## 2                   4     8     4     0
-    ## 3                   5     2     1     2
 
 The advantage by having the crosstable as a tibble, it can be exported
 as-is to an excel sheet compatible with openxlsx:
@@ -1407,32 +1294,15 @@ filter_regex <- function(df, column, s, exact_match = T, negate_ = FALSE) {
 # The default is to match the strings exactly
 mpg %>%
   filter_regex(model, c("a4", "tiburon")) %>% pull(model) %>% unique
-```
-
-    ## [1] "a4"      "tiburon"
-
-``` r
 mpg %>%
   filter_regex(model, c("a4", "tiburon"), negate_ = T) %>% pull(model) %>% unique %>% head
-```
 
-    ## [1] "a4 quattro"         "a6 quattro"         "c1500 suburban 2wd"
-    ## [4] "corvette"           "k1500 tahoe 4wd"    "malibu"
-
-``` r
 # Use exact_match = F to allow regex:
 mpg %>%
   filter_regex(model, c("a4","tiburon"), exact_match = F) %>% pull(model) %>% unique
-```
-
-    ## [1] "a4"         "a4 quattro" "tiburon"
-
-``` r
 mpg %>%
   filter_regex(model, c("a[0-9]+.*"), exact_match = F) %>% pull(model) %>% unique
 ```
-
-    ## [1] "a4"         "a4 quattro" "a6 quattro"
 
 # Use cut
 
@@ -2035,16 +1905,6 @@ mpg %>%
   mutate(acronym = generate_varcodes(model)) %>% 
   head()
 ```
-
-    ## # A tibble: 6 × 2
-    ##   model              acronym
-    ##   <chr>              <chr>  
-    ## 1 a4                 A      
-    ## 2 a4 quattro         AQ     
-    ## 3 a6 quattro         AQ     
-    ## 4 c1500 suburban 2wd CS2    
-    ## 5 corvette           C      
-    ## 6 k1500 tahoe 4wd    KT4
 
 # Powershell
 

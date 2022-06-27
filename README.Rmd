@@ -9,6 +9,10 @@ editor_options:
     extensions: +tex_math_dollars
 ---
 
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(eval = FALSE) 
+```
+
 ![Stats notes](img/wordcloud2.png)
 
 This document contains notes I make about R, data science and software engineering in the context of statistics.
@@ -60,7 +64,7 @@ For more distributions not included in base R, see the package `extraDistr` .
 
 ## The Normal Distribution
 
-```{r, message=F, warning = F, cache=T}
+```{r, eval=T, message=F, warning = F, cache=T}
 library(tidyverse)
 library(patchwork)
 options(scipen = 999)
@@ -127,7 +131,7 @@ $x = F^{-1}(p)$
 I.e. given a number (probability) between 0 and 1, return the p-th quantile, i.e. the x-value on the plot.
 Consider also the difference between the 'theoretical' quantile of the population (q) compared to the observed sample quantile (qs).
 
-```{r cdf, message=F, warning = F, cache=T}
+```{r cdf, eval =T, message=F, warning = F, cache=T}
 options(scipen = 999)
 
 plotnn <- function(n, mu, sd) {
@@ -194,7 +198,7 @@ Here is a QQ-plot to illustrate the observed quantiles (y-axis) vs the theoretic
 This can be used to assess normality.
 Note that the plot looks the same even if the values are z-transformed or not (verify it yourself if you like by changing `ggplot(aes(x = qq, y = x))` to `ggplot(aes(x = qq, y = x_scaled))`).
 
-```{r qq_plot, message=F, warning = F, cache=T}
+```{r qq_plot, eval =T, message=F, warning = F, cache=T}
 
 mu <- 50
 sd <- 5
@@ -257,7 +261,7 @@ Also note that for samples from the normal distribution, the median may not equa
 Note: for this to work, the file obviously needs to exist beforehand.
 If needed, create an empty workbook beforehand:
 
-``` r
+```{r}
 wb <- createWorkbook(title = str_glue("Månadsuppdatering {upp_datum}"))
 addWorksheet(wb, "Session_info")
 addWorksheet(wb, "Log")
@@ -266,17 +270,18 @@ saveWorkbook(wb, file = path_to_file, overwrite = TRUE)
 
 Now if we want to update the 'Log'-sheet only and not overwrite anything else:
 
-``` r
+```{r}
 library(openxlsx)
 library(tidyverse) # (optional, for using tibble etc)
-wb <- loadWorkbook(path_to_file)
-df <- readWorkbook(wb, sheet = "Log")
+wb <- openxlsx::loadWorkbook(path_to_file)
+df <- openxlsx::readWorkbook(wb, sheet = "Log")
 df <- as_tibble(df)
+
 # * do stuff to df*
 # write data to the same sheet
 openxlsx::writeData(wb = wb, sheet = "Log", x = df)
 # save it:
-saveWorkbook(wb, path_to_file, overwrite = TRUE)
+openxlsx::saveWorkbook(wb, path_to_file, overwrite = TRUE)
 ```
 
 This is the absolutely best method if you want to add more sheets as time goes and gives the most flexibility.
@@ -286,7 +291,7 @@ It also preserves the original formatting of the file that is loaded and allows 
 
 If you're just interested in reading the excel data without manipulating it too much (when saving it), these are some of the simplest options.
 
-``` r
+```{r}
 # Read xlsx/xls:
 readxl::read_xlsx(name_of_file) 
 readxl::read_xls(name_of_file) # or readxl::read_excel(name_of_file) for guessing xls or xlsx
@@ -328,7 +333,7 @@ write.xlsx(df, file = "Output/myfile.xlsx")
 
 Option 1 (simplest):
 
-``` r
+```{r}
 # Write multiple data frames as sheets in single excel file:
 list_of_datasets <- list("Sheet name 1" = df1, 
                          "Sheet name 2" = df2,
@@ -338,7 +343,7 @@ openxlsx::write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")
 
 Option 2 (more customization):
 
-``` r
+```{r}
 library(openxlsx)
 library(tidyverse)
  
@@ -360,14 +365,14 @@ saveWorkbook(wb, file = "Output/myfile.xlsx", overwrite = TRUE)
 
 If you don't need to apply any styling for each sheet you can just do:
 
-``` r
+```{r}
 dat <- split(mtcars, mtcars$cyl)
 openxlsx::write.xlsx(dat, file = "Output/myfile.xlsx")   
 ```
 
 ## Add comments to cells
 
-``` r
+```{r}
 comments <- c("comment 1",
 "comment 2",
 "comment 3")
@@ -385,7 +390,7 @@ map(1:length(comments),
 
 ## Openxlsx template
 
-``` r
+```{r, eval=F, message=F, warning = F}
 # header style
 hs1 <- openxlsx::createStyle(
   fontColour = "#ffffff", fgFill = "#4F80BD",
@@ -416,18 +421,48 @@ conditionalFormatting(wb,
                       type = "colourScale"
 )
 
+# Change format of columns
+openxlsx::addStyle(wb, sheet = curr_sheetname, createStyle(numFmt = "NUMBER"), rows = 2:nrow(tmp), cols = 1)
+# map(cols_to_format,
+#         ~openxlsx::addStyle(wb, sheet = curr_enkät, createStyle(numFmt = "NUMBER"), rows = 2:nrow(tmp), cols = .x))
+
 openxlsx::saveWorkbook(wb, file = str_glue("Output/insert_name.xlsx"), overwrite = T)
 
-
-
 ```
+
+## Openxlsx write one table after another on the same sheet
+
+
+
+```{r, eval=F,}
+counter <- 1
+for (i in seq_along(x)) {
+  startindex <- counter
+  tmp <- x[[i]]
+  n <- nrow(tmp)+1 # antal rader + en rad för kolumnen
+  title <- str_remove(names(x[i]), "X") # enkätfrågan + ta bort X
+  
+  openxlsx::writeData(wb, curr_enkät, title, startRow = startindex, startCol = 1)
+  openxlsx::addStyle(wb, curr_enkät, style, rows = startindex, cols = 1)
+  openxlsx::writeDataTable(wb, curr_enkät, tmp, startRow = startindex+1, startCol = 1)
+  
+  counter <- counter + n + 1 + 1
+  
+  rm(tmp)
+  rm(title)
+  rm(startindex)
+  rm(n)
+}
+```
+
+
 
 ## Read dates
 
 When importing dates from Excel into R, dates are represented as days since 1899-12-30.
 Usually this is done automatically, but in some cases there may be text in the columns, then you can use this method (text -\> NA):
 
-``` r
+```{r}
 as.Date(44301, origin = "1899-12-30")
 ```
 
@@ -438,7 +473,7 @@ So it is a good idea to double check with the data so that your imported dates l
 
 If the column contains both dates and text for some reason, and you want to keep the text, use this function:
 
-``` r
+```{r}
 # Function for converting excel-dates in 1900-date system to R-dates, while keeping texts as they are
 # if the column has a mix of texts and dates
 convertd <- function(x) {
@@ -451,7 +486,7 @@ convertd(c(22,"aa"))
 
 ## Add a plot to an excel sheet
 
-``` r
+```{r}
 library(tidyverse)
 library(openxlsx)
 wb <- createWorkbook()
@@ -467,7 +502,7 @@ saveWorkbook(wb, "insertPlotExample2.xlsx", overwrite = TRUE)
 
 ## Add multiple plots into single excel sheet
 
-``` r
+```{r}
 library(tidyverse)
 library(openxlsx)
 wb <- createWorkbook()
@@ -497,7 +532,7 @@ saveWorkbook(wb, "insertPlotExample2.xlsx", overwrite = TRUE)
 
 Credits to <https://dominicroye.github.io/en/2019/import-excel-sheets-with-r/>
 
-``` r
+```{r}
 in_path <- "path/to/excelfile.xlsx"
 
 # read multiple sheets and join them into single dataframe:
@@ -513,7 +548,7 @@ df <- in_path %>%
 
 ## Read multiple excel sheets for multiple excel files into a single data frame
 
-``` r
+```{r}
 read_multiple_excel_sheets <- function(path, idname = "sheet") {
   print(str_glue("Reading {path} with id = {idname} for each sheet"))
   path %>%
@@ -569,7 +604,7 @@ Read multiple csv files in directory using summarise.
 
 See <https://www.tidyverse.org/blog/2020/03/dplyr-1-0-0-summarise/>
 
-``` r
+```{r}
 library(tidyverse)
 # reading all csv files in current directory:
 tibble(path = dir(pattern = "\\.csv$")) %>% 
@@ -579,7 +614,7 @@ tibble(path = dir(pattern = "\\.csv$")) %>%
 
 Or read from any directory:
 
-``` r
+```{r}
 path <- "C:/Users/my_usrname/output/csv"
 
 df <- list.files(path, full.names = T, include.dirs = F) %>% 
@@ -594,7 +629,7 @@ df <- list.files(path, full.names = T, include.dirs = F) %>%
 If the csv files has multiple columns with same names, try to merge them together.
 For example, all columns starting with 'SOURCE':
 
-``` r
+```{r}
 # get colnames
 source_cols <- res[str_detect(names(res), "SOURCE.*")] %>% names()
 x <- res[source_cols]
@@ -607,7 +642,7 @@ res <- res %>% select(-setdiff(source_cols, "SOURCE")) # remove all other column
 This is useful, especially since csv files may in fact be separated with semicolon (;) and not comma, which may be due to the locale and OS used when the csv file was saved.
 For example, in Swedish, comma (,) is used as a decimal separator.
 
-``` r
+```{r}
 res <- list.files(path = indir, pattern = "*.csv", full.names = TRUE) %>%
   map_df(read_delim,
          delim = ";", 
@@ -740,14 +775,14 @@ x_long %>%
 
 ## Remove all files and subdirectories under path/\* (without deleting path/)
 
-``` r
+```{r}
 unlink("path/*", recursive = TRUE)
 unlink("path/*") # deletes files only, no directories
 ```
 
 ## Remove all files and subdirectories for multiple paths
 
-``` r
+```{r}
 # set pattern = ".*out.*" to target specific directories named out
 out_dirs <- list.files(str_glue("C:/path1/path2"), full.names = T, recursive = T, pattern = ".*out.*", include.dirs = T)
 out_dirs <- str_c(out_dirs, "/*")
@@ -757,7 +792,7 @@ unlink(out_dirs, recursive = T) # removes files and dirs under "C:/path1/path2/{
 
 ## Extract filenames or directory names from a path
 
-``` r
+```{r}
 basename("C:/px/hej.txt")
 # hej.txt
 dirname("C:/px/hej.txt")
@@ -766,14 +801,14 @@ dirname("C:/px/hej.txt")
 
 # Unload library/package from R session without restarting
 
-``` r
+```{r}
 # unloading library(officer)
 detach(package:officer)
 ```
 
 # Save R results in Word file
 
-``` r
+```{r}
 library(flextable) # converting dataframes to flextable objects
 library(officer) # for adding data to word document, like flextables
 
@@ -784,14 +819,14 @@ word_export <- word_export %>% body_add_flextable( as.data.frame.matrix(tab1) %>
 print(word_export, 'try.docx')
 ```
 
-``` r
+```{r}
 # add new page:
 mydoc %>% body_add_break()
 ```
 
 Function for adding R table to word document:
 
-``` r
+```{r}
 myft <- function(mydoc, tab, title) {
   res <- body_add_par(mydoc, "")
   res <- body_add_par(mydoc, title, style = "Tabellrubrik_")
@@ -803,7 +838,7 @@ mydoc <- myft(mydoc, tt0, "Table 1. xxx")
 
 Template:
 
-``` r
+```{r}
 library(flextable)
 library(officer)
 
@@ -838,7 +873,7 @@ Use `seq_along` or `seq_len` instead.
 
 For faster looping.
 
-``` r
+```{r}
 out <- vector("list", length(n))
 for (i in seq_len(n)) {
 out[[i]] <- 1 + i
@@ -859,7 +894,7 @@ TODO
 
 Note: you can also specify "format": "json" in the query to get the data directly as json.
 
-``` r
+```{r}
 library(httr)
 url <- "https://pxweb.nordicstatistics.org:443/api/v1/en/Nordic Statistics/Geography and climate/Land use/DENS01.px"
 url <- URLencode(url) # convert whitespace to ascii %20
@@ -903,7 +938,7 @@ To see how it was selected, add `?select`: `https://pxweb.nhwstat.org:443/Prod/s
 
 To download it, add `.relational_table`: `https://pxweb.nhwstat.org:443/Prod/sq/0978ea50-2b97-4a48-bc58-d4a71806336e.relational_table`
 
-``` r
+```{r}
 as_tibble(read_delim(
   "https://pxweb.nhwstat.org:443/Prod/sq/0978ea50-2b97-4a48-bc58-d4a71806336e.relational_table",
   locale = locale(encoding = "latin1"),
@@ -912,14 +947,14 @@ as_tibble(read_delim(
 
 ## Read a px-file in R
 
-``` r
+```{r}
 library(pxR)
 px_in <- read.px("abcd10.px",  encoding='iso-8859-15')
 ```
 
 ## Write/export a px-file
 
-``` r
+```{r}
 library(pxR)
 write.px(
   px_in,
@@ -930,7 +965,7 @@ write.px(
 
 ## Pxweb
 
-``` r
+```{r}
 library(pxweb)
 pxweb::pxweb_interactive() # interactively browse statistical databases and download px-files via API queries
 ```
@@ -939,12 +974,12 @@ pxweb::pxweb_interactive() # interactively browse statistical databases and down
 
 To do.
 
-``` r
+```{r}
 ```
 
 # Check outliers in boxplots:
 
-``` r
+```{r}
 is_outlier <- function(x) {
   return(x < quantile(x, 0.25,na.rm = T) - 1.5 * IQR(x, na.rm = T) | x > quantile(x, 0.75, na.rm = T) + 1.5 * IQR(x,na.rm=T))
 }
@@ -961,13 +996,13 @@ In that case, use `boxplot.stats()$out` to see outlier values.
 
 ## Group boxplot by group
 
-``` r
+```{r}
 boxplot(temp$num ~ temp$group)
 ```
 
 ## Compare if two dataframes are identical
 
-``` r
+```{r}
 all.equal(px_df,px_df2)
 identical(px_df,px_df2)
 dplyr::all_equal(px_df,px_df2) # By default ignores column and row order, and is sensitive to variable classes, but can be overidden. Can automatically convert factors to character and integers to doubles.
@@ -984,7 +1019,7 @@ all_equal(mtcars, scramble(mtcars)) # By default, ordering of rows and columns i
 
 with flextable:
 
-``` r
+```{r}
 tableone2df <- function(tableone){
   rows <- nrow(tableone)
   cols <- ncol(tableone)
@@ -1013,7 +1048,7 @@ flextable::flextable(tableone2df(table_1)  %>% rownames_to_column("Variable"))
 
 ## Add totals to table
 
-``` r
+```{r}
 # 2=sum cols, 1=sum rows, otherwise it sums both
 tab <- addmargins(table(df$Company,df$Marital), 2)
 ```
@@ -1063,7 +1098,7 @@ crosstable(mtcars, gear, cyl, custom_name = "row=gear, col=cyl")
 
 The advantage by having the crosstable as a tibble, it can be exported as-is to an excel sheet compatible with openxlsx:
 
-``` r
+```{r}
 t1 <- crosstable(mtcars, gear, cyl, add_margins = "both")
 writeDataTable(wb, currsheet, t1, startRow = 1, withFilter = F)
 ```
@@ -1073,7 +1108,7 @@ writeDataTable(wb, currsheet, t1, startRow = 1, withFilter = F)
 To set a reference category for a categorical variable in regression models, you move that category to the first position of the levels.
 If you want "Mid" to be the reference and the levels are "Low", "Mid", "High", you simply want to change the order of levels to "Mid", "Low", "High".
 
-``` r
+```{r}
 # relevel single variable
 df %>% 
   dplyr::mutate(q_mycat = fct_relevel(q_mycat, "Mid"))
@@ -1094,13 +1129,13 @@ df %>%
 
 From <https://stackoverflow.com/questions/14096814/merging-a-lot-of-data-frames>
 
-``` r
+```{r}
 Reduce(function(...) merge(..., all=TRUE), list(df1, df2, df3))
 ```
 
 # Create a sequence of dates
 
-``` r
+```{r}
 full_dates <- seq(as.Date("2016-09-01"), by = "month", length.out =39)
 full_dates <- tibble(date = full_dates)
 full_dates <- full_dates %>% mutate(month = format(date, "%m"), year = format(date, "%Y") )
@@ -1119,7 +1154,7 @@ Returns a dataframe (data.frame) from all combinations of the supplied vectors o
 Useful if you for ex.
 want to test a set of hyperparameters without creating nested for loops, just create a dataframe of all combinations and iterate through it.
 
-``` r
+```{r}
 expand.grid(letters[1:2], 1:3, c("+", "-"))
 ```
 
@@ -1129,7 +1164,7 @@ expand.grid(letters[1:2], 1:3, c("+", "-"))
 
 Using deparse + substitute
 
-``` r
+```{r}
 print_path <- function(path) {
   print(stringr::str_glue("{deparse(substitute(path))} = {path}"))
 }
@@ -1139,7 +1174,7 @@ print_path <- function(path) {
 
 ## Terajoule (TJ) to (thousand) tons of oil equivalent
 
-``` r
+```{r}
 tj_to_ttoe <- function(tj) {
   # For converting Terajoule to Thousand tons of oil equivalent
   tj/(0.041868*1000)
@@ -1171,7 +1206,7 @@ dat %>%
 
 Rename the last column:
 
-``` r
+```{r}
 bind_rows(sms_tot, mms_tot) %>%
       dplyr::rename(value = last_col())
       
@@ -1184,7 +1219,7 @@ bind_rows(sms_tot, mms_tot) %>%
 
 <https://stackoverflow.com/questions/49119794/using-dplyrmutate-to-create-several-new-variables-from-names-specified-in>
 
-``` r
+```{r}
 add_columns <- function(df, columns){
   new <- rep(NA_character_, length(columns))
   names(new) <- columns
@@ -1244,7 +1279,7 @@ mpg %>%
 `right` = indicating if the intervals should be closed on the right (and open on the left) or vice versa.
 `include.lowest` = indicating if an x[i] equal to the lowest (or highest, for right = FALSE) "breaks" value should be included.
 
-``` r
+```{r}
 cut(tmp2$Antal, breaks = c(-Inf,20,50,Inf), labels = c("\u226420", "21-50", "50-521"))
 # will show ≤20    21-50  50-521
 
@@ -1264,7 +1299,7 @@ cut(0:20, breaks = c(0,  19,  Inf),labels = c("<20", "\u226520"),include.lowest 
 
 From <https://statisticsglobe.com/split-vector-into-chunks-in-r>
 
-``` r
+```{r}
  my_vec <- 2008:2021
   chunk_length <- 5
   split(my_vec,             
@@ -1275,7 +1310,7 @@ From <https://statisticsglobe.com/split-vector-into-chunks-in-r>
 
 From <https://statisticsglobe.com/split-vector-into-chunks-in-r>
 
-``` r
+```{r}
 chunk_number <- 7   
 split(my_vec,             # Applying split() function
       cut(seq_along(my_vec),
@@ -1287,7 +1322,7 @@ split(my_vec,             # Applying split() function
 
 Returns list of dataframes.
 
-``` r
+```{r}
 library(tidyverse) 
 mtcars %>% split(.$cyl)
 ```
@@ -1315,7 +1350,7 @@ To do
 The problem with sum(x, na.rm = TRUE) is that it will return 0 if all categories are NA.
 Sometimes we want it to be NA, here is how:
 
-``` r
+```{r}
 sumna <- function(x) {
   if(all(is.na(x))) NA else sum(x, na.rm = TRUE)
 }
@@ -1325,7 +1360,7 @@ sumna <- function(x) {
 
 [Kommunkoder](https://www.scb.se/hitta-statistik/regional-statistik-och-kartor/regionala-indelningar/lan-och-kommuner/lan-och-kommuner-i-kodnummerordning/#Stockholms_lan)
 
-``` r
+```{r}
 library(tidyverse)
 library(sf)
 library(RColorBrewer)
@@ -1351,7 +1386,7 @@ ggplot() +
 
 ## Calculate power in t-test
 
-``` r
+```{r}
 # delta: difference in means
 # Number of subjects needed to obtain 80% power
 power.t.test(delta = 10, sd = 19, power = 0.8, sig.level = 0.05)
@@ -1363,7 +1398,7 @@ power.t.test(delta = 10, sd = 19, n=100, sig.level = 0.05)
 
 Also known as the Mann-Whitney U test.
 
-``` r
+```{r}
 wilcox.test(df$num ~ temp$group)
 ```
 
@@ -1371,13 +1406,13 @@ wilcox.test(df$num ~ temp$group)
 
 Tests difference in means.
 
-``` r
+```{r}
 t.test(temp$num ~ temp$group)
 ```
 
 ## Correlation incl p-values and confidence interval
 
-``` r
+```{r}
 cor.test()
 ```
 
@@ -1385,7 +1420,7 @@ cor.test()
 
 For testing the null hypothesis of independence of rows and columns in a contingency table with fixed marginals.
 
-``` r
+```{r}
 fisher.test( matrix(c(2,10,20,3),nrow=2,ncol=2)  )
 # odds ratio: 0.035, p=0.00008124
 ```
@@ -1403,7 +1438,7 @@ oddsratio, pvalue = stats.fisher_exact([[2, 10], [20, 3]])
 Kappa measures the agreement between two variables, taking into account the agreement that would happen by chance.
 Kappa = (O-E) / (1-E), where O = observed agreement, E = expected agreement assuming independence.
 
-``` r
+```{r}
 library(psych) 
 tab<-matrix(c(12,20,20,12),ncol=2,nrow=2)
 #     [,1] [,2]
@@ -1414,14 +1449,14 @@ psych::cohen.kappa(tab) # -0.25
 
 ## Calculate binomial confidence interval
 
-``` r
+```{r}
 binom.test(40, 95) # num successes, num trials
 ```
 
 With CI in parenthesis for.ex.
 (10.1-15.5%) calculated from percentage of success:
 
-``` r
+```{r}
 library(stringr)
 calc_conf <- function(perc, n){
   test <- round(perc*n)
@@ -1437,7 +1472,7 @@ calc_conf(0.42, 95) # (32.0-52.7%)
 
 ## Calculate difference in binomial confidence intervals
 
-``` r
+```{r}
 library(DescTools)
 # x = number of successes in group 1 or 2, n = number of trials in group 1 or 2 
 BinomDiffCI(x1=40,n1=95,x2=2,n2=47)
@@ -1445,7 +1480,7 @@ BinomDiffCI(x1=40,n1=95,x2=2,n2=47)
 
 Nicely formatted CI calculated from percentage of success:
 
-``` r
+```{r}
 library(stringr)
 bindiff <- function(perc_1, n_1, perc_2, n_2){
   test1 <- round(perc_1*n_1)
@@ -1489,7 +1524,7 @@ The random effect is to the left of \|.
 
 ### Generate survival curves
 
-``` r
+```{r}
 library(survival) # survival curves
 fit1 <- survfit(Surv( time , survival ) ~ variable, data=df)
 
@@ -1501,7 +1536,7 @@ ggsurvplot(fit1)
 
 ### Cox regression
 
-``` r
+```{r}
 library(survival) 
 fit1 <- coxph(Surv( time , survival ) ~ variable, data=df)
 summary(fit1)
@@ -1516,7 +1551,7 @@ The to set the scales, use `scale_x_time`/`scale_y_time`.
 To customize breaks and labels, use the `scales` library.
 In this case we use `breaks = scales::breaks_width("15 min"), labels =scales::label_time(format = "%H:%M")`.
 
-``` r
+```{r}
 tibble(minutes = 100:290,
        time_parsed = seconds_to_period(dminutes(minutes)) %>% as.numeric() %>% duration) %>% 
   mutate(pace = get_pace("marathon", minutes) %>% as.numeric()%>% duration) %>% 
@@ -1528,7 +1563,7 @@ tibble(minutes = 100:290,
 
 ### Arrange plots
 
-``` r
+```{r}
 library(ggpubr)
 ggarrange(p1, p2, p3)
 # with common legend:
@@ -1537,7 +1572,7 @@ ggarrange(p1, p2, p3, ncol=3, common.legend = T, legend="right")
 
 #### Arrange within arrange
 
-``` r
+```{r}
 library(tidyverse)
 library(ggpubr)
 # with common legend
@@ -1566,7 +1601,7 @@ Generates:
 
 #### Legend title
 
-``` r
+```{r}
 library(tidyverse)
 p11 <- iris %>% ggplot(aes(Sepal.Length, Sepal.Width, color=Species)) + geom_point()
 # change title in legend:
@@ -1579,14 +1614,14 @@ p11 + scale_color_manual("Hej")
 
 #### Change the legend label text
 
-``` r
+```{r}
 + scale_color_discrete(labels = c("A",  "B", "C")) # for ggplot(aes(color=category))
 + scale_fill_discrete(labels = c("A",  "B", "C")) # for ggplot(aes(fill=category))
 ```
 
 #### Legend colors
 
-``` r
+```{r}
 library(tidyverse)
 library(RColorBrewer)
 p11 <- iris %>% ggplot(aes(Sepal.Length, Sepal.Width, color=Species)) + geom_point()
@@ -1612,7 +1647,7 @@ p11 + scale_color_grey()
 
 ### Bar plot
 
-``` r
+```{r}
 # stat=identity: use own y-values, rather than counting the aggregate number of rows for each x (stat=count)
 # position=dodge : place bars side by side instead of stacked
  geom_bar(stat="identity", position = "dodge")
@@ -1625,7 +1660,7 @@ p11 + scale_color_grey()
 
 Dodging overlapping labels:
 
-``` r
+```{r}
 p <- ggplot(mpg) +
   geom_bar(aes(x = manufacturer)) + 
   theme(axis.text.x = element_text(size = 11))
@@ -1640,7 +1675,7 @@ Introduced in ggplot2 3.3.0.
 A binning scale takes continuous data and makes it discrete by assigning each data point to a bin.
 Allows continuous data to be used with discrete palettes
 
-``` r
+```{r}
 p <- ggplot(mpg) + 
   geom_point(aes(displ, cty, size = hwy, colour = hwy))
 
@@ -1666,7 +1701,7 @@ ggplot(mpg) +
 
 ### Plot text column in ggplot in the same order it appears in the data frame
 
-``` r
+```{r}
 # procedure is a text column
 f <- function(x) factor(x, levels = unique(x))
 reshape2::melt(tmp, id.vars = "Procedure") %>%
@@ -1685,7 +1720,7 @@ Code can be:
 Quosure- An expression that has been saved with an environment (aka a closure).  
 A quosure can be evaluated later in the stored environment to return a predictable result.
 
-``` r
+```{r}
 a <- 1
 b <- 2
 q <- rlang::quo(a+b)
@@ -1702,7 +1737,7 @@ Useful when doing ggplot functions.
 For example with this function you can create a function like this `f(mtcars, disp, mpg )`, where disp and mpg are columns within the dataframe mtcars (included in tidyverse).
 !! uncoutes the symbol.
 
-``` r
+```{r}
 library(tidyverse)
 f <- function(df,a,b){
   a <- rlang::enquo(a)
@@ -1720,7 +1755,7 @@ f(mtcars, disp, mpg )
 
 ### map: apply function to each element of list or vector
 
-``` r
+```{r}
 # map: apply function to each element of list of vector
 mtcars %>% map(., sum) # sum each col in df
 pmap_dbl(mtcars,sum) # sum of each row
@@ -1733,7 +1768,7 @@ Why use map instead of lapply?
 
 ### Create an empty tibble with column names from vector and 0 rows
 
-``` r
+```{r}
 default_cols <- c("Survey", "sub_area", "Insats")
 
 default_df <- default_cols %>% purrr::map_dfc(setNames, object = list(character()))
@@ -1743,7 +1778,7 @@ default_df <- default_cols %>% purrr::map_dfc(setNames, object = list(character(
 
 ### Nest: split dataframe into list of dataframes
 
-``` r
+```{r}
 library(tidyverse)
 n_iris <- iris %>%  group_by(Species) %>%  nest()
 ## A tibble: 3 x 2
@@ -1757,7 +1792,7 @@ n_iris <- iris %>%  group_by(Species) %>%  nest()
 
 ### Join each element in nested dataframe with another dataframe
 
-``` r
+```{r}
 join_df <- function(df_nest, df_other) {
   df_all <- inner_join(df_nest, df_other, by = c("name1" = "name2"))
   return(df_all)
@@ -1777,7 +1812,7 @@ Consider the dataframe df:
 | B      | my_dir/B.px |
 | C      | my_dir/C.px |
 
-``` r
+```{r}
 inFile_n <- df %>% group_by(matrix) %>% nest()
 # lÃ¤s in alla matriser:
 inFile_alla <- inFile_n %>% 
@@ -1850,7 +1885,7 @@ Dir | Rename-Item –NewName { $_.name –replace “_flags“,”” }
 
 # Run/execute program/scripts from R using system()
 
-``` r
+```{r}
 system("powershell ls -rec H:\\Documents\\")
 ```
 
@@ -1859,7 +1894,7 @@ system("powershell ls -rec H:\\Documents\\")
 Add ls -rec for subfolders and for ex.
 -Include \*.txt for including txt files only
 
-``` r
+```{r}
 system("powershell (ls H:\\Documents\\multiple_tests\\*) |
        Foreach-Object{ $f=$_; (gc $f.PSPath) |
        Foreach-Object {$_ -replace '\\\"hej', 'hej' } |

@@ -9,7 +9,7 @@ editor_options:
     extensions: +tex_math_dollars
 ---
 
-```{r setup, include=FALSE} 
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(eval = FALSE) 
 ```
 
@@ -19,10 +19,40 @@ This document contains notes I make about R, data science and software engineeri
 
 How to use this document: search for a keyword with `Ctrl` + `f` or scroll trough.
 
+# Updating R
+
+The following code assumes you are using windows and can be run from RStudio.
+The version of R can usually be found here `C:\Program Files\R\R-4.2.0`.
+[More info](https://cran.r-project.org/bin/windows/base/rw-FAQ.html#What_0027s-the-best-way-to-upgrade_003f "R for Windows FAQ").
+
+```{r}
+install.packages("installr")
+library(installr)
+# Run the following 
+# (you can also just type installr::updateR() and choose options interactively)
+installr::updateR(browse_news = T, 
+                  fast = F,
+                  install_R = T, 
+                  copy_packages = T, 
+                  copy_site_files = T,
+                  keep_old_packages = T,
+                  update_packages = F, # this will be done in next step
+                  start_new_R = F,
+                  quit_R = F
+                  )
+# When the above is completed, restart R, exit R studio and reopen with a fresh session
+
+# Reinstall the copied packages to match the latest version of R
+update.packages(checkBuilt=TRUE, ask=FALSE) 
+
+# Double check that the packages have been built with the latest version of R:
+installed.packages()
+```
+
 # RStudio useful shortcuts
 
 |                                                                            | Command                            |
-|------------------------------------------------|------------------------|
+|----------------------------------------------|-------------------------|
 | Restart R-session and unload packages:                                     | `Command`/`Ctrl` + `Shift` + `F10` |
 | Comment/uncomment single/multiple lines:                                   | `Ctrl`+ `Shift` + `c`              |
 | Display command palette:                                                   | `Ctrl`+ `Shift` + `p`              |
@@ -432,8 +462,6 @@ openxlsx::saveWorkbook(wb, file = str_glue("Output/insert_name.xlsx"), overwrite
 
 ## Openxlsx write one table after another on the same sheet
 
-
-
 ```{r, eval=F,}
 counter <- 1
 for (i in seq_along(x)) {
@@ -454,8 +482,6 @@ for (i in seq_along(x)) {
   rm(n)
 }
 ```
-
-
 
 ## Read dates
 

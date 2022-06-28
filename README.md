@@ -7,6 +7,37 @@ engineering in the context of statistics.
 How to use this document: search for a keyword with `Ctrl` + `f` or
 scroll trough.
 
+# Updating R
+
+The following code assumes you are using windows and can be run from
+RStudio. The version of R can usually be found here
+`C:\Program Files\R\R-4.2.0`. [More
+info](https://cran.r-project.org/bin/windows/base/rw-FAQ.html#What_0027s-the-best-way-to-upgrade_003f "R for Windows FAQ").
+
+``` r
+install.packages("installr")
+library(installr)
+# Run the following 
+# (you can also just type installr::updateR() and choose options interactively)
+installr::updateR(browse_news = T, 
+                  fast = F,
+                  install_R = T, 
+                  copy_packages = T, 
+                  copy_site_files = T,
+                  keep_old_packages = T,
+                  update_packages = F, # this will be done in next step
+                  start_new_R = F,
+                  quit_R = F
+                  )
+# When the above is completed, restart R, exit R studio and reopen with a fresh session
+
+# Reinstall the copied packages to match the latest version of R
+update.packages(checkBuilt=TRUE, ask=FALSE) 
+
+# Double check that the packages have been built with the latest version of R:
+installed.packages()
+```
+
 # RStudio useful shortcuts
 
 |                                                                            | Command                            |
@@ -108,7 +139,7 @@ p_X <- df %>%
  ( p_pdf + p_X)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ### Relationships between cdf and inverse cdf, quantiles and sample quantiles
 

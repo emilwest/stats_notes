@@ -1073,7 +1073,123 @@ get_polisen(2022, 06, .location = "Varberg")
 
 # Download text files from URL
 
-To do.
+# Date handling
+
+todo: look into POSIXct vs dates.
+
+## Generate sequence of dates
+
+``` r
+library(lubridate)
+
+seq(ymd("2022-01-01"), ymd("2022-12-31"), by = "1 days")
+# "2022-01-01" "2022-01-02" "2022-01-03" ... 2022-12-31"
+# in base r, replace ymd() with as.Date()
+```
+
+## Generate dataframe of dates for entire years
+
+The following function requires lubridate and tidyverse. Given a vector
+of year(s), you get dataframes with daily and weekly information in your
+locale. Examples: `generate_yearly_dfs()`, `generate_yearly_dfs(2022)`,
+`generate_yearly_dfs(2022:2025)`.
+
+``` r
+generate_yearly_dfs <- function(.yr = lubridate::year(lubridate::now()),
+                                .by = "1 days") {
+
+  if (length(.yr) == 1) {
+    first_day <- str_glue("{.yr}-01-01")
+    last_day <- str_glue("{.yr}-12-31")
+  } else if (length(.yr) > 1) {
+    first_day <- str_glue("{first(.yr)}-01-01")
+    last_day <- str_glue("{last(.yr)}-12-31")
+  }
+
+  x <- tibble(
+    datum = seq(lubridate::ymd(first_day), lubridate::ymd(last_day), by = .by),
+    yr = lubridate::year(datum),
+    m = lubridate::month(datum, label = T),
+    w = lubridate::week(datum),
+    d = lubridate::day(datum),
+    day = lubridate::wday(datum, label = T)
+  )
+
+  # weekly summary
+  weekly_summary <- x %>%
+    group_by(yr, w) %>%
+    mutate(id = 1:n()) %>%
+    filter(id == 1 | id == 7) %>%
+    mutate(daypart = str_glue("{d} {m}")) %>%
+    summarise(period = str_c(daypart, collapse = " - ")) %>% 
+    ungroup()
+
+  return(list(
+    year_df = x,
+    weekly_summary = weekly_summary
+  ))
+}
+
+# > generate_yearly_dfs()
+# `summarise()` has grouped output by 'yr'. You can override using the `.groups` argument.
+# $year_df
+# # A tibble: 365 x 6
+#    datum         yr m         w     d day  
+#    <date>     <dbl> <ord> <dbl> <int> <ord>
+#  1 2022-01-01  2022 jan       1     1 lör  
+#  2 2022-01-02  2022 jan       1     2 sön  
+#  3 2022-01-03  2022 jan       1     3 mån  
+#  4 2022-01-04  2022 jan       1     4 tis  
+#  5 2022-01-05  2022 jan       1     5 ons  
+#  6 2022-01-06  2022 jan       1     6 tor  
+#  7 2022-01-07  2022 jan       1     7 fre  
+#  8 2022-01-08  2022 jan       2     8 lör  
+#  9 2022-01-09  2022 jan       2     9 sön  
+# 10 2022-01-10  2022 jan       2    10 mån  
+# # ... with 355 more rows
+# 
+# $weekly_summary
+# # A tibble: 53 x 3
+# # Groups:   yr [1]
+#       yr     w Period       
+#    <dbl> <dbl> <chr>          
+#  1  2022     1 1 jan - 7 jan  
+#  2  2022     2 8 jan - 14 jan 
+#  3  2022     3 15 jan - 21 jan
+#  4  2022     4 22 jan - 28 jan
+#  5  2022     5 29 jan - 4 feb 
+#  6  2022     6 5 feb - 11 feb 
+#  7  2022     7 12 feb - 18 feb
+#  8  2022     8 19 feb - 25 feb
+#  9  2022     9 26 feb - 4 mar 
+# 10  2022    10 5 mar - 11 mar 
+# # ... with 43 more rows
+```
+
+Using the function above you can easily generate a calendar:
+
+``` r
+generate_yearly_dfs()$year_df %>% 
+  select(-d,-w) %>% 
+  group_by(yr, m, isow) %>% 
+  pivot_wider(names_from = day, values_from = datum) %>% 
+  select(yr, m, isow, mån:fre, lör, sön)
+
+# # A tibble: 63 x 10
+# # Groups:   yr, m, isow [63]
+#       yr m      isow mån        tis        ons        tor        fre        lör        sön       
+#    <dbl> <ord> <dbl> <date>     <date>     <date>     <date>     <date>     <date>     <date>    
+#  1  2022 jan      52 NA         NA         NA         NA         NA         2022-01-01 2022-01-02
+#  2  2022 jan       1 2022-01-03 2022-01-04 2022-01-05 2022-01-06 2022-01-07 2022-01-08 2022-01-09
+#  3  2022 jan       2 2022-01-10 2022-01-11 2022-01-12 2022-01-13 2022-01-14 2022-01-15 2022-01-16
+#  4  2022 jan       3 2022-01-17 2022-01-18 2022-01-19 2022-01-20 2022-01-21 2022-01-22 2022-01-23
+#  5  2022 jan       4 2022-01-24 2022-01-25 2022-01-26 2022-01-27 2022-01-28 2022-01-29 2022-01-30
+#  6  2022 jan       5 2022-01-31 NA         NA         NA         NA         NA         NA        
+#  7  2022 feb       5 NA         2022-02-01 2022-02-02 2022-02-03 2022-02-04 2022-02-05 2022-02-06
+#  8  2022 feb       6 2022-02-07 2022-02-08 2022-02-09 2022-02-10 2022-02-11 2022-02-12 2022-02-13
+#  9  2022 feb       7 2022-02-14 2022-02-15 2022-02-16 2022-02-17 2022-02-18 2022-02-19 2022-02-20
+# 10  2022 feb       8 2022-02-21 2022-02-22 2022-02-23 2022-02-24 2022-02-25 2022-02-26 2022-02-27
+```
 
 # Check outliers in boxplots:
 

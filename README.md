@@ -1030,7 +1030,8 @@ pxweb::pxweb_interactive() # interactively browse statistical databases and down
 
 # Retrieve data from Polisen open API
 
-Reruns a tibble of useful information. More info here:
+Returns a tibble of useful information from Swedish Police reports given
+a location and date information. More info here:
 <https://polisen.se/om-polisen/om-webbplatsen/oppna-data/api-over-polisens-handelser/>
 
 ``` r

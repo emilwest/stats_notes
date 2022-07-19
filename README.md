@@ -1028,6 +1028,49 @@ library(pxweb)
 pxweb::pxweb_interactive() # interactively browse statistical databases and download px-files via API queries
 ```
 
+# Retrieve data from Polisen open API
+
+Reruns a tibble of useful information. More info here:
+<https://polisen.se/om-polisen/om-webbplatsen/oppna-data/api-over-polisens-handelser/>
+
+``` r
+library(httr)
+library(tidyverse)
+library(jsonlite)
+
+get_polisen <- function(.yr, .month, .location, .day = NULL) {
+  if (str_detect(.month, "0", negate = T) & str_length(.month) == 1) {
+    .month <- str_c("0",.month)
+  }
+  url <- str_glue("https://polisen.se/api/events?DateTime={.yr}-{.month}&locationname={.location}")
+  if (!is.null(.day)) {
+    url <- str_glue("https://polisen.se/api/events?DateTime={.yr}-{.month}-{.day}&locationname={.location}")
+  }
+  resp <- httr::GET(as.character(url))
+
+  if (httr::http_status(resp)$category != "Success") {
+    print(resp)
+    stop("Http status not success")
+  }
+
+  resp %>%
+    content(as = "text") %>%
+     jsonlite::fromJSON() %>%
+     as_tibble()
+}
+
+get_polisen(2022, 06, .location = "Varberg")
+# # A tibble: 6 × 7
+#       id datetime                   name                                        summary url   type  location$name
+#    <int> <chr>                      <chr>                                       <chr>   <chr> <chr> <chr>        
+# 1 348128 2022-06-30 14:25:06 +02:00 30 juni 14:19, Arbetsplatsolycka, Varberg   Arbets… /akt… Arbe… Varberg      
+# 2 348081 2022-06-30 7:44:32 +02:00  30 juni 07:28, Trafikolycka, Varberg        Lastbi… /akt… Traf… Varberg      
+# 3 346006 2022-06-21 18:16:10 +02:00 21 juni 17:40, Trafikolycka, personskada, … På Fas… /akt… Traf… Varberg      
+# 4 344011 2022-06-14 13:12:56 +02:00 14 juni 11:59, Miljöbrott, Varberg          Oljelä… /akt… Milj… Varberg      
+# 5 343872 2022-06-13 12:43:45 +02:00 13 juni 12:27, Arbetsplatsolycka, Varberg   Lärare… /akt… Arbe… Varberg      
+# 6 341728 2022-06-02 11:43:01 +02:00 02 juni 10:31, Trafikolycka, Varberg        Krock … /akt… Traf… Varberg
+```
+
 # Download text files from URL
 
 To do.

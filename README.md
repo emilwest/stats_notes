@@ -1134,7 +1134,7 @@ get_polisen(.date = "2022-06", .location = "Uppsala") %>%
 
 See [code](R/trafikverket_api.R) for more details. Given a coordinate,
 retrieve traffic information within a 10 000 meter radius and display on
-an interactive map. Requieres that you register for an api-key at
+an interactive map. Requires that you register for an api-key at
 Trafikverket. For more info, see
 [here](https://api.trafikinfo.trafikverket.se/).
 

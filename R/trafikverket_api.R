@@ -1,5 +1,6 @@
 library(tidyverse)
 library(httr)
+library(leaflet)
 
 # https://api.trafikinfo.trafikverket.se/Console
 # https://developer.trafiklab.se/node/33092/keys

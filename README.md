@@ -57,27 +57,27 @@ installed.packages()
 
 # Probability distributions in R
 
-| Distribution                   | cdf ![F(x) = P(X \leq x)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;F%28x%29%20%3D%20P%28X%20%5Cleq%20x%29 "F(x) = P(X \leq x)") | Inverse cdf/quantile ![F^{-1}(p) = x](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;F%5E%7B-1%7D%28p%29%20%3D%20x "F^{-1}(p) = x") | pdf ![f(x) = P(X = x)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;f%28x%29%20%3D%20P%28X%20%3D%20x%29 "f(x) = P(X = x)") | Generate a random variable |
-|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------|
-| Beta                           | `pbeta`                                                                                                                                                             | `qbeta`                                                                                                                                                           | `dbeta`                                                                                                                                                    | `rbeta`                    |
-| Binomial                       | `pbinom`                                                                                                                                                            | `qbinom`                                                                                                                                                          | `dbinom`                                                                                                                                                   | `rbinom`                   |
-| Chi-Square                     | `pchisq`                                                                                                                                                            | `qchisq`                                                                                                                                                          | `dchisq`                                                                                                                                                   | `rchisq`                   |
-| Discrete Uniform               | `extraDistr::pdunif`                                                                                                                                                | `extraDistr::qdunif`                                                                                                                                              | `extraDistr::ddunif`                                                                                                                                       | `extraDistr::rdunif`       |
-| Exponential                    | `pexp`                                                                                                                                                              | `qexp`                                                                                                                                                            | `dexp`                                                                                                                                                     | `rexp`                     |
-| F                              | `pf`                                                                                                                                                                | `qf`                                                                                                                                                              | `df`                                                                                                                                                       | `rf`                       |
-| Gamma                          | `pgamma`                                                                                                                                                            | `qgamma`                                                                                                                                                          | `dgamma`                                                                                                                                                   | `rgamma`                   |
-| Geometric                      | `pgeom`                                                                                                                                                             | `qgeom`                                                                                                                                                           | `dgeom`                                                                                                                                                    | `rgeom`                    |
-| Logistic                       | `plogis`                                                                                                                                                            | `qlogis`                                                                                                                                                          | `dlogis`                                                                                                                                                   | `rlogis`                   |
-| Log Normal                     | `plnorm`                                                                                                                                                            | `plnorm`                                                                                                                                                          | `dlnorm`                                                                                                                                                   | `rlnorm`                   |
-| Negative Binomial              | `pnbinom`                                                                                                                                                           | `qnbinom`                                                                                                                                                         | `dnbinom`                                                                                                                                                  | `rnbinom`                  |
-| Normal                         | `pnorm`                                                                                                                                                             | `qnorm`                                                                                                                                                           | `dnorm`                                                                                                                                                    | `rnorm`                    |
-| Poisson                        | `ppois`                                                                                                                                                             | `qpois`                                                                                                                                                           | `dpois`                                                                                                                                                    | `rpois`                    |
-| Student t                      | `pt`                                                                                                                                                                | `qt`                                                                                                                                                              | `dt`                                                                                                                                                       | `rt`                       |
-| Studentized Range              | `ptukey`                                                                                                                                                            | `qtukey`                                                                                                                                                          | \-                                                                                                                                                         | \-                         |
-| Uniform                        | `punif`                                                                                                                                                             | `qunif`                                                                                                                                                           | `dunif`                                                                                                                                                    | `runif`                    |
-| Weibull                        | `pweibull`                                                                                                                                                          | `qweibull`                                                                                                                                                        | `dweibull`                                                                                                                                                 | `rweibull`                 |
-| Wilcoxon Rank Sum Statistic    | `pwilcox`                                                                                                                                                           | `qwilcox`                                                                                                                                                         | `dwilcox`                                                                                                                                                  | `rwilcox`                  |
-| Wilcoxon Signed Rank Statistic | `psignrank`                                                                                                                                                         | `qsignrank`                                                                                                                                                       | `dsignrank`                                                                                                                                                | `rsignrank`                |
+| Distribution                   | cdf *F*(*x*) = *P*(*X* ≤ *x*) | Inverse cdf/quantile *F*<sup> − 1</sup>(*p*) = *x* | pdf *f*(*x*) = *P*(*X* = *x*) | Generate a random variable |
+|--------------------------------|-------------------------------|----------------------------------------------------|-------------------------------|----------------------------|
+| Beta                           | `pbeta`                       | `qbeta`                                            | `dbeta`                       | `rbeta`                    |
+| Binomial                       | `pbinom`                      | `qbinom`                                           | `dbinom`                      | `rbinom`                   |
+| Chi-Square                     | `pchisq`                      | `qchisq`                                           | `dchisq`                      | `rchisq`                   |
+| Discrete Uniform               | `extraDistr::pdunif`          | `extraDistr::qdunif`                               | `extraDistr::ddunif`          | `extraDistr::rdunif`       |
+| Exponential                    | `pexp`                        | `qexp`                                             | `dexp`                        | `rexp`                     |
+| F                              | `pf`                          | `qf`                                               | `df`                          | `rf`                       |
+| Gamma                          | `pgamma`                      | `qgamma`                                           | `dgamma`                      | `rgamma`                   |
+| Geometric                      | `pgeom`                       | `qgeom`                                            | `dgeom`                       | `rgeom`                    |
+| Logistic                       | `plogis`                      | `qlogis`                                           | `dlogis`                      | `rlogis`                   |
+| Log Normal                     | `plnorm`                      | `plnorm`                                           | `dlnorm`                      | `rlnorm`                   |
+| Negative Binomial              | `pnbinom`                     | `qnbinom`                                          | `dnbinom`                     | `rnbinom`                  |
+| Normal                         | `pnorm`                       | `qnorm`                                            | `dnorm`                       | `rnorm`                    |
+| Poisson                        | `ppois`                       | `qpois`                                            | `dpois`                       | `rpois`                    |
+| Student t                      | `pt`                          | `qt`                                               | `dt`                          | `rt`                       |
+| Studentized Range              | `ptukey`                      | `qtukey`                                           | \-                            | \-                         |
+| Uniform                        | `punif`                       | `qunif`                                            | `dunif`                       | `runif`                    |
+| Weibull                        | `pweibull`                    | `qweibull`                                         | `dweibull`                    | `rweibull`                 |
+| Wilcoxon Rank Sum Statistic    | `pwilcox`                     | `qwilcox`                                          | `dwilcox`                     | `rwilcox`                  |
+| Wilcoxon Signed Rank Statistic | `psignrank`                   | `qsignrank`                                        | `dsignrank`                   | `rsignrank`                |
 
 For more distributions not included in base R, see the package
 `extraDistr` .
@@ -145,9 +145,9 @@ p_X <- df %>%
 
 The cdf and the inverse cdf are related by
 
-![p = F(x), 0 \leq p \leq 1](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;p%20%3D%20F%28x%29%2C%200%20%5Cleq%20p%20%5Cleq%201 "p = F(x), 0 \leq p \leq 1")
+*p* = *F*(*x*), 0 ≤ *p* ≤ 1
 
-![x = F^{-1}(p)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;x%20%3D%20F%5E%7B-1%7D%28p%29 "x = F^{-1}(p)")
+*x* = *F*<sup> − 1</sup>(*p*)
 
 I.e. given a number (probability) between 0 and 1, return the p-th
 quantile, i.e. the x-value on the plot. Consider also the difference
@@ -502,8 +502,8 @@ for (i in seq_along(x)) {
 
 When importing dates from Excel into R, dates are represented as days
 since 1899-12-30. Usually this is done automatically, but in some cases
-there may be text in the columns, then you can use this method (text -\>
-NA):
+there may be text in the columns, then you can use this method (text
+-&gt; NA):
 
 ``` r
 as.Date(44301, origin = "1899-12-30")
@@ -683,7 +683,7 @@ res$SOURCE <- do.call(paste, c(x, sep = " # ")) # paste all cols together, separ
 res <- res %>% select(-setdiff(source_cols, "SOURCE")) # remove all other columns 
 ```
 
-# read_delim : read any character delimited file
+# read\_delim : read any character delimited file
 
 This is useful, especially since csv files may in fact be separated with
 semicolon (;) and not comma, which may be due to the locale and OS used
@@ -723,7 +723,7 @@ df %>%
 
 ## Self join / cross-join
 
-Table band_members:
+Table band\_members:
 
 | name | band    |
 |------|---------|
@@ -984,8 +984,8 @@ close(fileConn)
 
 ### Tab delimited
 
-Save query -\> Update the query with a fixed starting time point and the
-new time periods -\> Tab delimited with heading.
+Save query -&gt; Update the query with a fixed starting time point and
+the new time periods -&gt; Tab delimited with heading.
 
 This may generate something like this:
 `https://pxweb.nhwstat.org:443/Prod/sq/0978ea50-2b97-4a48-bc58-d4a71806336e`.
@@ -1031,7 +1031,7 @@ pxweb::pxweb_interactive() # interactively browse statistical databases and down
 # Retrieve data from Polisen open API
 
 Returns a tibble of useful information from Swedish Police reports given
-a location and date information. More info here:
+location, date or event. More info here about what you can do:
 <https://polisen.se/om-polisen/om-webbplatsen/oppna-data/api-over-polisens-handelser/>
 
 ``` r
@@ -1039,37 +1039,46 @@ library(httr)
 library(tidyverse)
 library(jsonlite)
 
-get_polisen <- function(.yr, .month, .location, .day = NULL) {
-  if (str_detect(.month, "0", negate = T) & str_length(.month) == 1) {
-    .month <- str_c("0",.month)
+get_polisen <- function(.date = NULL, .location=NULL, .events = NULL) {
+  base_url <- "https://polisen.se/api/events?"
+  url <- base_url
+  if (!is.null(.events)) {
+    events <- str_c(.events, collapse = ";")
+    url <- str_c(base_url, "type=", events)
   }
-  url <- str_glue("https://polisen.se/api/events?DateTime={.yr}-{.month}&locationname={.location}")
-  if (!is.null(.day)) {
-    url <- str_glue("https://polisen.se/api/events?DateTime={.yr}-{.month}-{.day}&locationname={.location}")
+  if (!is.null(.date)) {
+    url <- str_c(url, "&DateTime=", .date)
   }
-  resp <- httr::GET(as.character(url))
+  if (!is.null(.location)) {
+    locations <- str_c(.location, collapse = ";")
+    url <- str_c(url, "&locationname=", locations)
+  }
 
+  resp <- httr::GET(as.character(url))
+  
   if (httr::http_status(resp)$category != "Success") {
     print(resp)
     stop("Http status not success")
   }
-
+  
   resp %>%
     content(as = "text") %>%
-     jsonlite::fromJSON() %>%
-     as_tibble()
+    jsonlite::fromJSON() %>%
+    as_tibble()
 }
 
-get_polisen(2022, 06, .location = "Varberg")
-# # A tibble: 6 × 7
-#       id datetime                   name                                        summary url   type  location$name
-#    <int> <chr>                      <chr>                                       <chr>   <chr> <chr> <chr>        
-# 1 348128 2022-06-30 14:25:06 +02:00 30 juni 14:19, Arbetsplatsolycka, Varberg   Arbets… /akt… Arbe… Varberg      
-# 2 348081 2022-06-30 7:44:32 +02:00  30 juni 07:28, Trafikolycka, Varberg        Lastbi… /akt… Traf… Varberg      
-# 3 346006 2022-06-21 18:16:10 +02:00 21 juni 17:40, Trafikolycka, personskada, … På Fas… /akt… Traf… Varberg      
-# 4 344011 2022-06-14 13:12:56 +02:00 14 juni 11:59, Miljöbrott, Varberg          Oljelä… /akt… Milj… Varberg      
-# 5 343872 2022-06-13 12:43:45 +02:00 13 juni 12:27, Arbetsplatsolycka, Varberg   Lärare… /akt… Arbe… Varberg      
-# 6 341728 2022-06-02 11:43:01 +02:00 02 juni 10:31, Trafikolycka, Varberg        Krock … /akt… Traf… Varberg
+# get all events:
+get_polisen()
+# Filter by a vector of events
+get_polisen(.date = "2022-06", .location = "Varberg", .events = c("Rån", "Trafikolycka"))
+# filter by a vector of locations
+get_polisen(.date = "2022-04", .location = c("Varberg","Stockholm"))
+# filter by year, year-month or year-month-day:
+get_polisen(.date = "2022-06-05", .location = "Linköping")
+# A tibble: 1 x 7
+# id datetime                   name         summary          url              type   location$name $gps   
+# <int> <chr>                      <chr>        <chr>            <chr>            <chr>  <chr>         <chr>  
+#   1 342083 2022-06-05 11:31:12 +02:00 05 juni 11:~ Trafikant uppmä~ /aktuellt/hande~ Rattf~ Linköping     58.410
 ```
 
 # Download text files from URL
@@ -1940,8 +1949,7 @@ reshape2::melt(tmp, id.vars = "Procedure") %>%
 Code - a sequence of symbols/constants/calls that will return a result
 if evaluated. Code can be:
 
-![i](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;i "i")
-Evaluated immediately (Standard Eval), (ii) Quoted to use later
+*i* Evaluated immediately (Standard Eval), (ii) Quoted to use later
 (Non-Standard Eval).
 
 ### Quote contents as a quosure
@@ -2038,11 +2046,11 @@ tmp_n2 <- tmp_n %>%
 
 Consider the dataframe df:
 
-| matrix | filePathIn  |
-|--------|-------------|
-| A      | my_dir/A.px |
-| B      | my_dir/B.px |
-| C      | my_dir/C.px |
+| matrix | filePathIn   |
+|--------|--------------|
+| A      | my\_dir/A.px |
+| B      | my\_dir/B.px |
+| C      | my\_dir/C.px |
 
 ``` r
 inFile_n <- df %>% group_by(matrix) %>% nest()
@@ -2056,21 +2064,21 @@ inFile_alla <- inFile_n %>%
 
 where:
 
-inFile_n:
+inFile\_n:
 
-| matrix \<chr\> | data \<list\>        |
-|----------------|----------------------|
-| A              | \<tibble \[1 x 2\]\> |
-| B              | \<tibble \[1 x 2\]\> |
-| C              | \<tibble \[1 x 2\]\> |
+| matrix &lt;chr&gt; | data &lt;list&gt;        |
+|--------------------|--------------------------|
+| A                  | &lt;tibble \[1 x 2\]&gt; |
+| B                  | &lt;tibble \[1 x 2\]&gt; |
+| C                  | &lt;tibble \[1 x 2\]&gt; |
 
-inFile_alla:
+inFile\_alla:
 
-| matrix \<chr\> | data \<list\>        | rrr \<list\>               |
-|----------------|----------------------|----------------------------|
-| A              | \<tibble \[1 x 2\]\> | \<tibble \[27,000 x 7\]\>  |
-| B              | \<tibble \[1 x 2\]\> | \<tibble \[25,200 x 6\]\>  |
-| C              | \<tibble \[1 x 2\]\> | \<tibble \[126,000 x 7\]\> |
+| matrix &lt;chr&gt; | data &lt;list&gt;        | rrr &lt;list&gt;               |
+|--------------------|--------------------------|--------------------------------|
+| A                  | &lt;tibble \[1 x 2\]&gt; | &lt;tibble \[27,000 x 7\]&gt;  |
+| B                  | &lt;tibble \[1 x 2\]&gt; | &lt;tibble \[25,200 x 6\]&gt;  |
+| C                  | &lt;tibble \[1 x 2\]&gt; | &lt;tibble \[126,000 x 7\]&gt; |
 
 # Stringr string manipulation
 

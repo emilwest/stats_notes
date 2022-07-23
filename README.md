@@ -1037,9 +1037,10 @@ location, date or event. More info here about what you can do:
 ``` r
 library(httr)
 library(tidyverse)
+library(lubridate)
 library(jsonlite)
 
-get_polisen <- function(.date = NULL, .location=NULL, .events = NULL) {
+get_polisen <- function(.date = NULL, .location=NULL, .events = NULL, .preprocess = T) {
   base_url <- "https://polisen.se/api/events?"
   url <- base_url
   if (!is.null(.events)) {
@@ -1061,10 +1062,31 @@ get_polisen <- function(.date = NULL, .location=NULL, .events = NULL) {
     stop("Http status not success")
   }
   
-  resp %>%
+  df <- resp %>%
     content(as = "text") %>%
     jsonlite::fromJSON() %>%
     as_tibble()
+  
+  if (.preprocess & nrow(df) != 0) {
+    df <- df %>% 
+      mutate(datetime = lubridate::as_datetime(datetime, tz = "Europe/Stockholm"),
+             url = str_glue("https://polisen.se{url}"),
+             summary2 = str_glue("{summary}\n<a href=\"{url}\">Mer info</a>")
+      )
+    # separate coordinates into two columns, rename duplicate column name
+    df$location <- df$location %>% 
+      as_tibble() %>% 
+      separate(gps, c("lat", "lng"), sep = ",", convert = T) %>% 
+      dplyr::rename(location_name = name) %>% 
+      # add some noise to coordinates, since all coordinates for a given location are the same.
+      # otherwise the points will overlap on the map.
+      # the coordinates only show the coordinate of an area, never an exact location
+      mutate(lat = jitter(lat), lng = jitter(lng) )
+    
+    df <- df %>%
+      unnest(location)
+  } 
+  return(df)
 }
 
 # get all events:
@@ -1075,10 +1097,53 @@ get_polisen(.date = "2022-06", .location = "Varberg", .events = c("Rån", "Trafi
 get_polisen(.date = "2022-04", .location = c("Varberg","Stockholm"))
 # filter by year, year-month or year-month-day:
 get_polisen(.date = "2022-06-05", .location = "Linköping")
-# A tibble: 1 x 7
-# id datetime                   name         summary          url              type   location$name $gps   
-# <int> <chr>                      <chr>        <chr>            <chr>            <chr>  <chr>         <chr>  
-#   1 342083 2022-06-05 11:31:12 +02:00 05 juni 11:~ Trafikant uppmä~ /aktuellt/hande~ Rattf~ Linköping     58.410
+# # A tibble: 1 x 9
+# id datetime            name                                  summary          url                 type   location_name   lat   lng
+# <int> <dttm>              <chr>                                 <chr>            <glue>              <chr>  <chr>         <dbl> <dbl>
+# 342083 2022-06-05 11:31:12 05 juni 11:31, Rattfylleri, Linköping Trafikant uppmä~ https://polisen.se~ Rattf~ Linköping      58.4  15.6
+```
+
+## Interactive plot of police report locations from API
+
+The following code will plot an interactive map of all the coordinates
+retrieved via the Polisen API function, with popups containing
+information and links for more information.
+
+Note that the coordinates from Polisen only show the coordinates of a
+city or area, not an exact location. Within `get_polisen()`, numeric
+noise is added to the coordinates in order to be able show all
+coordinates on a plot (otherwise they will all overlap for a given
+area). In order to find out the exact location or area within a city,
+you would have to click on ‘Mer info’ where it will probably be given in
+more detail in the police report.
+
+![Stats notes](img/polisen_plot2.png)
+
+``` r
+# install.packages("leaflet")
+library(leaflet)
+library(tidyverse)
+
+get_polisen(.date = "2022-06", .location = "Uppsala") %>% 
+  leaflet() %>%
+  addTiles() %>%
+  addMarkers(lng = ~lng, lat = ~lat, popup = ~summary2, label = ~name)
+```
+
+# Retrieve Swedish traffic info from Trafikverket API
+
+See [code](R/trafikverket_api.R) for more details. Given a coordinate,
+retrieve traffic information within a 10 000 meter radius and display on
+an interactive map. Requieres that you register for an api-key at
+Trafikverket. For more info, see
+[here](https://api.trafikinfo.trafikverket.se/).
+
+![Stats notes](img/trafikverket_api_plot.png)
+
+``` r
+x <- get_traffic_info(.x = "6398983", .y = "320011")
+x %>% 
+  plot_traffic()
 ```
 
 # Download text files from URL

@@ -1109,6 +1109,18 @@ x %>%
 
 # Download text files from URL
 
+# Data exploration
+
+## Count number of missing for all columns in dataframe
+
+```{r}
+library(tidyverse)
+map_df(iris, ~sum(is.na(.))) %>% pivot_longer(everything(), names_to = "Variable", values_to = "n")
+```
+
+
+
+
 # Date handling
 
 todo: look into POSIXct vs dates.

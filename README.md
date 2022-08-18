@@ -1028,6 +1028,22 @@ library(pxweb)
 pxweb::pxweb_interactive() # interactively browse statistical databases and download px-files via API queries
 ```
 
+# Coordinates and maps
+
+## Convert SWEREF89 to WGS84
+
+``` r
+convert_sweref99_to_wgs84 <- function(.x, .y){
+  # SWEREF 99
+  sweref99 <- sf::st_sfc(sf::st_point(c(.x, .y), dim = "XY"), crs = 3006)
+  wgs84 <- sf::st_transform(sweref99, crs = 4326)
+  sf::st_coordinates(wgs84)
+}
+convert_sweref99_to_wgs84(6398983, 320011)
+#          X       Y
+# 1 61.74469 1.97728
+```
+
 # Retrieve data from Polisen open API
 
 Returns a tibble of useful information from Swedish Police reports given
@@ -1214,10 +1230,17 @@ of year(s), you get dataframes with daily and weekly information in your
 locale. Examples: `generate_yearly_dfs()`, `generate_yearly_dfs(2022)`,
 `generate_yearly_dfs(2022:2025)`.
 
+Note that the weekly summary filters away week 53 (if it exists), and
+weeks overlapping from previous year, i.e. the first week on monday may
+not start on January 1st.
+
 ``` r
+library(lubridate)
+library(tidyverse)
+
 generate_yearly_dfs <- function(.yr = lubridate::year(lubridate::now()),
                                 .by = "1 days") {
-
+  
   if (length(.yr) == 1) {
     first_day <- str_glue("{.yr}-01-01")
     last_day <- str_glue("{.yr}-12-31")
@@ -1225,30 +1248,35 @@ generate_yearly_dfs <- function(.yr = lubridate::year(lubridate::now()),
     first_day <- str_glue("{first(.yr)}-01-01")
     last_day <- str_glue("{last(.yr)}-12-31")
   }
-
+  
   x <- tibble(
     datum = seq(lubridate::ymd(first_day), lubridate::ymd(last_day), by = .by),
     yr = lubridate::year(datum),
     m = lubridate::month(datum, label = T),
-    w = lubridate::week(datum),
+    w = lubridate::isoweek(datum), # week 1 starts on Jan 1st
+    isow = lubridate::isoweek(datum), # week 1 starts on first Monday of the year 
     d = lubridate::day(datum),
     day = lubridate::wday(datum, label = T)
-  )
-
+  ) 
+  
   # weekly summary
   weekly_summary <- x %>%
-    group_by(yr, w) %>%
-    mutate(id = 1:n()) %>%
-    filter(id == 1 | id == 7) %>%
+    filter(!(m == "jan" & w == 52)) %>% 
+    filter(!(w == 53)) %>% 
+    group_by(yr,  isow) %>%
+    mutate(id = row_number()) %>%
+    filter(datum == min(datum) | datum == max(datum)) %>%
     mutate(daypart = str_glue("{d} {m}")) %>%
-    summarise(period = str_c(daypart, collapse = " - ")) %>% 
+    summarise(period = str_c(daypart, collapse = " - ")) %>%
     ungroup()
-
+  
+  
   return(list(
     year_df = x,
     weekly_summary = weekly_summary
   ))
 }
+
 
 # > generate_yearly_dfs()
 # `summarise()` has grouped output by 'yr'. You can override using the `.groups` argument.

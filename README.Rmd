@@ -996,6 +996,27 @@ library(pxweb)
 pxweb::pxweb_interactive() # interactively browse statistical databases and download px-files via API queries
 ```
 
+
+# Coordinates and maps
+
+## Convert SWEREF89 to WGS84
+
+```{r}
+convert_sweref99_to_wgs84 <- function(.x, .y){
+  # SWEREF 99
+  sweref99 <- sf::st_sfc(sf::st_point(c(.x, .y), dim = "XY"), crs = 3006)
+  wgs84 <- sf::st_transform(sweref99, crs = 4326)
+  sf::st_coordinates(wgs84)
+}
+convert_sweref99_to_wgs84(6398983, 320011)
+#          X       Y
+# 1 61.74469 1.97728
+```
+
+
+
+
+
 # Retrieve data from Polisen open API
 
 Returns a tibble of useful information from Swedish Police reports given location, date or event.

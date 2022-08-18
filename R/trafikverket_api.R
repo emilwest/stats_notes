@@ -116,9 +116,11 @@ get_traffic_info <- function(.x,
     # extract latitude/longitude and create summary box for each coordinate
     res <- res %>% 
       mutate(WGS84 = str_replace_all(WGS84, "^.*\\((.*)\\)$", "\\1") ) %>% 
+      mutate(StartTime = lubridate::as_date(StartTime)) %>% 
       mutate(messagec = ifelse(MessageCode == MessageType, MessageCode, str_glue("{MessageType} - {MessageCode}"))) %>% 
       mutate(content = str_glue("<b>{ifelse(!is.na(RoadNumber),RoadNumber, '')} 
   {messagec} </b></br>
+  Started: {StartTime} </b></br>
                             {SeverityText}. 
                             {ifelse(!is.na(TrafficRestrictionType),TrafficRestrictionType,'')}
                             {ifelse(!is.na(TemporaryLimit),TemporaryLimit,'')}</br>
@@ -135,18 +137,46 @@ get_traffic_info <- function(.x,
   return(res)
 }
 
-plot_traffic <- function(.data, .icondim = 16) {
+convert_sweref99_to_wgs84 <- function(.x, .y){
+  # SWEREF 99
+  sweref99 <- sf::st_sfc(sf::st_point(c(.x, .y), dim = "XY"), crs = 3006)
+  wgs84 <- sf::st_transform(sweref99, crs = 4326)
+  sf::st_coordinates(wgs84)
+}
+convert_sweref99_to_wgs84(6398983, 320011)[1]
+
+
+plot_traffic <- function(.data, .x, .y, .icondim = 16) {
+  a <- convert_sweref99_to_wgs84(.x = .x, .y = .y) %>% as_tibble()
+  
   show_icons <- 
     leaflet::icons(iconUrl = .data$Icon_url, iconWidth = .icondim, iconHeight = .icondim, iconAnchorX = 0, iconAnchorY = 0)
   
-  .data %>% 
     leaflet() %>%
     addTiles() %>%
-    addMarkers(lng = ~lng, lat = ~lat, popup = ~content, label = ~Message, icon = show_icons)
+    addMarkers(data = .data, lng = ~lng, lat = ~lat, popup = ~content, label = ~Message, icon = show_icons) #%>% 
+    #addMarkers(data = a, lng = ~X, lat = ~Y) 
 }
-
 
 x <- get_traffic_info(.x = "6398983", .y = "320011")
 x %>% 
-  plot_traffic()
+  plot_traffic(.x = 6398983, .y = 320011)
+
+avkontr <- "L:/Myndigheter/Trafikverket/TRV_5161_Skattning hastighetsindex/Document/Memo/Månadsrapport-Avvikelsekontroll_2022.xlsx"
+
+av <- readxl::read_excel(avkontr)
+
+av <- av %>% 
+  filter(Månad == "Jul")
+
+av
+
+x[1,]$SWEREF99TM
+x[1,]$lng
+x[1,]$lat
+# 313975.98 6405213.04
+# lng 11.9  lat 57.8
+
+convert_sweref99_to_wgs84(313975.98, 6405213.04) %>% as_tibble()
+
 

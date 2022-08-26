@@ -952,6 +952,16 @@ px
 fileConn <- file("testpx.px")
 writeLines(px, fileConn)
 close(fileConn)
+
+
+# Alternatively, load it directly in R by saving to temporary file path
+txtPath <- tempfile(fileext = ".px")
+writeLines(text = px, con = txtPath)
+close(txtPath)
+library(pxR)
+d <- pxR::read.px(txtPath, encoding = "iso-8859-15") %>% as_tibble()
+
+
 ```
 
 ### Tab delimited

@@ -57,27 +57,27 @@ installed.packages()
 
 # Probability distributions in R
 
-| Distribution                   | cdf ![F(x) = P(X \leq x)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;F%28x%29%20%3D%20P%28X%20%5Cleq%20x%29 "F(x) = P(X \leq x)") | Inverse cdf/quantile ![F^{-1}(p) = x](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;F%5E%7B-1%7D%28p%29%20%3D%20x "F^{-1}(p) = x") | pdf ![f(x) = P(X = x)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;f%28x%29%20%3D%20P%28X%20%3D%20x%29 "f(x) = P(X = x)") | Generate a random variable |
-|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------|
-| Beta                           | `pbeta`                                                                                                                                                             | `qbeta`                                                                                                                                                           | `dbeta`                                                                                                                                                    | `rbeta`                    |
-| Binomial                       | `pbinom`                                                                                                                                                            | `qbinom`                                                                                                                                                          | `dbinom`                                                                                                                                                   | `rbinom`                   |
-| Chi-Square                     | `pchisq`                                                                                                                                                            | `qchisq`                                                                                                                                                          | `dchisq`                                                                                                                                                   | `rchisq`                   |
-| Discrete Uniform               | `extraDistr::pdunif`                                                                                                                                                | `extraDistr::qdunif`                                                                                                                                              | `extraDistr::ddunif`                                                                                                                                       | `extraDistr::rdunif`       |
-| Exponential                    | `pexp`                                                                                                                                                              | `qexp`                                                                                                                                                            | `dexp`                                                                                                                                                     | `rexp`                     |
-| F                              | `pf`                                                                                                                                                                | `qf`                                                                                                                                                              | `df`                                                                                                                                                       | `rf`                       |
-| Gamma                          | `pgamma`                                                                                                                                                            | `qgamma`                                                                                                                                                          | `dgamma`                                                                                                                                                   | `rgamma`                   |
-| Geometric                      | `pgeom`                                                                                                                                                             | `qgeom`                                                                                                                                                           | `dgeom`                                                                                                                                                    | `rgeom`                    |
-| Logistic                       | `plogis`                                                                                                                                                            | `qlogis`                                                                                                                                                          | `dlogis`                                                                                                                                                   | `rlogis`                   |
-| Log Normal                     | `plnorm`                                                                                                                                                            | `plnorm`                                                                                                                                                          | `dlnorm`                                                                                                                                                   | `rlnorm`                   |
-| Negative Binomial              | `pnbinom`                                                                                                                                                           | `qnbinom`                                                                                                                                                         | `dnbinom`                                                                                                                                                  | `rnbinom`                  |
-| Normal                         | `pnorm`                                                                                                                                                             | `qnorm`                                                                                                                                                           | `dnorm`                                                                                                                                                    | `rnorm`                    |
-| Poisson                        | `ppois`                                                                                                                                                             | `qpois`                                                                                                                                                           | `dpois`                                                                                                                                                    | `rpois`                    |
-| Student t                      | `pt`                                                                                                                                                                | `qt`                                                                                                                                                              | `dt`                                                                                                                                                       | `rt`                       |
-| Studentized Range              | `ptukey`                                                                                                                                                            | `qtukey`                                                                                                                                                          | \-                                                                                                                                                         | \-                         |
-| Uniform                        | `punif`                                                                                                                                                             | `qunif`                                                                                                                                                           | `dunif`                                                                                                                                                    | `runif`                    |
-| Weibull                        | `pweibull`                                                                                                                                                          | `qweibull`                                                                                                                                                        | `dweibull`                                                                                                                                                 | `rweibull`                 |
-| Wilcoxon Rank Sum Statistic    | `pwilcox`                                                                                                                                                           | `qwilcox`                                                                                                                                                         | `dwilcox`                                                                                                                                                  | `rwilcox`                  |
-| Wilcoxon Signed Rank Statistic | `psignrank`                                                                                                                                                         | `qsignrank`                                                                                                                                                       | `dsignrank`                                                                                                                                                | `rsignrank`                |
+| Distribution                   | cdf $F(x) = P(X \leq x)$ | Inverse cdf/quantile $F^{-1}(p) = x$ | pdf $f(x) = P(X = x)$ | Generate a random variable |
+|--------------------------------|--------------------------|--------------------------------------|-----------------------|----------------------------|
+| Beta                           | `pbeta`                  | `qbeta`                              | `dbeta`               | `rbeta`                    |
+| Binomial                       | `pbinom`                 | `qbinom`                             | `dbinom`              | `rbinom`                   |
+| Chi-Square                     | `pchisq`                 | `qchisq`                             | `dchisq`              | `rchisq`                   |
+| Discrete Uniform               | `extraDistr::pdunif`     | `extraDistr::qdunif`                 | `extraDistr::ddunif`  | `extraDistr::rdunif`       |
+| Exponential                    | `pexp`                   | `qexp`                               | `dexp`                | `rexp`                     |
+| F                              | `pf`                     | `qf`                                 | `df`                  | `rf`                       |
+| Gamma                          | `pgamma`                 | `qgamma`                             | `dgamma`              | `rgamma`                   |
+| Geometric                      | `pgeom`                  | `qgeom`                              | `dgeom`               | `rgeom`                    |
+| Logistic                       | `plogis`                 | `qlogis`                             | `dlogis`              | `rlogis`                   |
+| Log Normal                     | `plnorm`                 | `plnorm`                             | `dlnorm`              | `rlnorm`                   |
+| Negative Binomial              | `pnbinom`                | `qnbinom`                            | `dnbinom`             | `rnbinom`                  |
+| Normal                         | `pnorm`                  | `qnorm`                              | `dnorm`               | `rnorm`                    |
+| Poisson                        | `ppois`                  | `qpois`                              | `dpois`               | `rpois`                    |
+| Student t                      | `pt`                     | `qt`                                 | `dt`                  | `rt`                       |
+| Studentized Range              | `ptukey`                 | `qtukey`                             | \-                    | \-                         |
+| Uniform                        | `punif`                  | `qunif`                              | `dunif`               | `runif`                    |
+| Weibull                        | `pweibull`               | `qweibull`                           | `dweibull`            | `rweibull`                 |
+| Wilcoxon Rank Sum Statistic    | `pwilcox`                | `qwilcox`                            | `dwilcox`             | `rwilcox`                  |
+| Wilcoxon Signed Rank Statistic | `psignrank`              | `qsignrank`                          | `dsignrank`           | `rsignrank`                |
 
 For more distributions not included in base R, see the package
 `extraDistr` .
@@ -145,9 +145,9 @@ p_X <- df %>%
 
 The cdf and the inverse cdf are related by
 
-![p = F(x), 0 \leq p \leq 1](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;p%20%3D%20F%28x%29%2C%200%20%5Cleq%20p%20%5Cleq%201 "p = F(x), 0 \leq p \leq 1")
+$p = F(x), 0 \leq p \leq 1$
 
-![x = F^{-1}(p)](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;x%20%3D%20F%5E%7B-1%7D%28p%29 "x = F^{-1}(p)")
+$x = F^{-1}(p)$
 
 I.e. given a number (probability) between 0 and 1, return the p-th
 quantile, i.e. the x-value on the plot. Consider also the difference
@@ -980,6 +980,14 @@ px
 fileConn <- file("testpx.px")
 writeLines(px, fileConn)
 close(fileConn)
+
+
+# Alternatively, load it directly in R by saving to temporary file path
+txtPath <- tempfile(fileext = ".px")
+writeLines(text = px, con = txtPath)
+close(txtPath)
+library(pxR)
+d <- pxR::read.px(txtPath, encoding = "iso-8859-15") %>% as_tibble()
 ```
 
 ### Tab delimited
@@ -2087,8 +2095,7 @@ reshape2::melt(tmp, id.vars = "Procedure") %>%
 Code - a sequence of symbols/constants/calls that will return a result
 if evaluated. Code can be:
 
-![i](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;i "i")
-Evaluated immediately (Standard Eval), (ii) Quoted to use later
+$i$ Evaluated immediately (Standard Eval), (ii) Quoted to use later
 (Non-Standard Eval).
 
 ### Quote contents as a quosure

@@ -95,3 +95,90 @@ ames_test  <-  testing(ames_split)
 # Ch 6 Fitting Models with parsnip
 
 
+
+linear_reg() %>% set_engine("lm")%>% translate()
+linear_reg() %>% set_engine("stan")%>% translate()
+linear_reg(penalty = 1) %>% set_engine("glmnet")%>% translate()
+
+
+lm_model <- 
+  linear_reg() %>% 
+  set_engine("lm")
+lm_model
+
+lm_form_fit <- 
+  lm_model %>% 
+  # Recall that Sale_Price has been pre-logged
+  fit(Sale_Price ~ Longitude + Latitude, data = ames_train)
+
+lm_xy_fit <- 
+  lm_model %>% 
+  fit_xy(
+    x = ames_train %>% select(Longitude, Latitude),
+    y = ames_train %>% pull(Sale_Price)
+  )
+
+lm_xy_fit
+
+
+# Random forest
+
+rand_forest(trees = 1000, min_n = 5) %>% 
+  set_engine("ranger") %>% 
+  set_mode("regression") %>% 
+  translate()
+
+lm_form_fit %>% extract_fit_engine() %>% vcov()
+
+lm_form_fit %>% extract_fit_engine() %>% plot
+
+model_res <- 
+  lm_form_fit %>% 
+  extract_fit_engine() %>% 
+  summary()
+
+model_res
+param_est <- coef(model_res)
+class(param_est)
+param_est
+
+# better way to summarise model fit:
+tidy(model_res)
+
+# Predictions 
+
+ames_test_small <- ames_test %>% slice(1:5)
+predict(lm_form_fit, new_data = ames_test_small)
+
+
+ames_test_small %>% 
+  select(Sale_Price) %>% 
+  bind_cols(predict(lm_form_fit, ames_test_small)) %>% 
+  # Add 95% prediction intervals to the results:
+  bind_cols(predict(lm_form_fit, ames_test_small, type = "pred_int")) 
+
+
+
+tree_model <- 
+  decision_tree(min_n = 2) %>% 
+  set_engine("rpart") %>% 
+  set_mode("regression")
+
+tree_fit <- 
+  tree_model %>% 
+  fit(Sale_Price ~ Longitude + Latitude, data = ames_train)
+
+ames_test_small %>% 
+  select(Sale_Price) %>% 
+  bind_cols(predict(tree_fit, ames_test_small))
+
+parsnip_addin()
+
+
+# ---------------------------------------------------------------------------------
+# Ch 7 A Model Workflow 
+
+
+
+
+

@@ -146,37 +146,146 @@ convert_sweref99_to_wgs84 <- function(.x, .y){
 convert_sweref99_to_wgs84(6398983, 320011)[1]
 
 
-plot_traffic <- function(.data, .x, .y, .icondim = 16) {
-  a <- convert_sweref99_to_wgs84(.x = .x, .y = .y) %>% as_tibble()
+plot_traffic <- function(.data, x, y, .icondim = 16) {
+  a <- convert_sweref99_to_wgs84(.x = x, .y = y) %>% as_tibble()
   
   show_icons <- 
     leaflet::icons(iconUrl = .data$Icon_url, iconWidth = .icondim, iconHeight = .icondim, iconAnchorX = 0, iconAnchorY = 0)
   
+  if (nrow(.data) != 0) {
     leaflet() %>%
     addTiles() %>%
-    addMarkers(data = .data, lng = ~lng, lat = ~lat, popup = ~content, label = ~Message, icon = show_icons) #%>% 
-    #addMarkers(data = a, lng = ~X, lat = ~Y) 
+    addMarkers(data = .data, lng = ~lng, lat = ~lat, popup = ~content, label = ~Message, icon = show_icons) %>% 
+    addMarkers(data = a, lng = ~X, lat = ~Y, popup = "Slang") 
+  } else {
+    leaflet() %>%
+      addTiles() %>%
+      addMarkers(data = a, lng = ~X, lat = ~Y, popup = "Slang") 
+  }
+    
 }
 
 x <- get_traffic_info(.x = "6398983", .y = "320011")
+
+
 x %>% 
-  plot_traffic(.x = 6398983, .y = 320011)
+  plot_traffic(313975.98, 6405213.04)
 
 avkontr <- "L:/Myndigheter/Trafikverket/TRV_5161_Skattning hastighetsindex/Document/Memo/Månadsrapport-Avvikelsekontroll_2022.xlsx"
 
-av <- readxl::read_excel(avkontr)
+av1 <- readxl::read_excel(avkontr)
 
-av <- av %>% 
+av <- av1 %>% 
   filter(Månad == "Jul")
 
-av
+av1 %>% 
+  filter(Månad != "Jul" & !is.na(Kommentar))
 
 x[1,]$SWEREF99TM
 x[1,]$lng
 x[1,]$lat
 # 313975.98 6405213.04
 # lng 11.9  lat 57.8
-
 convert_sweref99_to_wgs84(313975.98, 6405213.04) %>% as_tibble()
+
+leaflet() %>% 
+  addTiles() %>% 
+  addMarkers(data = convert_sweref99_to_wgs84(313975.98, 6405213.04) %>% as_tibble(),
+             lat = ~Y, lng = ~X, popup = "Slang")
+
+
+# -----
+
+
+
+library(shiny)
+
+
+radio_choices <- av$PunktNr %>% unique %>%  set_names()
+
+
+# Define UI for application that draws a histogram
+ui <- fluidPage(
+  
+  # Application title
+  titlePanel("Hello World"),
+  
+  # Sidebar with a slider input for number of bins 
+  sidebarLayout(
+    sidebarPanel(
+      radioButtons("radio", 
+                   h3("Punktnummer"),
+                   choices = radio_choices, selected = 9539)
+    ),
+    
+    # Show a plot of the generated distribution
+    mainPanel(
+      textOutput("txt"),
+      tableOutput("table"),
+      leafletOutput("plotSlang"),
+      leafletOutput("trafikPlot")
+    )
+  )
+)
+
+# Define server logic required to draw a histogram
+server <- function(input, output) {
+  
+  output$txt <- renderText({
+    x <- av %>%
+      filter(PunktNr == input$radio)
+    str_glue("You have selected {input$radio}
+             Vägnr: {x$VägNr} 
+             Län: {x$Län}
+             Hastighet: {x$Hastighet}
+             ÅDT: {x$ÅDT}
+             
+             ")
+  })
+  
+  output$table <- renderTable({
+    av1 %>% 
+      filter(Månad != "Jul" & !is.na(Kommentar) & PunktNr == input$radio) %>% 
+      select(Månad, Kommentar)
+  })
+  
+  output$plotSlang <- renderLeaflet({
+    x <- av %>%
+      filter(PunktNr == input$radio)
+    
+    leaflet() %>% 
+      addTiles() %>% 
+      addMarkers(data = convert_sweref99_to_wgs84(x$`Y-koord`, x$`X-koord`) %>% as_tibble(),
+                 lat = ~Y, lng = ~X, popup = "Slang")
+  })
+  
+  output$trafikPlot <- renderLeaflet({
+    # generate bins based on input$bins from ui.R
+    x <- av %>%
+      filter(PunktNr == input$radio)
+    # 
+    y <- get_traffic_info(.x = as.character(x$`X-koord`), .y = as.character(x$`Y-koord`))
+    if (nrow(y)>0) {
+      y %>%
+        plot_traffic( x$`Y-koord`,x$`X-koord`)
+      
+    }
+    
+  })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+
+
+get_traffic_info()
+
+get_polisen(.date = "2022-07", .location = "Lyrestad")
+
+av  %>%
+  filter(PunktNr == 9539)
+
+
+
 
 

@@ -172,13 +172,35 @@ ames_test_small %>%
   select(Sale_Price) %>% 
   bind_cols(predict(tree_fit, ames_test_small))
 
-parsnip_addin()
+# parsnip_addin()
 
 
 # ---------------------------------------------------------------------------------
 # Ch 7 A Model Workflow 
 
+lm_model <- 
+  linear_reg() %>% 
+  set_engine("lm")
 
+lm_wflow <- 
+  workflow() %>% 
+  add_model(lm_model) %>% 
+  add_formula(Sale_Price ~ Longitude + Latitude)
+
+lm_wflow
+
+lm_fit <- fit(lm_wflow, ames_train)
+lm_fit
+
+predict(lm_fit, ames_test %>% slice(1:3))
+
+lm_fit %>% update_formula(Sale_Price ~ Longitude)
+
+# adding raw variables to workflow instead of formula:
+lm_wflow <- 
+  lm_wflow %>% 
+  remove_formula() %>% 
+  add_variables(outcome = Sale_Price, predictors = c(Longitude, Latitude))
 
 
 

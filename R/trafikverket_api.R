@@ -112,19 +112,61 @@ get_traffic_info <- function(.x,
     distinct() %>% 
     unnest(Geometry)
   
+  
   if (.preprocess & nrow(res) != 0) {
     # extract latitude/longitude and create summary box for each coordinate
     res <- res %>% 
       mutate(WGS84 = str_replace_all(WGS84, "^.*\\((.*)\\)$", "\\1") ) %>% 
       mutate(StartTime = lubridate::as_date(StartTime)) %>% 
-      mutate(messagec = ifelse(MessageCode == MessageType, MessageCode, str_glue("{MessageType} - {MessageCode}"))) %>% 
-      mutate(content = str_glue("<b>{ifelse(!is.na(RoadNumber),RoadNumber, '')} 
-  {messagec} </b></br>
-  Started: {StartTime} </b></br>
-                            {SeverityText}. 
-                            {ifelse(!is.na(TrafficRestrictionType),TrafficRestrictionType,'')}
-                            {ifelse(!is.na(TemporaryLimit),TemporaryLimit,'')}</br>
-                            <i>{ifelse(!is.na(Message),Message, '')}</i>")) %>% 
+      mutate(messagec = ifelse(MessageCode == MessageType, MessageCode, str_glue("{MessageType} - {MessageCode}")))
+    
+    res <- res %>% 
+      mutate(content = str_glue("<b>{messagec}</b></br><b>Started: {StartTime} </b></br>"))
+    
+    
+    
+    if (any(names(res) %in% c("RoadNumber"))) {
+      #res <- res %>% mutate(content = str_c(content, "<b>{RoadNumber}</b>"))
+      res <- res %>% mutate(content = ifelse(!is.na(RoadNumber),
+                                             str_c(content, "<b>",RoadNumber, "</b>. "), 
+                                             content
+      )
+      )
+    }
+    if (any(names(res) %in% c("SeverityText"))) {
+      #res <- res %>% mutate(content = str_c(content, SeverityText, ". "))
+      res <- res %>% mutate(content = ifelse(!is.na(SeverityText),
+                                             str_c(content, SeverityText, ". "), 
+                                             content
+      )
+      )
+    }
+    if (any(names(res) %in% c("TrafficRestrictionType"))) {
+      #res <- res %>% mutate(content = str_c(content, TrafficRestrictionType, ". "))
+      res <- res %>% mutate(content = ifelse(!is.na(TrafficRestrictionType),
+                                             str_c(content, TrafficRestrictionType, ". "), 
+                                             content
+      )
+      )
+    }
+    if (any(names(res) %in% c("TemporaryLimit"))) {
+      #res <- res %>% mutate(content = str_c(content, TemporaryLimit, ".</br>"))
+      res <- res %>% mutate(content = ifelse(!is.na(TemporaryLimit),
+                                             str_c(content, TemporaryLimit, ".</br>"), 
+                                             content
+      )
+      )
+    }
+    
+    if (any(names(res) %in% c("Message"))) {
+      res <- res %>% mutate(content = ifelse(!is.na(Message),
+                                             str_c(content, "<i>", Message, "</i>","."), 
+                                             content
+                                             )
+                            )
+    }
+
+    res <- res  %>% 
       separate(WGS84, into = c("lng", "lat"), sep = " ", convert = T)
     
     icons_tmp <- icons %>% 
@@ -165,33 +207,28 @@ plot_traffic <- function(.data, x, y, .icondim = 16) {
     
 }
 
-x <- get_traffic_info(.x = "6398983", .y = "320011")
+# 
+# x <- get_traffic_info(.x = "6232141", .y = "348334")
+# x
+# x$content
+# x$Message %>% enframe
 
 
 x %>% 
   plot_traffic(313975.98, 6405213.04)
 
-avkontr <- "L:/Myndigheter/Trafikverket/TRV_5161_Skattning hastighetsindex/Document/Memo/Månadsrapport-Avvikelsekontroll_2022.xlsx"
 
-av1 <- readxl::read_excel(avkontr)
-
-av <- av1 %>% 
-  filter(Månad == "Jul")
-
-av1 %>% 
-  filter(Månad != "Jul" & !is.na(Kommentar))
-
-x[1,]$SWEREF99TM
-x[1,]$lng
-x[1,]$lat
-# 313975.98 6405213.04
-# lng 11.9  lat 57.8
-convert_sweref99_to_wgs84(313975.98, 6405213.04) %>% as_tibble()
-
-leaflet() %>% 
-  addTiles() %>% 
-  addMarkers(data = convert_sweref99_to_wgs84(313975.98, 6405213.04) %>% as_tibble(),
-             lat = ~Y, lng = ~X, popup = "Slang")
+# x[1,]$SWEREF99TM
+# x[1,]$lng
+# x[1,]$lat
+# # 313975.98 6405213.04
+# # lng 11.9  lat 57.8
+# convert_sweref99_to_wgs84(313975.98, 6405213.04) %>% as_tibble()
+# 
+# leaflet() %>% 
+#   addTiles() %>% 
+#   addMarkers(data = convert_sweref99_to_wgs84(313975.98, 6405213.04) %>% as_tibble(),
+#              lat = ~Y, lng = ~X, popup = "Slang")
 
 
 # -----
@@ -199,16 +236,29 @@ leaflet() %>%
 
 
 library(shiny)
+library(lubridate)
+
+avkontr <- "L:/Myndigheter/Trafikverket/TRV_5161_Skattning hastighetsindex/Document/Memo/Månadsrapport-Avvikelsekontroll_2022.xlsx"
+
+manad <- lubridate::now() %>% lubridate::month()
+manad <- (manad-1) %>% month(label = T) %>% str_to_title()
+
+
+av1 <- readxl::read_excel(avkontr)
+
+av <- av1 %>% 
+  filter(Månad == manad) %>% 
+  filter(is.na(Bortfallsvikt) | Bortfallsvikt == 0) %>% 
+  filter(is.na(Kontrolldatum))
 
 
 radio_choices <- av$PunktNr %>% unique %>%  set_names()
-
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   
   # Application title
-  titlePanel("Hello World"),
+  titlePanel("Hastighetsindex"),
   
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
@@ -245,7 +295,7 @@ server <- function(input, output) {
   
   output$table <- renderTable({
     av1 %>% 
-      filter(Månad != "Jul" & !is.na(Kommentar) & PunktNr == input$radio) %>% 
+      filter(Månad != manad  & !is.na(Kommentar) & PunktNr == input$radio) %>% 
       select(Månad, Kommentar)
   })
   
@@ -277,6 +327,7 @@ server <- function(input, output) {
 # Run the application 
 shinyApp(ui = ui, server = server)
 
+# TODO lägg till knapp 'Reload/Refresh' som laddar excelfilen på nytt 
 
 get_traffic_info()
 

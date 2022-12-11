@@ -1,0 +1,208 @@
+---
+author: "Emil Westin"
+format: gfm
+execute: 
+  eval: false
+editor: 
+  markdown: 
+    wrap: sentence
+---
+
+
+
+## ggplot2
+
+### Time series with lubridate
+
+To plot times/dates in ggplot with lubridate, the period needs to be converted to seconds using for example the duration function.
+The to set the scales, use `scale_x_time`/`scale_y_time`.
+To customize breaks and labels, use the `scales` library.
+In this case we use `breaks = scales::breaks_width("15 min"), labels =scales::label_time(format = "%H:%M")`.
+
+```{r}
+tibble(minutes = 100:290,
+       time_parsed = seconds_to_period(dminutes(minutes)) %>% as.numeric() %>% duration) %>% 
+  mutate(pace = get_pace("marathon", minutes) %>% as.numeric()%>% duration) %>% 
+  ggplot(aes(x= time_parsed, y = pace)) +
+  geom_line() +
+  scale_x_time(breaks = scales::breaks_width("15 min"), labels =scales::label_time(format = "%H:%M")) +
+  scale_y_time(breaks = scales::breaks_width("0.25 min"), labels =scales::label_time(format = "%M:%S"))
+```
+
+### Arrange plots
+
+```{r}
+library(ggpubr)
+ggarrange(p1, p2, p3)
+# with common legend:
+ggarrange(p1, p2, p3, ncol=3, common.legend = T, legend="right")
+```
+
+#### Arrange within arrange
+
+```{r}
+library(tidyverse)
+library(ggpubr)
+# with common legend
+p11 <- iris %>% ggplot(aes(Sepal.Length, Sepal.Width, color=Species)) + geom_point()
+# with common legend
+p1 <- ggarrange(p11  ,
+                p11 ,
+                p11 ,
+                ncol=1, nrow=3,  legend = "none"
+)
+p2 <- ggarrange( p11 ,  legend = "none")
+p3 <- ggarrange(
+  p11,
+  p11 ,
+  p11 , 
+  ncol=1,nrow=3, common.legend = T, legend="right"
+)
+ggarrange(p1, p2, p3, ncol=3, common.legend = T, legend="right")
+```
+
+Generates:
+
+![Arrange example](img/arrange.png)
+
+### Legend
+
+#### Legend title
+
+```{r}
+library(tidyverse)
+p11 <- iris %>% ggplot(aes(Sepal.Length, Sepal.Width, color=Species)) + geom_point()
+# change title in legend:
+p11 + labs(color = "Hej") # or fill/group
+# Alternatively:
+p11 + scale_color_discrete("Hej")
+p11 + scale_fill_discrete("Hej") # if fill=Species
+p11 + scale_color_manual("Hej")  
+```
+
+#### Change the legend label text
+
+```{r}
++ scale_color_discrete(labels = c("A",  "B", "C")) # for ggplot(aes(color=category))
++ scale_fill_discrete(labels = c("A",  "B", "C")) # for ggplot(aes(fill=category))
+```
+
+#### Legend colors
+
+```{r}
+library(tidyverse)
+library(RColorBrewer)
+p11 <- iris %>% ggplot(aes(Sepal.Length, Sepal.Width, color=Species)) + geom_point()
+p11_c <- ggplot(iris, aes(x=Sepal.Length, y=Petal.Length, color=Sepal.Width)) + geom_point()
+
+# choose custom color palette 
+p11 + scale_color_brewer("Hej",palette = "Reds")
+# continous:
+p11_c + scale_color_gradient(low = "white", high = "red")
+
+# alternatively:
+num_categories <- 3
+cls_size <- brewer.pal(num_categories, "Reds") 
+p11 +  scale_color_manual("Hej", values = cls_size, drop=FALSE)
+# or if fill=Species, use: 
+# scale_fill_manual("Hej", values = cls_size, drop=FALSE)
+# scale_linetype_manual()
+
+# choose a pre-defined color palette:
+p11 + scale_color_viridis_d("Hej")
+p11 + scale_color_grey()
+```
+
+### Bar plot
+
+```{r}
+# stat=identity: use own y-values, rather than counting the aggregate number of rows for each x (stat=count)
+# position=dodge : place bars side by side instead of stacked
+ geom_bar(stat="identity", position = "dodge")
+
+# add labels above bar plot, for example percentage value
++ geom_text(aes(label= str_glue("{value*100}%") ),
+                position=position_dodge(width=0.9),
+            vjust=-0.25) 
+```
+
+Dodging overlapping labels:
+
+```{r}
+p <- ggplot(mpg) +
+  geom_bar(aes(x = manufacturer)) + 
+  theme(axis.text.x = element_text(size = 11))
+# Use guide_axis to dodge the labels
+p + 
+  scale_x_discrete(guide = guide_axis(n.dodge = 2))
+```
+
+### Binning scales
+
+Introduced in ggplot2 3.3.0.
+A binning scale takes continuous data and makes it discrete by assigning each data point to a bin.
+Allows continuous data to be used with discrete palettes
+
+```{r}
+p <- ggplot(mpg) + 
+  geom_point(aes(displ, cty, size = hwy, colour = hwy))
+
+p + 
+  scale_size_binned()
+
+# show outermost ticks:
+p + 
+  scale_size_binned(guide = guide_bins(show.limits = TRUE))
+  
+p + 
+  scale_colour_binned()
+  
+# place data at the center of the bin they belong to:
+p + 
+  scale_x_binned()
+ 
+# this facilitates to create histograms with tick-marks between the bars:
+ggplot(mpg) + 
+  geom_bar(aes(displ)) + 
+  scale_x_binned()
+```
+
+### Plot text column in ggplot in the same order it appears in the data frame
+
+```{r}
+# procedure is a text column
+f <- function(x) factor(x, levels = unique(x))
+reshape2::melt(tmp, id.vars = "Procedure") %>%
+  ggplot(aes(x=f(Procedure), y=value*100, fill=variable)) 
+```
+
+
+
+
+### Create Swedish map of municipalities (kommuner)
+
+[Kommunkoder](https://www.scb.se/hitta-statistik/regional-statistik-och-kartor/regionala-indelningar/lan-och-kommuner/lan-och-kommuner-i-kodnummerordning/#Stockholms_lan)
+
+```{r}
+library(tidyverse)
+library(sf)
+library(RColorBrewer)
+
+# Data fÃ¶r Sverigekarta
+tmp1 <- tempfile()
+download.file("http://api.thenmap.net/v2/se-7/geo/2020-08-14", destfile = tmp1)
+county <- read_sf(tmp1)
+county <- st_transform(x = county, crs = 3006)
+county <- merge(county, antal, by.x = "id", by.y = "Kommun", all.x=T)
+
+county$size <- cut(county$Antal, breaks = c(0, 10, 100, 1000, Inf), 
+                    labels = c("1-10", "11-100", "101-1000", ">1000"))
+                    
+cls_size <- brewer.pal(4, "Reds")
+ggplot() +
+  geom_sf(data = county, aes(fill = size)) +
+  theme_void() +
+  scale_fill_manual("Municipality size", values = cls_size) 
+```
+
+

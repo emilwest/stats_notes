@@ -1,3 +1,4 @@
+Emil Westin
 
 ![Stats notes](img/wordcloud2.png)
 
@@ -7,7 +8,7 @@ engineering in the context of statistics.
 How to use this document: search for a keyword with `Ctrl` + `f` or
 scroll trough.
 
-# Updating R
+## Updating R
 
 The following code assumes you are using windows and can be run from
 RStudio. The version of R can usually be found here
@@ -38,7 +39,14 @@ update.packages(checkBuilt=TRUE, ask=FALSE)
 installed.packages()
 ```
 
-# RStudio useful shortcuts
+## Unload library/package from R session without restarting
+
+``` r
+# unloading library(officer)
+detach(package:officer)
+```
+
+## RStudio useful shortcuts
 
 |                                                                            | Command                            |
 |----------------------------------------------------------------------------|------------------------------------|
@@ -55,249 +63,7 @@ installed.packages()
 | Run code from beginning to line                                            | `Ctrl` + `Alt` + `b`               |
 | Move/shift line up/down                                                    | `Alt` + `up / down`                |
 
-# Probability distributions in R
-
-| Distribution                   | cdf $F(x) = P(X \leq x)$ | Inverse cdf/quantile $F^{-1}(p) = x$ | pdf $f(x) = P(X = x)$ | Generate a random variable |
-|--------------------------------|--------------------------|--------------------------------------|-----------------------|----------------------------|
-| Beta                           | `pbeta`                  | `qbeta`                              | `dbeta`               | `rbeta`                    |
-| Binomial                       | `pbinom`                 | `qbinom`                             | `dbinom`              | `rbinom`                   |
-| Chi-Square                     | `pchisq`                 | `qchisq`                             | `dchisq`              | `rchisq`                   |
-| Discrete Uniform               | `extraDistr::pdunif`     | `extraDistr::qdunif`                 | `extraDistr::ddunif`  | `extraDistr::rdunif`       |
-| Exponential                    | `pexp`                   | `qexp`                               | `dexp`                | `rexp`                     |
-| F                              | `pf`                     | `qf`                                 | `df`                  | `rf`                       |
-| Gamma                          | `pgamma`                 | `qgamma`                             | `dgamma`              | `rgamma`                   |
-| Geometric                      | `pgeom`                  | `qgeom`                              | `dgeom`               | `rgeom`                    |
-| Logistic                       | `plogis`                 | `qlogis`                             | `dlogis`              | `rlogis`                   |
-| Log Normal                     | `plnorm`                 | `plnorm`                             | `dlnorm`              | `rlnorm`                   |
-| Negative Binomial              | `pnbinom`                | `qnbinom`                            | `dnbinom`             | `rnbinom`                  |
-| Normal                         | `pnorm`                  | `qnorm`                              | `dnorm`               | `rnorm`                    |
-| Poisson                        | `ppois`                  | `qpois`                              | `dpois`               | `rpois`                    |
-| Student t                      | `pt`                     | `qt`                                 | `dt`                  | `rt`                       |
-| Studentized Range              | `ptukey`                 | `qtukey`                             | \-                    | \-                         |
-| Uniform                        | `punif`                  | `qunif`                              | `dunif`               | `runif`                    |
-| Weibull                        | `pweibull`               | `qweibull`                           | `dweibull`            | `rweibull`                 |
-| Wilcoxon Rank Sum Statistic    | `pwilcox`                | `qwilcox`                            | `dwilcox`             | `rwilcox`                  |
-| Wilcoxon Signed Rank Statistic | `psignrank`              | `qsignrank`                          | `dsignrank`           | `rsignrank`                |
-
-For more distributions not included in base R, see the package
-`extraDistr` .
-
-## The Normal Distribution
-
-``` r
-library(tidyverse)
-library(patchwork)
-options(scipen = 999)
-
-mu <- 50
-sd <- 5
-n <- 1000
-set.seed(10)
-df <- tibble(
-  x = seq(1, 100, length.out = n),
-  p = seq(0, 1, length.out = n),
-  pdf = dnorm(x, mean = mu, sd = sd), # f(x) = P(X = x)
-  cdf = pnorm(x, mean = mu, sd = sd), # F(x) = P(X <= x)
-  q = qnorm(p, mean = mu, sd = sd), # F^{-1}(p) = x
-  X = rnorm(n, mean = mu, sd = sd) # generate a random variable
-)
-
-p_pdf <- df %>%
-  ggplot(aes(x = x, y = pdf)) +
-  geom_point(size = 0.5) +
-  theme_light() +
-  labs(
-    title = "The pdf (dnorm): P(X = x)",
-    subtitle = str_glue("n = {nrow(df)}, mu = {mu}, sd = {sd}")
-  )
-p_cdf <- df %>%
-  ggplot(aes(x = x, y = cdf)) +
-  geom_point(size = 0.5) +
-  theme_light() +
-  labs(
-    title = "The cdf (pnorm): F(x) = P(X <= x)",
-    subtitle = str_glue("n = {nrow(df)}, mu = {mu}, sd = {sd}")
-  )
-p_q <- df %>%
-  ggplot(aes(x = x, y = q)) +
-  geom_point(size = 0.5) +
-  theme_light() +
-  labs(
-    title = "The quantile / inverse cdf (qnorm)",
-    subtitle = str_glue("n = {nrow(df)}, mu = {mu}, sd = {sd}")
-  )
-p_X <- df %>%
-  ggplot(aes(x = X)) +
-  geom_density() +
-  theme_light() +
-  labs(
-    title = "Sample generated from X ~ N(50, 5)",
-    subtitle = str_glue("n = {nrow(df)}, mu = {mu}, sd = {sd}")
-  )
-
-(p_cdf + p_q )/
- ( p_pdf + p_X)
-```
-
-![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
-
-### Relationships between cdf and inverse cdf, quantiles and sample quantiles
-
-The cdf and the inverse cdf are related by
-
-$p = F(x), 0 \leq p \leq 1$
-
-$x = F^{-1}(p)$
-
-I.e. given a number (probability) between 0 and 1, return the p-th
-quantile, i.e. the x-value on the plot. Consider also the difference
-between the ‘theoretical’ quantile of the population (q) compared to the
-observed sample quantile (qs).
-
-``` r
-options(scipen = 999)
-
-plotnn <- function(n, mu, sd) {
-  set.seed(10)
-  X <- rnorm(n, mu, sd) # Generate random variable
-  p <- 0.5 # Let the probability be 50% (the 50th percentile)
-  q <- qnorm(p, mu, sd) # inverse cdf, theoretical quantile
-  cdf <- pnorm(q, mu, sd) # cdf should be equal to p
-  
-  xbar <- mean(X) # sample mean
-  xmedian <- median(X) # sample median
-  sd(X)
-  q_sample <- qnorm(p, xbar, sd(X)) %>% round(3)
-  0.5 == pnorm(q_sample, xbar, sd(X)) # TRUE
-  
-  
-  plot1 <- X %>%
-    enframe() %>%
-    ggplot(aes(x = value)) +
-    geom_density(fill = "gray") +
-    theme_minimal()+
-    theme(legend.position="top")
-  
-  
-  # extract x,y values from plot in order to shade the area
-  d <- ggplot_build(plot1)$data[[1]]
-  d <- d %>% mutate(color = case_when(
-    x <= q & x > q_sample~ "P(X <= q)",
-    x <= q_sample ~ "P(X <= qs)"
-  ))
-  
-  plot1 +
-    geom_area(data = subset(d, x <= q), aes(
-      x = x, y = y,
-      fill = factor(color)
-    )) +
-    annotate("text", x = q + 1, y = 0, label = str_glue("q = {q}")) +
-    annotate("text", x = q - 1, y = 0 + 0.005, label = str_glue("q_sample = {q_sample}")) +
-    geom_vline(xintercept = q, linetype = "dashed") +
-    geom_vline(xintercept = q_sample, linetype = "dotted") + 
-    scale_color_discrete("cdf:") +
-    labs(
-      title = "Relationship between cdf and inverse cdf (the quantile q)",
-      subtitle = str_glue("X ~ N({mu}, {sd}), n = {n}. xbar = {round(xbar,4)}, median = {round(xmedian,4)}"),
-      x = "x",
-      fill = "cdf"
-    ) +
-    scale_fill_manual(breaks = c("P(X <= q)", "P(X <= qs)"),
-                       values = c("#FC4E07","#00AFBB"))
-}
-
-mu <- 50
-sd <- 5
-
-plotnn(10, mu, sd)
-```
-
-![](README_files/figure-gfm/cdf-1.png)<!-- -->
-
-``` r
-plotnn(100, mu, sd)
-```
-
-![](README_files/figure-gfm/cdf-2.png)<!-- -->
-
-``` r
-plotnn(1000, mu, sd)
-```
-
-![](README_files/figure-gfm/cdf-3.png)<!-- -->
-
-``` r
-plotnn(100000, mu, sd)
-```
-
-![](README_files/figure-gfm/cdf-4.png)<!-- -->
-
-Here is a QQ-plot to illustrate the observed quantiles (y-axis) vs the
-theoretical quantiles (x-axis). This can be used to assess normality.
-Note that the plot looks the same even if the values are z-transformed
-or not (verify it yourself if you like by changing
-`ggplot(aes(x = qq, y = x))` to `ggplot(aes(x = qq, y = x_scaled))`).
-
-``` r
-mu <- 50
-sd <- 5
-
-plotqq <- function(n, mu, sd) {
-  set.seed(10)
-  
-  X <- rnorm(n, mu, sd)
-  d <- X %>% 
-    enframe(name = NULL, value = "x") %>% 
-    mutate(across(x, scale, .names = "{.col}_scaled")) %>% # z-transform to mean zero and unit variance
-    arrange(x) %>% 
-    mutate(j = 1:length(X),
-           prob_level = (j-0.5)/length(X), # 0.5 is the 'continuity' correction
-           qq = qnorm(prob_level) # standard normal quantile,
-    )
-  
-  d %>% 
-    ggplot(aes(x = qq, y = x)) +
-    geom_point() +
-    geom_smooth(method = "lm", formula = y ~ x, se = FALSE) +
-    labs(y = "Observed quantiles",
-         x = "Theoretical quantiles",
-         subtitle = str_glue("n = {n}, mu = {mu}, sd = {sd}")) +
-    theme_light() 
-}
-
-p1 <- plotqq(10,mu,sd)
-p2 <- plotqq(100,mu,sd)
-p3 <- plotqq(1000,mu,sd)
-p4 <- plotqq(100000,mu,sd)
-
-(p1+p2) /
-  (p3+p4)
-```
-
-![](README_files/figure-gfm/qq_plot-1.png)<!-- -->
-
-## The difference between percentile, quantile and quartile
-
-The table below shows a set of possible values (domains) for the
-quantile(x) and percentile(x) functions, while the quartile is always
-between 0-4.
-
-| Quartile | Quantile | Percentile  |
-|----------|----------|-------------|
-| 0        | 0        | 0           |
-| 1        | 0.25     | 25          |
-| 2        | 0.5      | 50 (median) |
-| 3        | 0.75     | 75          |
-| 4        | 1        | 100         |
-
-This does not say that a quantile varies between 0 and 1, and percentile
-between 0 and 100. Quantiles can go from anything to anything.
-[Link](https://stats.stackexchange.com/questions/156778/percentile-vs-quantile-vs-quartile "Percentile vs quantile vs quartile")
-
-Also note that for samples from the normal distribution, the median may
-not equal the sample quantile but they should not be far apart.
-
-# Create/write/load/manipulate excel files in R
+# Excel: create/write/load/manipulate
 
 ## Load specific excel sheet and write to it without overwriting other sheets
 
@@ -608,42 +374,6 @@ df <- dir(pattern = "xlsx") %>%
                   .id = "level")
 ```
 
-# Excel
-
-## Useful excel formulas
-
-### Split number+text pattern
-
-For example, D6 is ‘108 Denmark’ becomes ‘108’:
-
-``` excel
-=LEFT(D6; SUM(LEN(D6) - LEN(SUBSTITUTE(D6; {"0";"1";"2";"3";"4";"5";"6";"7";"8";"9"}; ""))))
-```
-
-Extract the text part, where E5 is ‘108 Denmark’ and C5 is ‘108’:
-
-``` excel
-=RIGHT(E5;LEN(E5)-LEN(C5))
-```
-
-Note: add -1 to exclude the whitespace.
-
-### Split text+number pattern
-
-Extract the number part, where D6 is ‘Denmark 108’:
-
-``` excel
-=RIGHT(D6; SUM(LEN(D6) - LEN(SUBSTITUTE(D6; {"0";"1";"2";"3";"4";"5";"6";"7";"8";"9"}; ""))))
-```
-
-Extract the text, where E5 is ‘Denmark 108’ and C5 is ‘108’:
-
-``` excel
-=LEFT(E5,LEN(E5)-LEN(C5))
-```
-
-Note: add -1 to exclude the whitespace.
-
 # Read CSV files in R
 
 Read multiple csv files in directory using summarise.
@@ -699,7 +429,190 @@ res <- list.files(path = indir, pattern = "*.csv", full.names = TRUE) %>%
          id="filename")
 ```
 
+# Officer: Export R results to Word report
+
+``` r
+library(flextable) # converting dataframes to flextable objects
+library(officer) # for adding data to word document, like flextables
+
+# simplest example:
+tab1 <- matrix( c(1,2,3,4), ncol=2, nrow=2)
+word_export <- read_docx()
+word_export <- word_export %>% body_add_flextable( as.data.frame.matrix(tab1) %>% flextable()  )
+print(word_export, 'try.docx')
+```
+
+``` r
+# add new page:
+mydoc %>% body_add_break()
+```
+
+Function for adding R table to word document:
+
+``` r
+myft <- function(mydoc, tab, title) {
+  res <- body_add_par(mydoc, "")
+  res <- body_add_par(mydoc, title, style = "Tabellrubrik_")
+  res <- body_add_flextable(mydoc, flextable(tab %>% as.data.frame.matrix() %>% rownames_to_column(" ")) %>% autofit(), align = "left") 
+  return(res)
+}
+mydoc <- myft(mydoc, tt0, "Table 1. xxx")
+```
+
+## Officer template
+
+``` r
+library(flextable)
+library(officer)
+
+setwd("<set working dir>")
+getwd()
+
+inmall <- "word_template.docx"
+utmall <- "out_file.docx"
+
+# RAPPORT: IMPORT --------------------------------------------------------------
+mydoc <- read_docx(inmall)
+
+# RAPPORT: TITLE PAGE ----------------------------------------------------------
+mydoc <- body_replace_all_text(mydoc, "TITLE", "My title page", only_at_cursor = F)
+mydoc <- body_replace_all_text(mydoc, "DATE", as.character(Sys.Date()), only_at_cursor = F)
+
+# RAPPORT: SECTION 1 -----------------------------------------------------------
+mydoc <- body_add_par(mydoc, "Descriptive statistics", style = "heading 1", pos = "before")
+
+# RAPPORT: EXPORT --------------------------------------------------------------
+print(mydoc, utmall)
+shell.exec(utmall)
+```
+
 # Data wrangling
+
+## Set reference category in categorical variable
+
+To set a reference category for a categorical variable in regression
+models, you move that category to the first position of the levels. If
+you want “Mid” to be the reference and the levels are “Low”, “Mid”,
+“High”, you simply want to change the order of levels to “Mid”, “Low”,
+“High”.
+
+``` r
+# relevel single variable
+df %>% 
+  dplyr::mutate(q_mycat = fct_relevel(q_mycat, "Mid"))
+  
+# explicitly same as:
+df %>% 
+  dplyr::mutate(q_mycat = factor(q_mycat, c("Mid", "Low", "High")))
+
+# using stats::relevel:
+df$q_mycat <- relevel(df$q_mycat, ref = "Mid")
+
+# relevel multiple variables (assuming they have the same factors levels):
+df %>% 
+  dplyr::mutate(across(starts_with("q_"), ~ fct_relevel(.x, "Mid")))
+```
+
+## Count number of missing for all columns in dataframe
+
+``` r
+library(tidyverse)
+map_df(iris, ~sum(is.na(.))) %>% pivot_longer(everything(), names_to = "Variable", values_to = "n")
+```
+
+    # A tibble: 5 x 2
+      Variable         n
+      <chr>        <int>
+    1 Sepal.Length     0
+    2 Sepal.Width      0
+    3 Petal.Length     0
+    4 Petal.Width      0
+    5 Species          0
+
+## Get nice summary statistics in a dataframe
+
+``` r
+library(tidyverse)
+get_summary <- function(.data) {
+  .data %>%
+    mutate(across(where(is.factor), as.character)) %>% 
+    summarise(across(everything(), 
+                     .fns = list(n_missing = ~sum(is.na(.)),
+                                 minimum = ~min(., na.rm = T),
+                                 maximum = ~max(., na.rm = T),
+                                 mean = ~ ifelse(is.numeric(.), mean(., na.rm = T), NA),
+                                 median = ~ ifelse(is.numeric(.), median(., na.rm = T), NA)
+                                 # minimum = ~ ifelse(is.numeric(.), min(.), NA)
+                                 
+                     ), 
+                     .names = "{.col}__{.fn}")) %>% 
+    mutate(across(everything(), as.character)) %>% 
+    pivot_longer(everything(), names_to = "v") %>% 
+    separate(v, into = c("v","t"), sep = "__") %>% 
+    pivot_wider(names_from = t, values_from = value) %>% 
+    mutate(across(c(n_missing, mean, median), as.numeric)) %>% 
+    dplyr::rename("variable" = v)
+}
+
+iris %>% get_summary()
+# # A tibble: 5 × 6
+#   variable     n_missing minimum maximum    mean median
+#   <chr>            <dbl> <chr>   <chr>     <dbl>  <dbl>
+# 1 Sepal.Length         0 4.3     7.9        5.84   5.8 
+# 2 Sepal.Width          0 2       4.4        3.06   3   
+# 3 Petal.Length         0 1       6.9        3.76   4.35
+# 4 Petal.Width          0 0.1     2.5        1.20   1.3 
+# 5 Species              0 setosa  virginica NA     NA  
+```
+
+## Classic tables (base R)
+
+### Create contingency tables
+
+``` r
+table()
+prop.table() # with proportions
+```
+
+### Add totals to contingency table
+
+``` r
+# 2=sum cols, 1=sum rows, otherwise it sums both
+tab <- addmargins(table(df$Company,df$Marital), 2)
+```
+
+## Mutate columns to other format
+
+``` r
+library(tidyverse)
+
+# Old way (superseded):
+iris %>%
+    mutate_if(is.factor, as.character)
+    
+# New way (recommended from version 1.0.0):
+iris %>%
+  mutate(across(where(is.factor), as.character))
+# if converting to factor, use as_factor to preserve order that the factors appear
+
+## perform conversion on a list of dataframes
+dat <- iris %>% as_tibble() %>%  split(.$Species) # list of dataframes split by Species
+dat %>% 
+  map(~ .x %>% mutate(across(where(is_double), as.character)))
+```
+
+## Renaming
+
+Rename the last column:
+
+``` r
+bind_rows(sms_tot, mms_tot) %>%
+      dplyr::rename(value = last_col())
+      
+# alternatively if you like to overcomplicate things:
+bind_rows(sms_tot, mms_tot) %>%
+      dplyr::rename(value = !! last(names(sms_tot)))
+```
 
 ## Split delimited strings in a column and insert as new rows
 
@@ -721,6 +634,15 @@ df %>%
   separate_rows(B)
 ```
 
+    # A tibble: 5 x 2
+          A B         
+      <dbl> <chr>     
+    1     1 apple     
+    2     1 banana    
+    3     1 pear      
+    4     2 watermelon
+    5     2 apple     
+
 ## Self join / cross-join
 
 Table band_members:
@@ -740,6 +662,19 @@ band_members %>%
   left_join(band_members, by = character())
 ```
 
+    # A tibble: 9 x 4
+      name.x band.x  name.y band.y 
+      <chr>  <chr>   <chr>  <chr>  
+    1 Mick   Stones  Mick   Stones 
+    2 Mick   Stones  John   Beatles
+    3 Mick   Stones  Paul   Beatles
+    4 John   Beatles Mick   Stones 
+    5 John   Beatles John   Beatles
+    6 John   Beatles Paul   Beatles
+    7 Paul   Beatles Mick   Stones 
+    8 Paul   Beatles John   Beatles
+    9 Paul   Beatles Paul   Beatles
+
 This is basically the R/dplyr equivalent of a SQL self-join:
 
 ``` sql
@@ -758,10 +693,47 @@ Table band instruments:
 
 ``` r
 band_members %>% inner_join(band_instruments)
+```
+
+    # A tibble: 2 x 3
+      name  band    plays 
+      <chr> <chr>   <chr> 
+    1 John  Beatles guitar
+    2 Paul  Beatles bass  
+
+``` r
 band_members %>% left_join(band_instruments)
+```
+
+    # A tibble: 3 x 3
+      name  band    plays 
+      <chr> <chr>   <chr> 
+    1 Mick  Stones  <NA>  
+    2 John  Beatles guitar
+    3 Paul  Beatles bass  
+
+``` r
 band_members %>% right_join(band_instruments)
+```
+
+    # A tibble: 3 x 3
+      name  band    plays 
+      <chr> <chr>   <chr> 
+    1 John  Beatles guitar
+    2 Paul  Beatles bass  
+    3 Keith <NA>    guitar
+
+``` r
 band_members %>% full_join(band_instruments)
 ```
+
+    # A tibble: 4 x 3
+      name  band    plays 
+      <chr> <chr>   <chr> 
+    1 Mick  Stones  <NA>  
+    2 John  Beatles guitar
+    3 Paul  Beatles bass  
+    4 Keith <NA>    guitar
 
 ## Complete missing values in a column in df given a reference data frame (for long format)
 
@@ -812,136 +784,440 @@ iris_long <- iris %>%
   pivot_longer(-Species)
 
 x_long
+```
 
+    # A tibble: 4 x 3
+      Species name         value
+      <chr>   <chr>        <dbl>
+    1 setosa  Sepal.Length     1
+    2 setosa  Sepal.Width      2
+    3 setosa  Petal.Length     3
+    4 setosa  Petal.Width      4
+
+``` r
 x_long %>% 
-  complete_missing(iris_long, Species)
+  complete_missing(iris_long, Species) %>% 
+  head(10)
+```
 
+    # A tibble: 10 x 3
+       Species    name         value
+       <fct>      <chr>        <dbl>
+     1 setosa     Petal.Length     3
+     2 setosa     Petal.Width      4
+     3 setosa     Sepal.Length     1
+     4 setosa     Sepal.Width      2
+     5 versicolor Petal.Length    NA
+     6 versicolor Petal.Width     NA
+     7 versicolor Sepal.Length    NA
+     8 versicolor Sepal.Width     NA
+     9 virginica  Petal.Length    NA
+    10 virginica  Petal.Width     NA
+
+``` r
 # Is equivalent to:
 # x_long %>% 
 #     mutate(Species = fct_expand(Species, c("versicolor", "virginica"))) %>%
 #     complete(!!! syms(setdiff(names(iris_long), "value")))
 ```
 
-# System handling in R
+## Merge multiple dataframes
 
-## Remove all files and subdirectories under path/\* (without deleting path/)
+From
+<https://stackoverflow.com/questions/14096814/merging-a-lot-of-data-frames>
 
 ``` r
-unlink("path/*", recursive = TRUE)
-unlink("path/*") # deletes files only, no directories
+Reduce(function(...) merge(..., all=TRUE), list(df1, df2, df3))
 ```
 
-## Remove all files and subdirectories for multiple paths
+## Split dataframe by group into list
+
+Returns list of dataframes.
 
 ``` r
-# set pattern = ".*out.*" to target specific directories named out
-out_dirs <- list.files(str_glue("C:/path1/path2"), full.names = T, recursive = T, pattern = ".*out.*", include.dirs = T)
-out_dirs <- str_c(out_dirs, "/*")
-# out_dirs contains: "C:/path1/path2/ax/out/*" "C:/path1/path2/dk/out/*" "C:/path1/path2/EA/out/*" "C:/path1/path2/EU/out/*" ...
-unlink(out_dirs, recursive = T) # removes files and dirs under "C:/path1/path2/{ax,dk,EA,EU,...}/out/*"
+library(tidyverse) 
+mtcars %>% split(.$cyl)
 ```
 
-## Extract filenames or directory names from a path
+## Create a Data Frame from All Combinations of Factor Variables
+
+Returns a dataframe (data.frame) from all combinations of the supplied
+vectors or factors. Useful if you for ex. want to test a set of
+hyperparameters without creating nested for loops, just create a
+dataframe of all combinations and iterate through it.
 
 ``` r
-basename("C:/px/hej.txt")
-# hej.txt
-dirname("C:/px/hej.txt")
-# "C:/px"
+expand.grid(letters[1:2], 1:3, c("+", "-"))
 ```
 
-# Unload library/package from R session without restarting
+## Create several new empty columns using `dplyr::mutate` from names in character vector
+
+<https://stackoverflow.com/questions/49119794/using-dplyrmutate-to-create-several-new-variables-from-names-specified-in>
 
 ``` r
-# unloading library(officer)
-detach(package:officer)
-```
-
-# Save R results in Word file
-
-``` r
-library(flextable) # converting dataframes to flextable objects
-library(officer) # for adding data to word document, like flextables
-
-# simplest example:
-tab1 <- matrix( c(1,2,3,4), ncol=2, nrow=2)
-word_export <- read_docx()
-word_export <- word_export %>% body_add_flextable( as.data.frame.matrix(tab1) %>% flextable()  )
-print(word_export, 'try.docx')
-```
-
-``` r
-# add new page:
-mydoc %>% body_add_break()
-```
-
-Function for adding R table to word document:
-
-``` r
-myft <- function(mydoc, tab, title) {
-  res <- body_add_par(mydoc, "")
-  res <- body_add_par(mydoc, title, style = "Tabellrubrik_")
-  res <- body_add_flextable(mydoc, flextable(tab %>% as.data.frame.matrix() %>% rownames_to_column(" ")) %>% autofit(), align = "left") 
-  return(res)
+add_columns <- function(df, columns){
+  new <- rep(NA_character_, length(columns))
+  names(new) <- columns
+  mutate(df, !!!new)
 }
-mydoc <- myft(mydoc, tt0, "Table 1. xxx")
+
+sourcecols_in_meta <- str_extract(names(meta),"SOURCE.*") %>% na.omit %>% unique()
+sourcecols_in_df_final <- str_extract(names(df_final),"SOURCE.*") %>% na.omit %>% unique()
+# cols in meta not in df_final:
+diffcols <- setdiff(sourcecols_in_meta, sourcecols_in_df_final)
+
+df_final <- df_final %>% 
+    add_columns(diffcols)
 ```
 
-Template:
+## Cut variables into categories
+
+`right` = indicating if the intervals should be closed on the right (and
+open on the left) or vice versa. `include.lowest` = indicating if an
+x\[i\] equal to the lowest (or highest, for right = FALSE) “breaks”
+value should be included.
 
 ``` r
-library(flextable)
-library(officer)
+cut(tmp2$Antal, breaks = c(-Inf,20,50,Inf), labels = c("\u226420", "21-50", "50-521"))
+# will show ≤20    21-50  50-521
 
-setwd("<set working dir>")
-getwd()
+cut(0:10, breaks = c(0,  1, 4, 10, Inf), labels = c("0", "1-3", "4-9", "\u226510"), include.lowest = T,right=F )
+# [1] 0   1-3 1-3 1-3 4-9 4-9 4-9 4-9 4-9 4-9 ≥10
+#Levels: 0 1-3 4-9 ≥10
 
-inmall <- "word_template.docx"
-utmall <- "out_file.docx"
-
-# RAPPORT: IMPORT --------------------------------------------------------------
-mydoc <- read_docx(inmall)
-
-# RAPPORT: TITLE PAGE ----------------------------------------------------------
-mydoc <- body_replace_all_text(mydoc, "TITLE", "My title page", only_at_cursor = F)
-mydoc <- body_replace_all_text(mydoc, "DATE", as.character(Sys.Date()), only_at_cursor = F)
-
-# RAPPORT: SECTION 1 -----------------------------------------------------------
-mydoc <- body_add_par(mydoc, "Descriptive statistics", style = "heading 1", pos = "before")
-
-# RAPPORT: EXPORT --------------------------------------------------------------
-print(mydoc, utmall)
-shell.exec(utmall)
+# <19, ≥20 :
+cut(0:20, breaks = c(0,  19,  Inf),labels = c("<20", "\u226520"),include.lowest = T,right=T )
+#[1] <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 ≥20
+#Levels: <20 ≥20
 ```
 
-# For-loops
+## Vectors
 
-Never use `for (i in 1:lenght(n))` because it will fail if `length(n)`
-is 0, i.e. it will evaluate to `1 0`.
+### Split vector into chunks given length of each chunk
 
-Use `seq_along` or `seq_len` instead.
-
-## Preallocate the output container
-
-For faster looping.
+From <https://statisticsglobe.com/split-vector-into-chunks-in-r>
 
 ``` r
-out <- vector("list", length(n))
-for (i in seq_len(n)) {
-out[[i]] <- 1 + i
+ my_vec <- 2008:2021
+  chunk_length <- 5
+  split(my_vec,             
+        ceiling(seq_along(my_vec) / chunk_length))
+```
+
+    $`1`
+    [1] 2008 2009 2010 2011 2012
+
+    $`2`
+    [1] 2013 2014 2015 2016 2017
+
+    $`3`
+    [1] 2018 2019 2020 2021
+
+### Split vector into chunks given number of chunks
+
+From <https://statisticsglobe.com/split-vector-into-chunks-in-r>
+
+``` r
+chunk_number <- 2 
+split(my_vec,             # Applying split() function
+      cut(seq_along(my_vec),
+          chunk_number,
+          labels = FALSE))
+```
+
+    $`1`
+    [1] 2008 2009 2010 2011 2012 2013 2014
+
+    $`2`
+    [1] 2015 2016 2017 2018 2019 2020 2021
+
+## Calculate sum and return NA if all categories are NA
+
+The problem with sum(x, na.rm = TRUE) is that it will return 0 if all
+categories are NA. Sometimes we want it to be NA, here is how:
+
+``` r
+sumna <- function(x) {
+  if(all(is.na(x))) NA else sum(x, na.rm = TRUE)
 }
 ```
 
-# PX
+## Date handling
 
-## Retrieve data from PXWeb
+<!-- todo: look into POSIXct vs dates. -->
+
+### Generate sequence of dates
+
+``` r
+library(lubridate)
+
+seq(ymd("2022-01-01"), ymd("2022-12-31"), by = "1 days")
+# "2022-01-01" "2022-01-02" "2022-01-03" ... 2022-12-31"
+# in base r, replace ymd() with as.Date()
+```
+
+<!-- ```{r} -->
+<!-- full_dates <- seq(as.Date("2016-09-01"), by = "month", length.out =39) -->
+<!-- full_dates <- tibble(date = full_dates) -->
+<!-- full_dates <- full_dates %>% mutate(month = format(date, "%m"), year = format(date, "%Y") ) -->
+<!-- # you can merge the full dates with a dataframe that also contains year & month. na:s automatically added -->
+<!-- merge(full_dates, df, by = c("year", "month"), all.x = TRUE) -->
+<!-- # you can combine year & month columns into a single column as: -->
+<!-- df %>%  -->
+<!--   mutate(new_d = format( make_date(year, month), "%Y-%m" ) ) -->
+<!-- ``` -->
+<!-- ### Generate dataframe of dates for entire years -->
+<!-- The following function requires lubridate and tidyverse. -->
+<!-- Given a vector of year(s), you get dataframes with daily and weekly information in your locale. -->
+<!-- Examples: `generate_yearly_dfs()`, `generate_yearly_dfs(2022)`, `generate_yearly_dfs(2022:2025)`. -->
+<!-- Note that the weekly summary filters away week 53 (if it exists), and weeks overlapping from previous year, i.e. the first week on monday may not start on January 1st.  -->
+<!-- ```{r} -->
+<!-- library(lubridate) -->
+<!-- library(tidyverse) -->
+<!-- generate_yearly_dfs <- function(.yr = lubridate::year(lubridate::now()), -->
+<!--                                 .by = "1 days") { -->
+<!--   if (length(.yr) == 1) { -->
+<!--     first_day <- str_glue("{.yr}-01-01") -->
+<!--     last_day <- str_glue("{.yr}-12-31") -->
+<!--   } else if (length(.yr) > 1) { -->
+<!--     first_day <- str_glue("{first(.yr)}-01-01") -->
+<!--     last_day <- str_glue("{last(.yr)}-12-31") -->
+<!--   } -->
+<!--   x <- tibble( -->
+<!--     datum = seq(lubridate::ymd(first_day), lubridate::ymd(last_day), by = .by), -->
+<!--     yr = lubridate::year(datum), -->
+<!--     m = lubridate::month(datum, label = T), -->
+<!--     w = lubridate::isoweek(datum), # week 1 starts on Jan 1st -->
+<!--     isow = lubridate::isoweek(datum), # week 1 starts on first Monday of the year  -->
+<!--     d = lubridate::day(datum), -->
+<!--     day = lubridate::wday(datum, label = T) -->
+<!--   )  -->
+<!--   # weekly summary -->
+<!--   weekly_summary <- x %>% -->
+<!--     filter(!(m == "jan" & w == 52)) %>%  -->
+<!--     filter(!(w == 53)) %>%  -->
+<!--     group_by(yr,  isow) %>% -->
+<!--     mutate(id = row_number()) %>% -->
+<!--     filter(datum == min(datum) | datum == max(datum)) %>% -->
+<!--     mutate(daypart = str_glue("{d} {m}")) %>% -->
+<!--     summarise(period = str_c(daypart, collapse = " - ")) %>% -->
+<!--     ungroup() -->
+<!--   return(list( -->
+<!--     year_df = x, -->
+<!--     weekly_summary = weekly_summary -->
+<!--   )) -->
+<!-- } -->
+<!-- # > generate_yearly_dfs() -->
+<!-- # `summarise()` has grouped output by 'yr'. You can override using the `.groups` argument. -->
+<!-- # $year_df -->
+<!-- # # A tibble: 365 x 6 -->
+<!-- #    datum         yr m         w     d day   -->
+<!-- #    <date>     <dbl> <ord> <dbl> <int> <ord> -->
+<!-- #  1 2022-01-01  2022 jan       1     1 lör   -->
+<!-- #  2 2022-01-02  2022 jan       1     2 sön   -->
+<!-- #  3 2022-01-03  2022 jan       1     3 mån   -->
+<!-- #  4 2022-01-04  2022 jan       1     4 tis   -->
+<!-- #  5 2022-01-05  2022 jan       1     5 ons   -->
+<!-- #  6 2022-01-06  2022 jan       1     6 tor   -->
+<!-- #  7 2022-01-07  2022 jan       1     7 fre   -->
+<!-- #  8 2022-01-08  2022 jan       2     8 lör   -->
+<!-- #  9 2022-01-09  2022 jan       2     9 sön   -->
+<!-- # 10 2022-01-10  2022 jan       2    10 mån   -->
+<!-- # # ... with 355 more rows -->
+<!-- #  -->
+<!-- # $weekly_summary -->
+<!-- # # A tibble: 53 x 3 -->
+<!-- # # Groups:   yr [1] -->
+<!-- #       yr     w Period        -->
+<!-- #    <dbl> <dbl> <chr>           -->
+<!-- #  1  2022     1 1 jan - 7 jan   -->
+<!-- #  2  2022     2 8 jan - 14 jan  -->
+<!-- #  3  2022     3 15 jan - 21 jan -->
+<!-- #  4  2022     4 22 jan - 28 jan -->
+<!-- #  5  2022     5 29 jan - 4 feb  -->
+<!-- #  6  2022     6 5 feb - 11 feb  -->
+<!-- #  7  2022     7 12 feb - 18 feb -->
+<!-- #  8  2022     8 19 feb - 25 feb -->
+<!-- #  9  2022     9 26 feb - 4 mar  -->
+<!-- # 10  2022    10 5 mar - 11 mar  -->
+<!-- # # ... with 43 more rows -->
+<!-- ``` -->
+<!-- Using the function above you can easily generate a calendar: -->
+<!-- ```{r} -->
+<!-- generate_yearly_dfs()$year_df %>%  -->
+<!--   select(-d,-w) %>%  -->
+<!--   group_by(yr, m, isow) %>%  -->
+<!--   pivot_wider(names_from = day, values_from = datum) %>%  -->
+<!--   select(yr, m, isow, mån:fre, lör, sön) -->
+<!-- # # A tibble: 63 x 10 -->
+<!-- # # Groups:   yr, m, isow [63] -->
+<!-- #       yr m      isow mån        tis        ons        tor        fre        lör        sön        -->
+<!-- #    <dbl> <ord> <dbl> <date>     <date>     <date>     <date>     <date>     <date>     <date>     -->
+<!-- #  1  2022 jan      52 NA         NA         NA         NA         NA         2022-01-01 2022-01-02 -->
+<!-- #  2  2022 jan       1 2022-01-03 2022-01-04 2022-01-05 2022-01-06 2022-01-07 2022-01-08 2022-01-09 -->
+<!-- #  3  2022 jan       2 2022-01-10 2022-01-11 2022-01-12 2022-01-13 2022-01-14 2022-01-15 2022-01-16 -->
+<!-- #  4  2022 jan       3 2022-01-17 2022-01-18 2022-01-19 2022-01-20 2022-01-21 2022-01-22 2022-01-23 -->
+<!-- #  5  2022 jan       4 2022-01-24 2022-01-25 2022-01-26 2022-01-27 2022-01-28 2022-01-29 2022-01-30 -->
+<!-- #  6  2022 jan       5 2022-01-31 NA         NA         NA         NA         NA         NA         -->
+<!-- #  7  2022 feb       5 NA         2022-02-01 2022-02-02 2022-02-03 2022-02-04 2022-02-05 2022-02-06 -->
+<!-- #  8  2022 feb       6 2022-02-07 2022-02-08 2022-02-09 2022-02-10 2022-02-11 2022-02-12 2022-02-13 -->
+<!-- #  9  2022 feb       7 2022-02-14 2022-02-15 2022-02-16 2022-02-17 2022-02-18 2022-02-19 2022-02-20 -->
+<!-- # 10  2022 feb       8 2022-02-21 2022-02-22 2022-02-23 2022-02-24 2022-02-25 2022-02-26 2022-02-27 -->
+<!-- ``` -->
+
+## Purrr
+
+### map: apply function to each element of list or vector
+
+``` r
+mtcars %>% map(., sum) # sum each col in df
+pmap_dbl(mtcars, sum) # sum of each row in df
+mods <- by_cyl %>% map(~ lm(mpg ~ wt, data = .)) # in each df, create linear model
+```
+
+[Why use map instead of
+lapply?](https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply)
+
+-   Syntacically more convenient: You can use model formulas like
+    `~ . + 1` instead of `function(x) x + 1`
+
+-   Type-specific: you know exactly what type is returned (double,
+    character, dataframe, etc).
+
+-   Nicely integrated with tidyverse
+
+### Create an empty tibble with column names from vector and 0 rows
+
+``` r
+default_cols <- c("Survey", "sub_area", "Insats")
+
+default_df <- default_cols %>% purrr::map_dfc(setNames, object = list(character()))
+# A tibble: 0 x 3
+# ... with 3 variables: Survey <chr>, sub_area <chr>, Insats <chr>
+```
+
+### Nest: split dataframe into list of dataframes
+
+``` r
+library(tidyverse)
+n_iris <- iris %>%  group_by(Species) %>%  nest()
+## A tibble: 3 x 2
+## Groups:   Species [3]
+#  Species    data             
+#  <fct>      <list>           
+#1 setosa     <tibble [50 x 4]>
+#2 versicolor <tibble [50 x 4]>
+#3 virginica  <tibble [50 x 4]>
+```
+
+### Join each element in nested dataframe with another dataframe
+
+``` r
+join_df <- function(df_nest, df_other) {
+  df_all <- inner_join(df_nest, df_other, by = c("name1" = "name2"))
+  return(df_all)
+}
+
+tmp_n2 <- tmp_n %>%
+  mutate(new_data = map(data, ~ join_df(., df_of_interest)))
+```
+
+### Read nested files
+
+Consider the dataframe df:
+
+| matrix | filePathIn  |
+|--------|-------------|
+| A      | my_dir/A.px |
+| B      | my_dir/B.px |
+| C      | my_dir/C.px |
+
+``` r
+inFile_n <- df %>% group_by(matrix) %>% nest()
+# lÃ¤s in alla matriser:
+inFile_alla <- inFile_n %>% 
+  mutate( rrr = map(data, function(x) read.px(x$filePathIn) ) )
+# alternatively:
+#inFile_n %>% 
+#  mutate( rrr = map(data, ~ read.px(.x$filePathIn)  ) )
+```
+
+where:
+
+inFile_n:
+
+| matrix \<chr\> | data \<list\>        |
+|----------------|----------------------|
+| A              | \<tibble \[1 x 2\]\> |
+| B              | \<tibble \[1 x 2\]\> |
+| C              | \<tibble \[1 x 2\]\> |
+
+inFile_alla:
+
+| matrix \<chr\> | data \<list\>        | rrr \<list\>               |
+|----------------|----------------------|----------------------------|
+| A              | \<tibble \[1 x 2\]\> | \<tibble \[27,000 x 7\]\>  |
+| B              | \<tibble \[1 x 2\]\> | \<tibble \[25,200 x 6\]\>  |
+| C              | \<tibble \[1 x 2\]\> | \<tibble \[126,000 x 7\]\> |
+
+## Coordinates and maps
+
+### Convert SWEREF89 to WGS84
+
+``` r
+convert_sweref99_to_wgs84 <- function(.x, .y){
+  # SWEREF 99
+  sweref99 <- sf::st_sfc(sf::st_point(c(.x, .y), dim = "XY"), crs = 3006)
+  wgs84 <- sf::st_transform(sweref99, crs = 4326)
+  sf::st_coordinates(wgs84)
+}
+convert_sweref99_to_wgs84(6398983, 320011)
+#          X       Y
+# 1 61.74469 1.97728
+```
+
+## Stringr string manipulation
+
+See [stringr.R](R/stringr.R) for a walk-through.
+
+### Generate acronyms
+
+Based on the first character of each word in a string. Returns a
+character vector.
+
+``` r
+library(tidyverse)
+generate_varcodes <- function(s) {
+ str_split(s, boundary("word")) %>%
+    map(~str_sub(.x, 1,1)) %>%
+    map(str_to_upper) %>%
+    map(str_c, collapse = "") %>%
+    unlist()
+}
+mpg %>% 
+  select(model) %>% 
+  distinct() %>% 
+  mutate(acronym = generate_varcodes(model)) %>% 
+  head()
+```
+
+## Conversions
+
+### Terajoule (TJ) to (thousand) tons of oil equivalent
+
+``` r
+tj_to_ttoe <- function(tj) {
+  # For converting Terajoule to Thousand tons of oil equivalent
+  tj/(0.041868*1000)
+}
+```
+
+## PX
+
+### Retrieve data from PXWeb
 
 After selecting variables for a table, you can choose to retrieve the
 data in some of the following ways.
-
-### Pxweb in R
-
-TODO
 
 ### POST request with json query
 
@@ -1036,894 +1312,32 @@ library(pxweb)
 pxweb::pxweb_interactive() # interactively browse statistical databases and download px-files via API queries
 ```
 
-# Coordinates and maps
-
-## Convert SWEREF89 to WGS84
-
-``` r
-convert_sweref99_to_wgs84 <- function(.x, .y){
-  # SWEREF 99
-  sweref99 <- sf::st_sfc(sf::st_point(c(.x, .y), dim = "XY"), crs = 3006)
-  wgs84 <- sf::st_transform(sweref99, crs = 4326)
-  sf::st_coordinates(wgs84)
-}
-convert_sweref99_to_wgs84(6398983, 320011)
-#          X       Y
-# 1 61.74469 1.97728
-```
-
-# Retrieve data from Polisen open API
-
-Returns a tibble of useful information from Swedish Police reports given
-location, date or event. More info here about what you can do:
-<https://polisen.se/om-polisen/om-webbplatsen/oppna-data/api-over-polisens-handelser/>
-
-``` r
-library(httr)
-library(tidyverse)
-library(lubridate)
-library(jsonlite)
-
-get_polisen <- function(.date = NULL, .location=NULL, .events = NULL, .preprocess = T) {
-  base_url <- "https://polisen.se/api/events?"
-  url <- base_url
-  if (!is.null(.events)) {
-    events <- str_c(.events, collapse = ";")
-    url <- str_c(base_url, "type=", events)
-  }
-  if (!is.null(.date)) {
-    url <- str_c(url, "&DateTime=", .date)
-  }
-  if (!is.null(.location)) {
-    locations <- str_c(.location, collapse = ";")
-    url <- str_c(url, "&locationname=", locations)
-  }
-
-  resp <- httr::GET(as.character(url))
-  
-  if (httr::http_status(resp)$category != "Success") {
-    print(resp)
-    stop("Http status not success")
-  }
-  
-  df <- resp %>%
-    content(as = "text") %>%
-    jsonlite::fromJSON() %>%
-    as_tibble()
-  
-  if (.preprocess & nrow(df) != 0) {
-    df <- df %>% 
-      mutate(datetime = lubridate::as_datetime(datetime, tz = "Europe/Stockholm"),
-             url = str_glue("https://polisen.se{url}"),
-             summary2 = str_glue("{summary}\n<a href=\"{url}\">Mer info</a>")
-      )
-    # separate coordinates into two columns, rename duplicate column name
-    df$location <- df$location %>% 
-      as_tibble() %>% 
-      separate(gps, c("lat", "lng"), sep = ",", convert = T) %>% 
-      dplyr::rename(location_name = name) %>% 
-      # add some noise to coordinates, since all coordinates for a given location are the same.
-      # otherwise the points will overlap on the map.
-      # the coordinates only show the coordinate of an area, never an exact location
-      mutate(lat = jitter(lat), lng = jitter(lng) )
-    
-    df <- df %>%
-      unnest(location)
-  } 
-  return(df)
-}
-
-# get all events:
-get_polisen()
-# Filter by a vector of events
-get_polisen(.date = "2022-06", .location = "Varberg", .events = c("Rån", "Trafikolycka"))
-# filter by a vector of locations
-get_polisen(.date = "2022-04", .location = c("Varberg","Stockholm"))
-# filter by year, year-month or year-month-day:
-get_polisen(.date = "2022-06-05", .location = "Linköping")
-# # A tibble: 1 x 9
-# id datetime            name                                  summary          url                 type   location_name   lat   lng
-# <int> <dttm>              <chr>                                 <chr>            <glue>              <chr>  <chr>         <dbl> <dbl>
-# 342083 2022-06-05 11:31:12 05 juni 11:31, Rattfylleri, Linköping Trafikant uppmä~ https://polisen.se~ Rattf~ Linköping      58.4  15.6
-```
-
-## Interactive plot of police report locations from API
-
-The following code will plot an interactive map of all the coordinates
-retrieved via the Polisen API function, with popups containing
-information and links for more information.
-
-Note that the coordinates from Polisen only show the coordinates of a
-city or area, not an exact location. Within `get_polisen()`, numeric
-noise is added to the coordinates in order to be able show all
-coordinates on a plot (otherwise they will all overlap for a given
-area). In order to find out the exact location or area within a city,
-you would have to click on ‘Mer info’ where it will probably be given in
-more detail in the police report.
-
-![Stats notes](img/polisen_plot2.png)
-
-``` r
-# install.packages("leaflet")
-library(leaflet)
-library(tidyverse)
-
-get_polisen(.date = "2022-06", .location = "Uppsala") %>% 
-  leaflet() %>%
-  addTiles() %>%
-  addMarkers(lng = ~lng, lat = ~lat, popup = ~summary2, label = ~name)
-```
-
-# Retrieve Swedish traffic info from Trafikverket API
-
-See [code](R/trafikverket_api.R) for more details. Given a coordinate,
-retrieve traffic information within a 10 000 meter radius and display on
-an interactive map. Requires that you register for an api-key at
-Trafikverket. For more info, see
-[here](https://api.trafikinfo.trafikverket.se/).
-
-![Stats notes](img/trafikverket_api_plot.png)
-
-``` r
-x <- get_traffic_info(.x = "6398983", .y = "320011")
-x %>% 
-  plot_traffic()
-```
-
-# Download text files from URL
-
-# Data exploration
-
-## Count number of missing for all columns in dataframe
-
-``` r
-library(tidyverse)
-map_df(iris, ~sum(is.na(.))) %>% pivot_longer(everything(), names_to = "Variable", values_to = "n")
-```
-
-## Get nice summary statistics in a dataframe
-
-``` r
-library(tidyverse)
-get_summary <- function(.data) {
-  .data %>%
-    mutate(across(where(is.factor), as.character)) %>% 
-    summarise(across(everything(), 
-                     .fns = list(n_missing = ~sum(is.na(.)),
-                                 minimum = ~min(., na.rm = T),
-                                 maximum = ~max(., na.rm = T),
-                                 mean = ~ ifelse(is.numeric(.), mean(., na.rm = T), NA),
-                                 median = ~ ifelse(is.numeric(.), median(., na.rm = T), NA)
-                                 # minimum = ~ ifelse(is.numeric(.), min(.), NA)
-                                 
-                     ), 
-                     .names = "{.col}__{.fn}")) %>% 
-    mutate(across(everything(), as.character)) %>% 
-    pivot_longer(everything(), names_to = "v") %>% 
-    separate(v, into = c("v","t"), sep = "__") %>% 
-    pivot_wider(names_from = t, values_from = value) %>% 
-    mutate(across(c(n_missing, mean, median), as.numeric)) %>% 
-    dplyr::rename("variable" = v)
-}
-
-iris %>% get_summary()
-# # A tibble: 5 × 6
-#   variable     n_missing minimum maximum    mean median
-#   <chr>            <dbl> <chr>   <chr>     <dbl>  <dbl>
-# 1 Sepal.Length         0 4.3     7.9        5.84   5.8 
-# 2 Sepal.Width          0 2       4.4        3.06   3   
-# 3 Petal.Length         0 1       6.9        3.76   4.35
-# 4 Petal.Width          0 0.1     2.5        1.20   1.3 
-# 5 Species              0 setosa  virginica NA     NA  
-```
-
-# Date handling
-
-todo: look into POSIXct vs dates.
-
-## Generate sequence of dates
-
-``` r
-library(lubridate)
-
-seq(ymd("2022-01-01"), ymd("2022-12-31"), by = "1 days")
-# "2022-01-01" "2022-01-02" "2022-01-03" ... 2022-12-31"
-# in base r, replace ymd() with as.Date()
-```
-
-## Generate dataframe of dates for entire years
-
-The following function requires lubridate and tidyverse. Given a vector
-of year(s), you get dataframes with daily and weekly information in your
-locale. Examples: `generate_yearly_dfs()`, `generate_yearly_dfs(2022)`,
-`generate_yearly_dfs(2022:2025)`.
-
-Note that the weekly summary filters away week 53 (if it exists), and
-weeks overlapping from previous year, i.e. the first week on monday may
-not start on January 1st.
-
-``` r
-library(lubridate)
-library(tidyverse)
-
-generate_yearly_dfs <- function(.yr = lubridate::year(lubridate::now()),
-                                .by = "1 days") {
-  
-  if (length(.yr) == 1) {
-    first_day <- str_glue("{.yr}-01-01")
-    last_day <- str_glue("{.yr}-12-31")
-  } else if (length(.yr) > 1) {
-    first_day <- str_glue("{first(.yr)}-01-01")
-    last_day <- str_glue("{last(.yr)}-12-31")
-  }
-  
-  x <- tibble(
-    datum = seq(lubridate::ymd(first_day), lubridate::ymd(last_day), by = .by),
-    yr = lubridate::year(datum),
-    m = lubridate::month(datum, label = T),
-    w = lubridate::isoweek(datum), # week 1 starts on Jan 1st
-    isow = lubridate::isoweek(datum), # week 1 starts on first Monday of the year 
-    d = lubridate::day(datum),
-    day = lubridate::wday(datum, label = T)
-  ) 
-  
-  # weekly summary
-  weekly_summary <- x %>%
-    filter(!(m == "jan" & w == 52)) %>% 
-    filter(!(w == 53)) %>% 
-    group_by(yr,  isow) %>%
-    mutate(id = row_number()) %>%
-    filter(datum == min(datum) | datum == max(datum)) %>%
-    mutate(daypart = str_glue("{d} {m}")) %>%
-    summarise(period = str_c(daypart, collapse = " - ")) %>%
-    ungroup()
-  
-  
-  return(list(
-    year_df = x,
-    weekly_summary = weekly_summary
-  ))
-}
-
-
-# > generate_yearly_dfs()
-# `summarise()` has grouped output by 'yr'. You can override using the `.groups` argument.
-# $year_df
-# # A tibble: 365 x 6
-#    datum         yr m         w     d day  
-#    <date>     <dbl> <ord> <dbl> <int> <ord>
-#  1 2022-01-01  2022 jan       1     1 lör  
-#  2 2022-01-02  2022 jan       1     2 sön  
-#  3 2022-01-03  2022 jan       1     3 mån  
-#  4 2022-01-04  2022 jan       1     4 tis  
-#  5 2022-01-05  2022 jan       1     5 ons  
-#  6 2022-01-06  2022 jan       1     6 tor  
-#  7 2022-01-07  2022 jan       1     7 fre  
-#  8 2022-01-08  2022 jan       2     8 lör  
-#  9 2022-01-09  2022 jan       2     9 sön  
-# 10 2022-01-10  2022 jan       2    10 mån  
-# # ... with 355 more rows
-# 
-# $weekly_summary
-# # A tibble: 53 x 3
-# # Groups:   yr [1]
-#       yr     w Period       
-#    <dbl> <dbl> <chr>          
-#  1  2022     1 1 jan - 7 jan  
-#  2  2022     2 8 jan - 14 jan 
-#  3  2022     3 15 jan - 21 jan
-#  4  2022     4 22 jan - 28 jan
-#  5  2022     5 29 jan - 4 feb 
-#  6  2022     6 5 feb - 11 feb 
-#  7  2022     7 12 feb - 18 feb
-#  8  2022     8 19 feb - 25 feb
-#  9  2022     9 26 feb - 4 mar 
-# 10  2022    10 5 mar - 11 mar 
-# # ... with 43 more rows
-```
-
-Using the function above you can easily generate a calendar:
-
-``` r
-generate_yearly_dfs()$year_df %>% 
-  select(-d,-w) %>% 
-  group_by(yr, m, isow) %>% 
-  pivot_wider(names_from = day, values_from = datum) %>% 
-  select(yr, m, isow, mån:fre, lör, sön)
-
-# # A tibble: 63 x 10
-# # Groups:   yr, m, isow [63]
-#       yr m      isow mån        tis        ons        tor        fre        lör        sön       
-#    <dbl> <ord> <dbl> <date>     <date>     <date>     <date>     <date>     <date>     <date>    
-#  1  2022 jan      52 NA         NA         NA         NA         NA         2022-01-01 2022-01-02
-#  2  2022 jan       1 2022-01-03 2022-01-04 2022-01-05 2022-01-06 2022-01-07 2022-01-08 2022-01-09
-#  3  2022 jan       2 2022-01-10 2022-01-11 2022-01-12 2022-01-13 2022-01-14 2022-01-15 2022-01-16
-#  4  2022 jan       3 2022-01-17 2022-01-18 2022-01-19 2022-01-20 2022-01-21 2022-01-22 2022-01-23
-#  5  2022 jan       4 2022-01-24 2022-01-25 2022-01-26 2022-01-27 2022-01-28 2022-01-29 2022-01-30
-#  6  2022 jan       5 2022-01-31 NA         NA         NA         NA         NA         NA        
-#  7  2022 feb       5 NA         2022-02-01 2022-02-02 2022-02-03 2022-02-04 2022-02-05 2022-02-06
-#  8  2022 feb       6 2022-02-07 2022-02-08 2022-02-09 2022-02-10 2022-02-11 2022-02-12 2022-02-13
-#  9  2022 feb       7 2022-02-14 2022-02-15 2022-02-16 2022-02-17 2022-02-18 2022-02-19 2022-02-20
-# 10  2022 feb       8 2022-02-21 2022-02-22 2022-02-23 2022-02-24 2022-02-25 2022-02-26 2022-02-27
-```
-
-# Check outliers in boxplots:
-
-``` r
-is_outlier <- function(x) {
-  return(x < quantile(x, 0.25,na.rm = T) - 1.5 * IQR(x, na.rm = T) | x > quantile(x, 0.75, na.rm = T) + 1.5 * IQR(x,na.rm=T))
-}
-outlier_df <- score_diffs %>% 
-  mutate( across( ends_with("_diff"), is_outlier , .names="out_{.col}" ) ) 
-outlier_df %>%
-  select(pid, contains("b_diff") ) %>% 
-  filter(out_b_diff ==T) %>%
-  arrange(randgrp, b_diff)
-```
-
-Note: outliers in `boxplot()` is computed differently. In that case, use
-`boxplot.stats()$out` to see outlier values.
-
-## Group boxplot by group
-
-``` r
-boxplot(temp$num ~ temp$group)
-```
-
-## Compare if two dataframes are identical
-
-``` r
-all.equal(px_df,px_df2)
-identical(px_df,px_df2)
-dplyr::all_equal(px_df,px_df2) # By default ignores column and row order, and is sensitive to variable classes, but can be overidden. Can automatically convert factors to character and integers to doubles.
-# Example from documentation:
-scramble <- function(x) x[sample(nrow(x)), sample(ncol(x))]
-all_equal(mtcars, scramble(mtcars)) # By default, ordering of rows and columns ignored
-```
-
-# Table 1 : nice summary tables
-
-    library(table1) 
-    # or:
-    library(tableone)
-
-with flextable:
-
-``` r
-tableone2df <- function(tableone){
-  rows <- nrow(tableone)
-  cols <- ncol(tableone)
-  rowsXcols <- rows*cols
-  colnames <- colnames(tableone)
-  rownames <- rownames(tableone)
-
-  listoflists <- list()
-  for (i in 1:cols){
-    start <- (i*rows+1)-rows
-    end <- i*rows
-    listoflists[[i]] <- tableone[start:end]
-  }
-  dataframe <- as.data.frame(listoflists, col.names = colnames, row.names = rownames)
-  return(dataframe)
-}
-
-# then do:
-flextable::flextable(tableone2df(table_1)  %>% rownames_to_column("Variable"))
-```
-
-# Create contingency tables
-
-    table()
-    prop.table() # with proportions
-
-## Add totals to table
-
-``` r
-# 2=sum cols, 1=sum rows, otherwise it sums both
-tab <- addmargins(table(df$Company,df$Marital), 2)
-```
-
-## Contingency tables / Cross tables in dplyr
-
-``` r
-library(tidyverse)
-library(janitor)
-
-
-crosstable <- function(.data, x, y, add_margins = NULL, custom_name = NULL) {
-  
-  if (!is.null(custom_name)) {
-    newname <- custom_name
-  } else {
-    newname <- str_glue("{deparse(substitute(x))} / {deparse(substitute(y))}") %>%
-      as.character()
-  }
-  
-  x <- rlang::enquo(x)
-  y <- rlang::enquo(y)
-  
-  tmp <- .data %>% 
-    dplyr::count(!!x, !!y) %>%
-    tidyr::pivot_wider(names_from = !!y, values_from = "n", values_fill = 0) 
-  
-  # adds row/col totals
-  if (!is.null(add_margins)) {
-    if (add_margins == "both") tmp <- tmp %>% janitor::adorn_totals(where = c("row", "col")) 
-    if (add_margins == "row") tmp <- tmp %>% janitor::adorn_totals(where = c("row")) 
-    if (add_margins == "col") tmp <- tmp %>% janitor::adorn_totals(where = c("col")) 
-  }
-  
-  tmp %>% 
-    dplyr::as_tibble() %>%
-    dplyr::mutate(dplyr::across(where(is.double), as.integer)) %>% 
-    dplyr::rename("{newname}" := !!x)
-}
-
-crosstable(mtcars, gear, cyl)
-crosstable(mtcars, gear, cyl, add_margins = "both")
-crosstable(mtcars, gear, cyl, "row")
-crosstable(mtcars, gear, cyl, "col")
-crosstable(mtcars, gear, cyl, custom_name = "row=gear, col=cyl")
-```
-
-The advantage by having the crosstable as a tibble, it can be exported
-as-is to an excel sheet compatible with openxlsx:
-
-``` r
-t1 <- crosstable(mtcars, gear, cyl, add_margins = "both")
-writeDataTable(wb, currsheet, t1, startRow = 1, withFilter = F)
-```
-
-# Set reference category in categorical variable
-
-To set a reference category for a categorical variable in regression
-models, you move that category to the first position of the levels. If
-you want “Mid” to be the reference and the levels are “Low”, “Mid”,
-“High”, you simply want to change the order of levels to “Mid”, “Low”,
-“High”.
-
-``` r
-# relevel single variable
-df %>% 
-  dplyr::mutate(q_mycat = fct_relevel(q_mycat, "Mid"))
-  
-# explicitly same as:
-df %>% 
-  dplyr::mutate(q_mycat = factor(q_mycat, c("Mid", "Low", "High")))
-
-# using stats::relevel:
-df$q_mycat <- relevel(df$q_mycat, ref = "Mid")
-
-# relevel multiple variables (assuming they have the same factors levels):
-df %>% 
-  dplyr::mutate(across(starts_with("q_"), ~ fct_relevel(.x, "Mid")))
-```
-
-# Merge multiple dataframes
-
-From
-<https://stackoverflow.com/questions/14096814/merging-a-lot-of-data-frames>
-
-``` r
-Reduce(function(...) merge(..., all=TRUE), list(df1, df2, df3))
-```
-
-# Create a sequence of dates
-
-``` r
-full_dates <- seq(as.Date("2016-09-01"), by = "month", length.out =39)
-full_dates <- tibble(date = full_dates)
-full_dates <- full_dates %>% mutate(month = format(date, "%m"), year = format(date, "%Y") )
-
-# you can merge the full dates with a dataframe that also contains year & month. na:s automatically added
-merge(full_dates, df, by = c("year", "month"), all.x = TRUE)
-
-# you can combine year & month columns into a single column as:
-df %>% 
-  mutate(new_d = format( make_date(year, month), "%Y-%m" ) )
-```
-
-# Create a Data Frame from All Combinations of Factor Variables
-
-Returns a dataframe (data.frame) from all combinations of the supplied
-vectors or factors. Useful if you for ex. want to test a set of
-hyperparameters without creating nested for loops, just create a
-dataframe of all combinations and iterate through it.
-
-``` r
-expand.grid(letters[1:2], 1:3, c("+", "-"))
-```
-
-# Advanced programming in R
-
-### Convert variable name into a string
-
-Using deparse + substitute
-
-``` r
-print_path <- function(path) {
-  print(stringr::str_glue("{deparse(substitute(path))} = {path}"))
-}
-```
-
-# Conversions
-
-## Terajoule (TJ) to (thousand) tons of oil equivalent
-
-``` r
-tj_to_ttoe <- function(tj) {
-  # For converting Terajoule to Thousand tons of oil equivalent
-  tj/(0.041868*1000)
-}
-```
-
-# Dplyr
-
-## Mutate columns to other format
-
-``` r
-library(tidyverse)
-
-# Old way (superseded):
-iris %>%
-    mutate_if(is.factor, as.character)
-# New way (recommended from version 1.0.0):
-iris %>%
-  mutate(across(where(is.factor), as.character))
-# if converting to factor, use as_factor to preserve order that the factors appear
-
-## perform conversion on a list of dataframes
-dat <- iris %>% as_tibble() %>%  split(.$Species) # list of dataframes split by Species
-dat %>% 
-  map(~ .x %>% mutate(across(where(is_double), as.character)))
-```
-
-## Renaming
-
-Rename the last column:
-
-``` r
-bind_rows(sms_tot, mms_tot) %>%
-      dplyr::rename(value = last_col())
-      
-# alternatively if you like to overcomplicate things:
-bind_rows(sms_tot, mms_tot) %>%
-      dplyr::rename(value = !! last(names(sms_tot)))
-```
-
-## Create several new empty columns using `dplyr::mutate` from names in character vector
-
-<https://stackoverflow.com/questions/49119794/using-dplyrmutate-to-create-several-new-variables-from-names-specified-in>
-
-``` r
-add_columns <- function(df, columns){
-  new <- rep(NA_character_, length(columns))
-  names(new) <- columns
-  mutate(df, !!!new)
-}
-
-sourcecols_in_meta <- str_extract(names(meta),"SOURCE.*") %>% na.omit %>% unique()
-sourcecols_in_df_final <- str_extract(names(df_final),"SOURCE.*") %>% na.omit %>% unique()
-# cols in meta not in df_final:
-diffcols <- setdiff(sourcecols_in_meta, sourcecols_in_df_final)
-
-df_final <- df_final %>% 
-    add_columns(diffcols)
-```
-
-## Filter function: match string exactly or with regex
-
-``` r
-library(tidyverse)
-# function to filter a dataframe given a string s, with regex or exact matching.
-# df = dataframe to filter
-# column = name of column,
-# s = string to search,
-# exact_match = wheter to match string exactly or with regex
-# negate = match non-matching
-filter_regex <- function(df, column, s, exact_match = T, negate_ = FALSE) {
-  column <- rlang::enquo(column)
-
-  if (exact_match == TRUE) {
-    s <- str_c("^", s, "$") # add beginning and end of line to string
-  }
-
-  if (length(s) > 1) {
-    searchtt <- paste0(s, sep = "|", collapse = "")
-    searchtt <- str_sub(searchtt, 1, nchar(searchtt) - 1)
-  } else {
-    searchtt <- s
-  }
-  df %>%
-    filter(str_detect(string = !!column, pattern = searchtt, negate = negate_))
-}
-# The default is to match the strings exactly
-mpg %>%
-  filter_regex(model, c("a4", "tiburon")) %>% pull(model) %>% unique
-mpg %>%
-  filter_regex(model, c("a4", "tiburon"), negate_ = T) %>% pull(model) %>% unique %>% head
-
-# Use exact_match = F to allow regex:
-mpg %>%
-  filter_regex(model, c("a4","tiburon"), exact_match = F) %>% pull(model) %>% unique
-mpg %>%
-  filter_regex(model, c("a[0-9]+.*"), exact_match = F) %>% pull(model) %>% unique
-```
-
-# Use cut
-
-`right` = indicating if the intervals should be closed on the right (and
-open on the left) or vice versa. `include.lowest` = indicating if an
-x\[i\] equal to the lowest (or highest, for right = FALSE) “breaks”
-value should be included.
-
-``` r
-cut(tmp2$Antal, breaks = c(-Inf,20,50,Inf), labels = c("\u226420", "21-50", "50-521"))
-# will show ≤20    21-50  50-521
-
-cut(0:10, breaks = c(0,  1, 4, 10, Inf), labels = c("0", "1-3", "4-9", "\u226510"), include.lowest = T,right=F )
-# [1] 0   1-3 1-3 1-3 4-9 4-9 4-9 4-9 4-9 4-9 ≥10
-#Levels: 0 1-3 4-9 ≥10
-
-# <19, ≥20 :
-cut(0:20, breaks = c(0,  19,  Inf),labels = c("<20", "\u226520"),include.lowest = T,right=T )
-#[1] <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 ≥20
-#Levels: <20 ≥20
-```
-
-# Vectors
-
-## Split vector into chunks given length of each chunk
-
-From <https://statisticsglobe.com/split-vector-into-chunks-in-r>
-
-``` r
- my_vec <- 2008:2021
-  chunk_length <- 5
-  split(my_vec,             
-        ceiling(seq_along(my_vec) / chunk_length))
-```
-
-## Split vector into chunks given number of chunks
-
-From <https://statisticsglobe.com/split-vector-into-chunks-in-r>
-
-``` r
-chunk_number <- 7   
-split(my_vec,             # Applying split() function
-      cut(seq_along(my_vec),
-          chunk_number,
-          labels = FALSE))
-```
-
-# Split dataframe into groups
-
-Returns list of dataframes.
-
-``` r
-library(tidyverse) 
-mtcars %>% split(.$cyl)
-```
-
-# Lists
-
--   Do a comparison with python dicts.
-
-    ## Add element to list
-
-    To do
-
-## Remove element of list
-
-To do
-
-## Modify element of list
-
-To do
-
-# Calculating sums
-
-## Calculate sum and return NA if all categories are NA
-
-The problem with sum(x, na.rm = TRUE) is that it will return 0 if all
-categories are NA. Sometimes we want it to be NA, here is how:
-
-``` r
-sumna <- function(x) {
-  if(all(is.na(x))) NA else sum(x, na.rm = TRUE)
-}
-```
-
-# Create Swedish map of municipalities (kommuner)
-
-[Kommunkoder](https://www.scb.se/hitta-statistik/regional-statistik-och-kartor/regionala-indelningar/lan-och-kommuner/lan-och-kommuner-i-kodnummerordning/#Stockholms_lan)
-
-``` r
-library(tidyverse)
-library(sf)
-library(RColorBrewer)
-
-# Data fÃ¶r Sverigekarta
-tmp1 <- tempfile()
-download.file("http://api.thenmap.net/v2/se-7/geo/2020-08-14", destfile = tmp1)
-county <- read_sf(tmp1)
-county <- st_transform(x = county, crs = 3006)
-county <- merge(county, antal, by.x = "id", by.y = "Kommun", all.x=T)
-
-county$size <- cut(county$Antal, breaks = c(0, 10, 100, 1000, Inf), 
-                    labels = c("1-10", "11-100", "101-1000", ">1000"))
-                    
-cls_size <- brewer.pal(4, "Reds")
-ggplot() +
-  geom_sf(data = county, aes(fill = size)) +
-  theme_void() +
-  scale_fill_manual("Municipality size", values = cls_size) 
-```
-
-# Statistical tests
-
-## Calculate power in t-test
-
-``` r
-# delta: difference in means
-# Number of subjects needed to obtain 80% power
-power.t.test(delta = 10, sd = 19, power = 0.8, sig.level = 0.05)
-# calculate power from sample size:
-power.t.test(delta = 10, sd = 19, n=100, sig.level = 0.05)
-```
-
-## Wilcoxon rank sum test
-
-Also known as the Mann-Whitney U test.
-
-``` r
-wilcox.test(df$num ~ temp$group)
-```
-
-## t-test
-
-Tests difference in means.
-
-``` r
-t.test(temp$num ~ temp$group)
-```
-
-## Correlation incl p-values and confidence interval
-
-``` r
-cor.test()
-```
-
-## Fisher’s exact test
-
-For testing the null hypothesis of independence of rows and columns in a
-contingency table with fixed marginals.
-
-``` r
-fisher.test( matrix(c(2,10,20,3),nrow=2,ncol=2)  )
-# odds ratio: 0.035, p=0.00008124
-```
-
-In Python:
-
-``` python
-import scipy.stats as stats
-oddsratio, pvalue = stats.fisher_exact([[2, 10], [20, 3]])
-# (0.03, 8.124495626949326e-05)
-```
-
-## Cohen’s Kappa Coefficient
-
-Kappa measures the agreement between two variables, taking into account
-the agreement that would happen by chance. Kappa = (O-E) / (1-E), where
-O = observed agreement, E = expected agreement assuming independence.
-
-``` r
-library(psych) 
-tab<-matrix(c(12,20,20,12),ncol=2,nrow=2)
-#     [,1] [,2]
-#[1,]   12   20
-#[2,]   20   12
-psych::cohen.kappa(tab) # -0.25
-```
-
-## Calculate binomial confidence interval
-
-``` r
-binom.test(40, 95) # num successes, num trials
-```
-
-With CI in parenthesis for.ex. (10.1-15.5%) calculated from percentage
-of success:
-
-``` r
-library(stringr)
-calc_conf <- function(perc, n){
-  test <- round(perc*n)
-  res  <- binom.test(test, n)
-  lower <- res$conf.int[1] %>% round(3) *100 
-  upper <- res$conf.int[2] %>% round(3) *100
-  lower <- format(lower, nsmall = 1)
-  upper <- format(upper, nsmall = 1)
-  return(str_glue("({lower}-{upper}%)"))
-}
-calc_conf(0.42, 95) # (32.0-52.7%)
-```
-
-## Calculate difference in binomial confidence intervals
-
-``` r
-library(DescTools)
-# x = number of successes in group 1 or 2, n = number of trials in group 1 or 2 
-BinomDiffCI(x1=40,n1=95,x2=2,n2=47)
-```
-
-Nicely formatted CI calculated from percentage of success:
-
-``` r
-library(stringr)
-bindiff <- function(perc_1, n_1, perc_2, n_2){
-  test1 <- round(perc_1*n_1)
-  test2 <- round(perc_2*n_2) 
-  
-  res <- BinomDiffCI(test1,n_1,test2,n_2)
-  val <- res[1] %>% round(3) *100
-  lower <- res[2] %>% round(3) *100
-  upper <- res[3] %>% round(3) *100
-  val <- format(val, nsmall = 1)
-  lower <- format(lower, nsmall = 1)
-  upper <- format(upper, nsmall = 1)
-  
-  return(
-    list(test1=test1,test2=test2, 
-    ci = str_glue("{val}% ({lower}-{upper}%)")
-    ))
-}
-bindiff(0.42,95,0.042,47) # 37.8% (24.2-48.0%)
-```
-
-## Ordinal logistic regression
-
-Proportional odds: the effect of the independent variables on the
-dependent variable is constant for all levels in the dependent variable.
-
-## Mixed model
-
-<https://m-clark.github.io/mixed-models-with-R/random_intercepts.html>
-
-Random intercepts model: group-specific intercepts with own unique
-effects. E.g. (1 \| student) the intercept 1 is allowed to vary between
-student to student. The random effect is to the left of \|.
-
-<!--
-```r
-
-```
--->
-
-# Survival analysis
-
-### Generate survival curves
-
-``` r
-library(survival) # survival curves
-fit1 <- survfit(Surv( time , survival ) ~ variable, data=df)
-
-# Survival plot:
-#install.packages("survminer")
-library(survminer)
-ggsurvplot(fit1)
-```
-
-### Cox regression
-
-``` r
-library(survival) 
-fit1 <- coxph(Surv( time , survival ) ~ variable, data=df)
-summary(fit1)
-```
-
-# ggplot2
+<!-- ## Table 1 : nice summary tables -->
+<!--     library(table1)  -->
+<!--     # or: -->
+<!--     library(tableone) -->
+<!-- with flextable: -->
+<!-- ```{r} -->
+<!-- tableone2df <- function(tableone){ -->
+<!--   rows <- nrow(tableone) -->
+<!--   cols <- ncol(tableone) -->
+<!--   rowsXcols <- rows*cols -->
+<!--   colnames <- colnames(tableone) -->
+<!--   rownames <- rownames(tableone) -->
+<!--   listoflists <- list() -->
+<!--   for (i in 1:cols){ -->
+<!--     start <- (i*rows+1)-rows -->
+<!--     end <- i*rows -->
+<!--     listoflists[[i]] <- tableone[start:end] -->
+<!--   } -->
+<!--   dataframe <- as.data.frame(listoflists, col.names = colnames, row.names = rownames) -->
+<!--   return(dataframe) -->
+<!-- } -->
+<!-- # then do: -->
+<!-- flextable::flextable(tableone2df(table_1)  %>% rownames_to_column("Variable")) -->
+<!-- ``` -->
+
+## ggplot2
 
 ### Time series with lubridate
 
@@ -2090,15 +1504,500 @@ reshape2::melt(tmp, id.vars = "Procedure") %>%
   ggplot(aes(x=f(Procedure), y=value*100, fill=variable)) 
 ```
 
-# Tidyeval
+### Create Swedish map of municipalities (kommuner)
+
+[Kommunkoder](https://www.scb.se/hitta-statistik/regional-statistik-och-kartor/regionala-indelningar/lan-och-kommuner/lan-och-kommuner-i-kodnummerordning/#Stockholms_lan)
+
+``` r
+library(tidyverse)
+library(sf)
+library(RColorBrewer)
+
+# Data fÃ¶r Sverigekarta
+tmp1 <- tempfile()
+download.file("http://api.thenmap.net/v2/se-7/geo/2020-08-14", destfile = tmp1)
+county <- read_sf(tmp1)
+county <- st_transform(x = county, crs = 3006)
+county <- merge(county, antal, by.x = "id", by.y = "Kommun", all.x=T)
+
+county$size <- cut(county$Antal, breaks = c(0, 10, 100, 1000, Inf), 
+                    labels = c("1-10", "11-100", "101-1000", ">1000"))
+                    
+cls_size <- brewer.pal(4, "Reds")
+ggplot() +
+  geom_sf(data = county, aes(fill = size)) +
+  theme_void() +
+  scale_fill_manual("Municipality size", values = cls_size) 
+```
+
+# Probability distributions in R
+
+| Distribution                   | cdf $F(x) = P(X \leq x)$ | Inverse cdf/quantile $F^{-1}(p) = x$ | pdf $f(x) = P(X = x)$ | Generate a random variable |
+|--------------------------------|--------------------------|--------------------------------------|-----------------------|----------------------------|
+| Beta                           | `pbeta`                  | `qbeta`                              | `dbeta`               | `rbeta`                    |
+| Binomial                       | `pbinom`                 | `qbinom`                             | `dbinom`              | `rbinom`                   |
+| Chi-Square                     | `pchisq`                 | `qchisq`                             | `dchisq`              | `rchisq`                   |
+| Discrete Uniform               | `extraDistr::pdunif`     | `extraDistr::qdunif`                 | `extraDistr::ddunif`  | `extraDistr::rdunif`       |
+| Exponential                    | `pexp`                   | `qexp`                               | `dexp`                | `rexp`                     |
+| F                              | `pf`                     | `qf`                                 | `df`                  | `rf`                       |
+| Gamma                          | `pgamma`                 | `qgamma`                             | `dgamma`              | `rgamma`                   |
+| Geometric                      | `pgeom`                  | `qgeom`                              | `dgeom`               | `rgeom`                    |
+| Logistic                       | `plogis`                 | `qlogis`                             | `dlogis`              | `rlogis`                   |
+| Log Normal                     | `plnorm`                 | `plnorm`                             | `dlnorm`              | `rlnorm`                   |
+| Negative Binomial              | `pnbinom`                | `qnbinom`                            | `dnbinom`             | `rnbinom`                  |
+| Normal                         | `pnorm`                  | `qnorm`                              | `dnorm`               | `rnorm`                    |
+| Poisson                        | `ppois`                  | `qpois`                              | `dpois`               | `rpois`                    |
+| Student t                      | `pt`                     | `qt`                                 | `dt`                  | `rt`                       |
+| Studentized Range              | `ptukey`                 | `qtukey`                             | \-                    | \-                         |
+| Uniform                        | `punif`                  | `qunif`                              | `dunif`               | `runif`                    |
+| Weibull                        | `pweibull`               | `qweibull`                           | `dweibull`            | `rweibull`                 |
+| Wilcoxon Rank Sum Statistic    | `pwilcox`                | `qwilcox`                            | `dwilcox`             | `rwilcox`                  |
+| Wilcoxon Signed Rank Statistic | `psignrank`              | `qsignrank`                          | `dsignrank`           | `rsignrank`                |
+
+For more distributions not included in base R, see the package
+`extraDistr` .
+
+## The Normal Distribution
+
+``` r
+library(tidyverse)
+library(patchwork)
+options(scipen = 999)
+
+mu <- 50
+sd <- 5
+n <- 1000
+set.seed(10)
+df <- tibble(
+  x = seq(1, 100, length.out = n),
+  p = seq(0, 1, length.out = n),
+  pdf = dnorm(x, mean = mu, sd = sd), # f(x) = P(X = x)
+  cdf = pnorm(x, mean = mu, sd = sd), # F(x) = P(X <= x)
+  q = qnorm(p, mean = mu, sd = sd), # F^{-1}(p) = x
+  X = rnorm(n, mean = mu, sd = sd) # generate a random variable
+)
+
+p_pdf <- df %>%
+  ggplot(aes(x = x, y = pdf)) +
+  geom_point(size = 0.5) +
+  theme_light() +
+  labs(
+    title = "The pdf (dnorm): P(X = x)",
+    subtitle = str_glue("n = {nrow(df)}, mu = {mu}, sd = {sd}")
+  )
+p_cdf <- df %>%
+  ggplot(aes(x = x, y = cdf)) +
+  geom_point(size = 0.5) +
+  theme_light() +
+  labs(
+    title = "The cdf (pnorm): F(x) = P(X <= x)",
+    subtitle = str_glue("n = {nrow(df)}, mu = {mu}, sd = {sd}")
+  )
+p_q <- df %>%
+  ggplot(aes(x = x, y = q)) +
+  geom_point(size = 0.5) +
+  theme_light() +
+  labs(
+    title = "The quantile / inverse cdf (qnorm)",
+    subtitle = str_glue("n = {nrow(df)}, mu = {mu}, sd = {sd}")
+  )
+p_X <- df %>%
+  ggplot(aes(x = X)) +
+  geom_density() +
+  theme_light() +
+  labs(
+    title = "Sample generated from X ~ N(50, 5)",
+    subtitle = str_glue("n = {nrow(df)}, mu = {mu}, sd = {sd}")
+  )
+
+(p_cdf + p_q )/
+ ( p_pdf + p_X)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-138-1.png)
+
+### Relationships between cdf and inverse cdf, quantiles and sample quantiles
+
+The cdf and the inverse cdf are related by
+
+$p = F(x), 0 \leq p \leq 1$
+
+$x = F^{-1}(p)$
+
+I.e. given a number (probability) between 0 and 1, return the p-th
+quantile, i.e. the x-value on the plot. Consider also the difference
+between the ‘theoretical’ quantile of the population (q) compared to the
+observed sample quantile (qs).
+
+``` r
+options(scipen = 999)
+
+plotnn <- function(n, mu, sd) {
+  set.seed(10)
+  X <- rnorm(n, mu, sd) # Generate random variable
+  p <- 0.5 # Let the probability be 50% (the 50th percentile)
+  q <- qnorm(p, mu, sd) # inverse cdf, theoretical quantile
+  cdf <- pnorm(q, mu, sd) # cdf should be equal to p
+  
+  xbar <- mean(X) # sample mean
+  xmedian <- median(X) # sample median
+  sd(X)
+  q_sample <- qnorm(p, xbar, sd(X)) %>% round(3)
+  0.5 == pnorm(q_sample, xbar, sd(X)) # TRUE
+  
+  
+  plot1 <- X %>%
+    enframe() %>%
+    ggplot(aes(x = value)) +
+    geom_density(fill = "gray") +
+    theme_minimal()+
+    theme(legend.position="top")
+  
+  
+  # extract x,y values from plot in order to shade the area
+  d <- ggplot_build(plot1)$data[[1]]
+  d <- d %>% mutate(color = case_when(
+    x <= q & x > q_sample~ "P(X <= q)",
+    x <= q_sample ~ "P(X <= qs)"
+  ))
+  
+  plot1 +
+    geom_area(data = subset(d, x <= q), aes(
+      x = x, y = y,
+      fill = factor(color)
+    )) +
+    annotate("text", x = q + 1, y = 0, label = str_glue("q = {q}")) +
+    annotate("text", x = q - 1, y = 0 + 0.005, label = str_glue("q_sample = {q_sample}")) +
+    geom_vline(xintercept = q, linetype = "dashed") +
+    geom_vline(xintercept = q_sample, linetype = "dotted") + 
+    scale_color_discrete("cdf:") +
+    labs(
+      title = "Relationship between cdf and inverse cdf (the quantile q)",
+      subtitle = str_glue("X ~ N({mu}, {sd}), n = {n}. xbar = {round(xbar,4)}, median = {round(xmedian,4)}"),
+      x = "x",
+      fill = "cdf"
+    ) +
+    scale_fill_manual(breaks = c("P(X <= q)", "P(X <= qs)"),
+                       values = c("#FC4E07","#00AFBB"))
+}
+
+mu <- 50
+sd <- 5
+
+plotnn(10, mu, sd)
+```
+
+![](README_files/figure-gfm/cdf-1.png)
+
+``` r
+plotnn(100, mu, sd)
+```
+
+![](README_files/figure-gfm/cdf-2.png)
+
+``` r
+plotnn(1000, mu, sd)
+```
+
+![](README_files/figure-gfm/cdf-3.png)
+
+``` r
+plotnn(100000, mu, sd)
+```
+
+![](README_files/figure-gfm/cdf-4.png)
+
+Here is a QQ-plot to illustrate the observed quantiles (y-axis) vs the
+theoretical quantiles (x-axis). This can be used to assess normality.
+Note that the plot looks the same even if the values are z-transformed
+or not (verify it yourself if you like by changing
+`ggplot(aes(x = qq, y = x))` to `ggplot(aes(x = qq, y = x_scaled))`).
+
+``` r
+mu <- 50
+sd <- 5
+
+plotqq <- function(n, mu, sd) {
+  set.seed(10)
+  
+  X <- rnorm(n, mu, sd)
+  d <- X %>% 
+    enframe(name = NULL, value = "x") %>% 
+    mutate(across(x, scale, .names = "{.col}_scaled")) %>% # z-transform to mean zero and unit variance
+    arrange(x) %>% 
+    mutate(j = 1:length(X),
+           prob_level = (j-0.5)/length(X), # 0.5 is the 'continuity' correction
+           qq = qnorm(prob_level) # standard normal quantile,
+    )
+  
+  d %>% 
+    ggplot(aes(x = qq, y = x)) +
+    geom_point() +
+    geom_smooth(method = "lm", formula = y ~ x, se = FALSE) +
+    labs(y = "Observed quantiles",
+         x = "Theoretical quantiles",
+         subtitle = str_glue("n = {n}, mu = {mu}, sd = {sd}")) +
+    theme_light() 
+}
+
+p1 <- plotqq(10,mu,sd)
+p2 <- plotqq(100,mu,sd)
+p3 <- plotqq(1000,mu,sd)
+p4 <- plotqq(100000,mu,sd)
+
+(p1+p2) /
+  (p3+p4)
+```
+
+![](README_files/figure-gfm/qq_plot-1.png)
+
+## The difference between percentile, quantile and quartile
+
+The table below shows a set of possible values (domains) for the
+quantile(x) and percentile(x) functions, while the quartile is always
+between 0-4.
+
+| Quartile | Quantile | Percentile  |
+|----------|----------|-------------|
+| 0        | 0        | 0           |
+| 1        | 0.25     | 25          |
+| 2        | 0.5      | 50 (median) |
+| 3        | 0.75     | 75          |
+| 4        | 1        | 100         |
+
+This does not say that a quantile varies between 0 and 1, and percentile
+between 0 and 100. Quantiles can go from anything to anything.
+[Link](https://stats.stackexchange.com/questions/156778/percentile-vs-quantile-vs-quartile "Percentile vs quantile vs quartile")
+
+Also note that for samples from the normal distribution, the median may
+not equal the sample quantile but they should not be far apart.
+
+## Statistical tests
+
+### Calculate power in t-test
+
+``` r
+# delta: difference in means
+# Number of subjects needed to obtain 80% power
+power.t.test(delta = 10, sd = 19, power = 0.8, sig.level = 0.05)
+# calculate power from sample size:
+power.t.test(delta = 10, sd = 19, n=100, sig.level = 0.05)
+```
+
+### Wilcoxon rank sum test
+
+Also known as the Mann-Whitney U test.
+
+``` r
+wilcox.test(df$num ~ temp$group)
+```
+
+### t-test
+
+Tests difference in means.
+
+``` r
+t.test(temp$num ~ temp$group)
+```
+
+### Correlation incl p-values and confidence interval
+
+``` r
+cor.test()
+```
+
+### Fisher’s exact test
+
+For testing the null hypothesis of independence of rows and columns in a
+contingency table with fixed marginals.
+
+``` r
+fisher.test( matrix(c(2,10,20,3),nrow=2,ncol=2)  )
+# odds ratio: 0.035, p=0.00008124
+```
+
+In Python:
+
+``` python
+import scipy.stats as stats
+oddsratio, pvalue = stats.fisher_exact([[2, 10], [20, 3]])
+# (0.03, 8.124495626949326e-05)
+```
+
+### Cohen’s Kappa Coefficient
+
+Kappa measures the agreement between two variables, taking into account
+the agreement that would happen by chance. Kappa = (O-E) / (1-E), where
+O = observed agreement, E = expected agreement assuming independence.
+
+``` r
+library(psych) 
+tab<-matrix(c(12,20,20,12),ncol=2,nrow=2)
+#     [,1] [,2]
+#[1,]   12   20
+#[2,]   20   12
+psych::cohen.kappa(tab) # -0.25
+```
+
+### Calculate binomial confidence interval
+
+``` r
+binom.test(40, 95) # num successes, num trials
+```
+
+With CI in parenthesis for.ex. (10.1-15.5%) calculated from percentage
+of success:
+
+``` r
+library(stringr)
+calc_conf <- function(perc, n){
+  test <- round(perc*n)
+  res  <- binom.test(test, n)
+  lower <- res$conf.int[1] %>% round(3) *100 
+  upper <- res$conf.int[2] %>% round(3) *100
+  lower <- format(lower, nsmall = 1)
+  upper <- format(upper, nsmall = 1)
+  return(str_glue("({lower}-{upper}%)"))
+}
+calc_conf(0.42, 95) # (32.0-52.7%)
+```
+
+### Calculate difference in binomial confidence intervals
+
+``` r
+library(DescTools)
+# x = number of successes in group 1 or 2, n = number of trials in group 1 or 2 
+BinomDiffCI(x1=40,n1=95,x2=2,n2=47)
+```
+
+Nicely formatted CI calculated from percentage of success:
+
+``` r
+library(stringr)
+bindiff <- function(perc_1, n_1, perc_2, n_2){
+  test1 <- round(perc_1*n_1)
+  test2 <- round(perc_2*n_2) 
+  
+  res <- BinomDiffCI(test1,n_1,test2,n_2)
+  val <- res[1] %>% round(3) *100
+  lower <- res[2] %>% round(3) *100
+  upper <- res[3] %>% round(3) *100
+  val <- format(val, nsmall = 1)
+  lower <- format(lower, nsmall = 1)
+  upper <- format(upper, nsmall = 1)
+  
+  return(
+    list(test1=test1,test2=test2, 
+    ci = str_glue("{val}% ({lower}-{upper}%)")
+    ))
+}
+bindiff(0.42,95,0.042,47) # 37.8% (24.2-48.0%)
+```
+
+### Ordinal logistic regression
+
+Proportional odds: the effect of the independent variables on the
+dependent variable is constant for all levels in the dependent variable.
+
+### Mixed model
+
+<https://m-clark.github.io/mixed-models-with-R/random_intercepts.html>
+
+Random intercepts model: group-specific intercepts with own unique
+effects. E.g. (1 \| student) the intercept 1 is allowed to vary between
+student to student. The random effect is to the left of \|.
+
+### Survival analysis
+
+#### Generate survival curves
+
+``` r
+library(survival) # survival curves
+fit1 <- survfit(Surv( time , survival ) ~ variable, data=df)
+
+# Survival plot:
+#install.packages("survminer")
+library(survminer)
+ggsurvplot(fit1)
+```
+
+### Cox regression
+
+``` r
+library(survival) 
+fit1 <- coxph(Surv( time , survival ) ~ variable, data=df)
+summary(fit1)
+```
+
+### Check outliers in boxplots:
+
+``` r
+library(tidyverse)
+is_outlier <- function(x) {
+  return(x < quantile(x, 0.25,na.rm = T) - 1.5 * IQR(x, na.rm = T) | x > quantile(x, 0.75, na.rm = T) + 1.5 * IQR(x,na.rm=T))
+}
+
+# example: number of outlier per variable
+mtcars %>% 
+  summarise(across(where(is.numeric), is_outlier)) %>% 
+  summarise(across(everything(), ~sum(.==TRUE))) %>% 
+  t()
+```
+
+         [,1]
+    mpg     1
+    cyl     0
+    disp    0
+    hp      1
+    drat    0
+    wt      3
+    qsec    1
+    vs      0
+    am      0
+    gear    0
+    carb    1
+
+Note: outliers in `boxplot()` is computed differently. In that case, use
+`boxplot.stats()$out` to see outlier values.
+
+## Advanced programming in R
+
+### For-loops
+
+Never use `for (i in 1:lenght(n))` because it will fail if `length(n)`
+is 0, i.e. it will evaluate to `1 0`.
+
+Use `seq_along` or `seq_len` instead.
+
+### Preallocate the output container
+
+For faster looping.
+
+``` r
+out <- vector("list", length(n))
+# out <- vector("numeric", length(n)) #alternatively
+for (i in seq_len(n)) {
+out[[i]] <- 1 + i
+}
+```
+
+### Convert variable name into a string
+
+Using deparse + substitute
+
+``` r
+print_path <- function(path) {
+  print(stringr::str_glue("{deparse(substitute(path))} = {path}"))
+}
+```
+
+## Quote contents as a quosure
 
 Code - a sequence of symbols/constants/calls that will return a result
 if evaluated. Code can be:
 
-$i$ Evaluated immediately (Standard Eval), (ii) Quoted to use later
+\(i\) Evaluated immediately (Standard Eval), (ii) Quoted to use later
 (Non-Standard Eval).
-
-### Quote contents as a quosure
 
 Quosure- An expression that has been saved with an environment (aka a
 closure).  
@@ -2137,123 +2036,155 @@ mtcars
 f(mtcars, disp, mpg )
 ```
 
-# Purr
+# Retrieve data from Polisen open API
 
-### map: apply function to each element of list or vector
-
-``` r
-# map: apply function to each element of list of vector
-mtcars %>% map(., sum) # sum each col in df
-pmap_dbl(mtcars,sum) # sum of each row
-by_cyl <- mtcars %>% split(.$cyl) # list of dfs
-mods <- by_cyl %>% map(~ lm(mpg ~ wt, data = .)) # in each df, create linear model
-```
-
-Why use map instead of lapply?
-<https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply>
-
-### Create an empty tibble with column names from vector and 0 rows
+Returns a tibble of useful information from Swedish Police reports given
+location, date or event. More info here about what you can do:
+<https://polisen.se/om-polisen/om-webbplatsen/oppna-data/api-over-polisens-handelser/>
 
 ``` r
-default_cols <- c("Survey", "sub_area", "Insats")
-
-default_df <- default_cols %>% purrr::map_dfc(setNames, object = list(character()))
-# A tibble: 0 x 3
-# ... with 3 variables: Survey <chr>, sub_area <chr>, Insats <chr>
-```
-
-### Nest: split dataframe into list of dataframes
-
-``` r
+library(httr)
 library(tidyverse)
-n_iris <- iris %>%  group_by(Species) %>%  nest()
-## A tibble: 3 x 2
-## Groups:   Species [3]
-#  Species    data             
-#  <fct>      <list>           
-#1 setosa     <tibble [50 x 4]>
-#2 versicolor <tibble [50 x 4]>
-#3 virginica  <tibble [50 x 4]>
-```
+library(lubridate)
+library(jsonlite)
 
-### Join each element in nested dataframe with another dataframe
+get_polisen <- function(.date = NULL, .location=NULL, .events = NULL, .preprocess = T) {
+  base_url <- "https://polisen.se/api/events?"
+  url <- base_url
+  if (!is.null(.events)) {
+    events <- str_c(.events, collapse = ";")
+    url <- str_c(base_url, "type=", events)
+  }
+  if (!is.null(.date)) {
+    url <- str_c(url, "&DateTime=", .date)
+  }
+  if (!is.null(.location)) {
+    locations <- str_c(.location, collapse = ";")
+    url <- str_c(url, "&locationname=", locations)
+  }
 
-``` r
-join_df <- function(df_nest, df_other) {
-  df_all <- inner_join(df_nest, df_other, by = c("name1" = "name2"))
-  return(df_all)
+  resp <- httr::GET(as.character(url))
+  
+  if (httr::http_status(resp)$category != "Success") {
+    print(resp)
+    stop("Http status not success")
+  }
+  
+  df <- resp %>%
+    content(as = "text") %>%
+    jsonlite::fromJSON() %>%
+    as_tibble()
+  
+  if (.preprocess & nrow(df) != 0) {
+    df <- df %>% 
+      mutate(datetime = lubridate::as_datetime(datetime, tz = "Europe/Stockholm"),
+             url = str_glue("https://polisen.se{url}"),
+             summary2 = str_glue("{summary}\n<a href=\"{url}\">Mer info</a>")
+      )
+    # separate coordinates into two columns, rename duplicate column name
+    df$location <- df$location %>% 
+      as_tibble() %>% 
+      separate(gps, c("lat", "lng"), sep = ",", convert = T) %>% 
+      dplyr::rename(location_name = name) %>% 
+      # add some noise to coordinates, since all coordinates for a given location are the same.
+      # otherwise the points will overlap on the map.
+      # the coordinates only show the coordinate of an area, never an exact location
+      mutate(lat = jitter(lat), lng = jitter(lng) )
+    
+    df <- df %>%
+      unnest(location)
+  } 
+  return(df)
 }
 
-tmp_n2 <- tmp_n %>%
-  mutate(new_data = map(data, ~ join_df(., df_of_interest)))
+# get all events:
+get_polisen()
+# Filter by a vector of events
+get_polisen(.date = "2022-06", .location = "Varberg", .events = c("Rån", "Trafikolycka"))
+# filter by a vector of locations
+get_polisen(.date = "2022-04", .location = c("Varberg","Stockholm"))
+# filter by year, year-month or year-month-day:
+get_polisen(.date = "2022-06-05", .location = "Linköping")
+# # A tibble: 1 x 9
+# id datetime            name                                  summary          url                 type   location_name   lat   lng
+# <int> <dttm>              <chr>                                 <chr>            <glue>              <chr>  <chr>         <dbl> <dbl>
+# 342083 2022-06-05 11:31:12 05 juni 11:31, Rattfylleri, Linköping Trafikant uppmä~ https://polisen.se~ Rattf~ Linköping      58.4  15.6
 ```
 
-### Read nested files
+## Interactive plot of police report locations from API
 
-Consider the dataframe df:
+The following code will plot an interactive map of all the coordinates
+retrieved via the Polisen API function, with popups containing
+information and links for more information.
 
-| matrix | filePathIn  |
-|--------|-------------|
-| A      | my_dir/A.px |
-| B      | my_dir/B.px |
-| C      | my_dir/C.px |
+Note that the coordinates from Polisen only show the coordinates of a
+city or area, not an exact location. Within `get_polisen()`, numeric
+noise is added to the coordinates in order to be able show all
+coordinates on a plot (otherwise they will all overlap for a given
+area). In order to find out the exact location or area within a city,
+you would have to click on ‘Mer info’ where it will probably be given in
+more detail in the police report.
 
-``` r
-inFile_n <- df %>% group_by(matrix) %>% nest()
-# lÃ¤s in alla matriser:
-inFile_alla <- inFile_n %>% 
-  mutate( rrr = map(data, function(x) read.px(x$filePathIn) ) )
-# alternatively:
-#inFile_n %>% 
-#  mutate( rrr = map(data, ~ read.px(.x$filePathIn)  ) )
-```
-
-where:
-
-inFile_n:
-
-| matrix \<chr\> | data \<list\>        |
-|----------------|----------------------|
-| A              | \<tibble \[1 x 2\]\> |
-| B              | \<tibble \[1 x 2\]\> |
-| C              | \<tibble \[1 x 2\]\> |
-
-inFile_alla:
-
-| matrix \<chr\> | data \<list\>        | rrr \<list\>               |
-|----------------|----------------------|----------------------------|
-| A              | \<tibble \[1 x 2\]\> | \<tibble \[27,000 x 7\]\>  |
-| B              | \<tibble \[1 x 2\]\> | \<tibble \[25,200 x 6\]\>  |
-| C              | \<tibble \[1 x 2\]\> | \<tibble \[126,000 x 7\]\> |
-
-# Stringr string manipulation
-
-See [stringr.R](R/stringr.R) for a walk-through.
-
-## Generate acronyms
-
-Based on the first character of each word in a string. Returns a
-character vector.
+![Stats notes](img/polisen_plot2.png)
 
 ``` r
+# install.packages("leaflet")
+library(leaflet)
 library(tidyverse)
-generate_varcodes <- function(s) {
- str_split(s, boundary("word")) %>%
-    map(~str_sub(.x, 1,1)) %>%
-    map(str_to_upper) %>%
-    map(str_c, collapse = "") %>%
-    unlist()
-}
-mpg %>% 
-  select(model) %>% 
-  distinct() %>% 
-  mutate(acronym = generate_varcodes(model)) %>% 
-  head()
+
+get_polisen(.date = "2022-06", .location = "Uppsala") %>% 
+  leaflet() %>%
+  addTiles() %>%
+  addMarkers(lng = ~lng, lat = ~lat, popup = ~summary2, label = ~name)
 ```
 
-# Powershell
+# Retrieve Swedish traffic info from Trafikverket API
 
-Not really part of statistics but good to know if you need to do any
+See [code](R/trafikverket_api.R) for more details. Given a coordinate,
+retrieve traffic information within a 10 000 meter radius and display on
+an interactive map. Requires that you register for an api-key at
+Trafikverket. For more info, see
+[here](https://api.trafikinfo.trafikverket.se/).
+
+![Stats notes](img/trafikverket_api_plot.png)
+
+``` r
+x <- get_traffic_info(.x = "6398983", .y = "320011")
+x %>% 
+  plot_traffic()
+```
+
+## System handling in R
+
+### Remove all files and subdirectories under path/\* (without deleting path/)
+
+``` r
+unlink("path/*", recursive = TRUE)
+unlink("path/*") # deletes files only, no directories
+```
+
+### Remove all files and subdirectories for multiple paths
+
+``` r
+# set pattern = ".*out.*" to target specific directories named out
+out_dirs <- list.files(str_glue("C:/path1/path2"), full.names = T, recursive = T, pattern = ".*out.*", include.dirs = T)
+out_dirs <- str_c(out_dirs, "/*")
+# out_dirs contains: "C:/path1/path2/ax/out/*" "C:/path1/path2/dk/out/*" "C:/path1/path2/EA/out/*" "C:/path1/path2/EU/out/*" ...
+unlink(out_dirs, recursive = T) # removes files and dirs under "C:/path1/path2/{ax,dk,EA,EU,...}/out/*"
+```
+
+### Extract filenames or directory names from a path
+
+``` r
+basename("C:/px/hej.txt")
+# hej.txt
+dirname("C:/px/hej.txt")
+# "C:/px"
+```
+
+## Powershell
+
+If you’re a windows user, this is good to know if you need to do any
 form of automation on system files.
 
 ### grep -r in powershell
@@ -2270,7 +2201,7 @@ This example removes all files containing \_flags in filename:
 Dir | Rename-Item –NewName { $_.name –replace “_flags“,”” }
 ```
 
-# Run/execute program/scripts from R using system()
+### Run/execute program/scripts from R using system()
 
 ``` r
 system("powershell ls -rec H:\\Documents\\")
@@ -2356,15 +2287,18 @@ terminal:
     untracked = cyan
 ```
 
-# Creating a virtual environment
+<!-- # Creating a virtual environment -->
+<!-- To do -->
+<!-- # Bash / linux useful commands -->
+<!-- To do -->
 
-To do
+# Regex
 
-# Bash / linux useful commands
+## Find numbers
 
-To do
+`[0-9]+\.?[0-9]{0,}`
 
-# Fun stuff
+------------------------------------------------------------------------
 
 ## Calculate target pace
 
@@ -2489,8 +2423,3 @@ below the given target time).
 | 5H 30M      | 7M 49.2S |              |          |          |
 | 5H 45M      | 8M 10.6S |              |          |          |
 | 6H 0M       | 8M 31.9S |              |          |          |
-
-# Regex
-
-Find only numbers in px files: `[0-9]+\.?[0-9]{0,}` and replace with
-`..`.

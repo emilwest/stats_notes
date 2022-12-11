@@ -1,0 +1,812 @@
+---
+author: "Emil Westin"
+format: gfm
+execute: 
+  eval: false
+  warning: false
+  message: false
+editor: 
+  markdown: 
+    wrap: sentence
+---
+
+# Data wrangling
+
+
+## Set reference category in categorical variable
+
+To set a reference category for a categorical variable in regression models, you move that category to the first position of the levels.
+If you want "Mid" to be the reference and the levels are "Low", "Mid", "High", you simply want to change the order of levels to "Mid", "Low", "High".
+
+```{r}
+# relevel single variable
+df %>% 
+  dplyr::mutate(q_mycat = fct_relevel(q_mycat, "Mid"))
+  
+# explicitly same as:
+df %>% 
+  dplyr::mutate(q_mycat = factor(q_mycat, c("Mid", "Low", "High")))
+
+# using stats::relevel:
+df$q_mycat <- relevel(df$q_mycat, ref = "Mid")
+
+# relevel multiple variables (assuming they have the same factors levels):
+df %>% 
+  dplyr::mutate(across(starts_with("q_"), ~ fct_relevel(.x, "Mid")))
+```
+
+## Count number of missing for all columns in dataframe
+
+```{r}
+#| eval: true
+library(tidyverse)
+map_df(iris, ~sum(is.na(.))) %>% pivot_longer(everything(), names_to = "Variable", values_to = "n")
+```
+
+
+## Get nice summary statistics in a dataframe
+
+```{r}
+library(tidyverse)
+get_summary <- function(.data) {
+  .data %>%
+    mutate(across(where(is.factor), as.character)) %>% 
+    summarise(across(everything(), 
+                     .fns = list(n_missing = ~sum(is.na(.)),
+                                 minimum = ~min(., na.rm = T),
+                                 maximum = ~max(., na.rm = T),
+                                 mean = ~ ifelse(is.numeric(.), mean(., na.rm = T), NA),
+                                 median = ~ ifelse(is.numeric(.), median(., na.rm = T), NA)
+                                 # minimum = ~ ifelse(is.numeric(.), min(.), NA)
+                                 
+                     ), 
+                     .names = "{.col}__{.fn}")) %>% 
+    mutate(across(everything(), as.character)) %>% 
+    pivot_longer(everything(), names_to = "v") %>% 
+    separate(v, into = c("v","t"), sep = "__") %>% 
+    pivot_wider(names_from = t, values_from = value) %>% 
+    mutate(across(c(n_missing, mean, median), as.numeric)) %>% 
+    dplyr::rename("variable" = v)
+}
+
+iris %>% get_summary()
+# # A tibble: 5 × 6
+#   variable     n_missing minimum maximum    mean median
+#   <chr>            <dbl> <chr>   <chr>     <dbl>  <dbl>
+# 1 Sepal.Length         0 4.3     7.9        5.84   5.8 
+# 2 Sepal.Width          0 2       4.4        3.06   3   
+# 3 Petal.Length         0 1       6.9        3.76   4.35
+# 4 Petal.Width          0 0.1     2.5        1.20   1.3 
+# 5 Species              0 setosa  virginica NA     NA  
+```
+
+## Classic tables (base R)
+
+### Create contingency tables
+
+```{r}
+table()
+prop.table() # with proportions
+```
+
+### Add totals to contingency table
+
+```{r}
+# 2=sum cols, 1=sum rows, otherwise it sums both
+tab <- addmargins(table(df$Company,df$Marital), 2)
+```
+
+
+## Mutate columns to other format
+
+``` r
+library(tidyverse)
+
+# Old way (superseded):
+iris %>%
+    mutate_if(is.factor, as.character)
+    
+# New way (recommended from version 1.0.0):
+iris %>%
+  mutate(across(where(is.factor), as.character))
+# if converting to factor, use as_factor to preserve order that the factors appear
+
+## perform conversion on a list of dataframes
+dat <- iris %>% as_tibble() %>%  split(.$Species) # list of dataframes split by Species
+dat %>% 
+  map(~ .x %>% mutate(across(where(is_double), as.character)))
+```
+
+## Renaming
+
+Rename the last column:
+
+```{r}
+bind_rows(sms_tot, mms_tot) %>%
+      dplyr::rename(value = last_col())
+      
+# alternatively if you like to overcomplicate things:
+bind_rows(sms_tot, mms_tot) %>%
+      dplyr::rename(value = !! last(names(sms_tot)))
+```
+
+## Split delimited strings in a column and insert as new rows
+
+Consider
+
+| A   | B                   |
+|-----|---------------------|
+| 1   | apple, banana, pear |
+| 2   | watermelon, apple   |
+
+```{r}
+#| eval: true
+library(tidyverse)
+df <- tribble(
+  ~A, ~B,
+  1, c("apple, banana, pear"),
+  2, c("watermelon, apple")
+)
+df %>% 
+  separate_rows(B)
+```
+
+## Self join / cross-join
+
+Table band_members:
+
+| name | band    |
+|------|---------|
+| Mick | Stones  |
+| John | Beatles |
+| Paul | Beatles |
+
+To perform a self-join in R, i.e. a Cartesian product of all combinations of a table, supply `by = character()`
+
+```{r}
+#| eval: true
+#| #| message: false
+library(tidyverse)
+band_members %>% 
+  left_join(band_members, by = character())
+```
+
+This is basically the R/dplyr equivalent of a SQL self-join:
+
+``` sql
+select * from band_members b1, band_members b2
+```
+
+## Other joins
+
+Table band instruments:
+
+| name  | plays  |
+|-------|--------|
+| John  | guitar |
+| Paul  | bass   |
+| Keith | guitar |
+
+```{r}
+#| eval: true
+#| message: false
+band_members %>% inner_join(band_instruments)
+band_members %>% left_join(band_instruments)
+band_members %>% right_join(band_instruments)
+band_members %>% full_join(band_instruments)
+```
+
+## Complete missing values in a column in df given a reference data frame (for long format)
+
+Turn implicit missing values into explicit missing values.
+The following function works for data frames in long format where there is a 'value' column.
+If you supply a reference data frame, this function detects which values in the supplied column are missing and adds them with values as NA.
+
+```{r complete_missing1}
+#| eval: true
+#| message: false
+
+library(tidyverse)
+# Function for completing missing values for a column, given a reference df
+complete_missing <- function(.x, .reference_df, .colname) {
+
+  ax <- deparse(substitute(.colname)) # convert .colname to string
+  missingl <- setdiff(.reference_df[[ax]], .x[[ax]]) # missing levels
+
+  a <- rlang::enquo(.colname) #
+  .x %>%
+    mutate(!!a := fct_expand(!!a, missingl)) %>%
+    complete(!!! syms(setdiff(names(.reference_df), "value")))
+
+}
+```
+
+Or if you want to complete a column with a value you specify yourself:
+
+```{r complete_missing2}
+#| eval: true
+#| message: false
+library(tidyverse)
+complete_col <- function(.x, .colname, .levels) {
+  a <- rlang::enquo(.colname)
+  .x %>%
+    mutate(!!a := fct_expand(!!a, .levels)) %>%
+    complete(!!! syms(setdiff(names(.x), "value")))
+}
+```
+
+Example:
+
+```{r}
+#| eval: true
+#| message: false
+x <- tribble(~Sepal.Length, ~Sepal.Width, ~Petal.Length, ~Petal.Width,    ~Species,
+        1, 2, 3, 4, "setosa"
+        ) 
+# Convert to long formats:
+x_long <- x %>% 
+  pivot_longer(-Species)
+iris_long <- iris %>% 
+  pivot_longer(-Species)
+
+x_long
+
+x_long %>% 
+  complete_missing(iris_long, Species) %>% 
+  head(10)
+
+# Is equivalent to:
+# x_long %>% 
+#     mutate(Species = fct_expand(Species, c("versicolor", "virginica"))) %>%
+#     complete(!!! syms(setdiff(names(iris_long), "value")))
+```
+
+## Merge multiple dataframes
+
+From <https://stackoverflow.com/questions/14096814/merging-a-lot-of-data-frames>
+
+```{r}
+Reduce(function(...) merge(..., all=TRUE), list(df1, df2, df3))
+```
+
+## Split dataframe by group into list
+
+Returns list of dataframes.
+
+```{r}
+library(tidyverse) 
+mtcars %>% split(.$cyl)
+```
+
+## Create a Data Frame from All Combinations of Factor Variables
+
+Returns a dataframe (data.frame) from all combinations of the supplied vectors or factors.
+Useful if you for ex.
+want to test a set of hyperparameters without creating nested for loops, just create a dataframe of all combinations and iterate through it.
+
+```{r}
+expand.grid(letters[1:2], 1:3, c("+", "-"))
+```
+
+## Create several new empty columns using `dplyr::mutate` from names in character vector
+
+<https://stackoverflow.com/questions/49119794/using-dplyrmutate-to-create-several-new-variables-from-names-specified-in>
+
+```{r}
+add_columns <- function(df, columns){
+  new <- rep(NA_character_, length(columns))
+  names(new) <- columns
+  mutate(df, !!!new)
+}
+
+sourcecols_in_meta <- str_extract(names(meta),"SOURCE.*") %>% na.omit %>% unique()
+sourcecols_in_df_final <- str_extract(names(df_final),"SOURCE.*") %>% na.omit %>% unique()
+# cols in meta not in df_final:
+diffcols <- setdiff(sourcecols_in_meta, sourcecols_in_df_final)
+
+df_final <- df_final %>% 
+    add_columns(diffcols)
+```
+
+## Cut variables into categories
+
+`right` = indicating if the intervals should be closed on the right (and open on the left) or vice versa.
+`include.lowest` = indicating if an x\[i\] equal to the lowest (or highest, for right = FALSE) "breaks" value should be included.
+
+```{r}
+cut(tmp2$Antal, breaks = c(-Inf,20,50,Inf), labels = c("\u226420", "21-50", "50-521"))
+# will show ≤20    21-50  50-521
+
+cut(0:10, breaks = c(0,  1, 4, 10, Inf), labels = c("0", "1-3", "4-9", "\u226510"), include.lowest = T,right=F )
+# [1] 0   1-3 1-3 1-3 4-9 4-9 4-9 4-9 4-9 4-9 ≥10
+#Levels: 0 1-3 4-9 ≥10
+
+# <19, ≥20 :
+cut(0:20, breaks = c(0,  19,  Inf),labels = c("<20", "\u226520"),include.lowest = T,right=T )
+#[1] <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 <20 ≥20
+#Levels: <20 ≥20
+```
+
+## Vectors
+
+### Split vector into chunks given length of each chunk
+
+From <https://statisticsglobe.com/split-vector-into-chunks-in-r>
+
+```{r}
+#| eval: true
+ my_vec <- 2008:2021
+  chunk_length <- 5
+  split(my_vec,             
+        ceiling(seq_along(my_vec) / chunk_length))
+```
+
+### Split vector into chunks given number of chunks
+
+From <https://statisticsglobe.com/split-vector-into-chunks-in-r>
+
+```{r}
+#| eval: true
+chunk_number <- 2 
+split(my_vec,             # Applying split() function
+      cut(seq_along(my_vec),
+          chunk_number,
+          labels = FALSE))
+```
+
+## Calculate sum and return NA if all categories are NA
+
+The problem with sum(x, na.rm = TRUE) is that it will return 0 if all categories are NA.
+Sometimes we want it to be NA, here is how:
+
+```{r}
+sumna <- function(x) {
+  if(all(is.na(x))) NA else sum(x, na.rm = TRUE)
+}
+```
+
+
+## Date handling
+
+<!-- todo: look into POSIXct vs dates. -->
+
+### Generate sequence of dates
+
+```{r}
+library(lubridate)
+
+seq(ymd("2022-01-01"), ymd("2022-12-31"), by = "1 days")
+# "2022-01-01" "2022-01-02" "2022-01-03" ... 2022-12-31"
+# in base r, replace ymd() with as.Date()
+```
+
+
+<!-- ```{r} -->
+<!-- full_dates <- seq(as.Date("2016-09-01"), by = "month", length.out =39) -->
+<!-- full_dates <- tibble(date = full_dates) -->
+<!-- full_dates <- full_dates %>% mutate(month = format(date, "%m"), year = format(date, "%Y") ) -->
+
+<!-- # you can merge the full dates with a dataframe that also contains year & month. na:s automatically added -->
+<!-- merge(full_dates, df, by = c("year", "month"), all.x = TRUE) -->
+
+<!-- # you can combine year & month columns into a single column as: -->
+<!-- df %>%  -->
+<!--   mutate(new_d = format( make_date(year, month), "%Y-%m" ) ) -->
+<!-- ``` -->
+
+
+
+
+<!-- ### Generate dataframe of dates for entire years -->
+
+<!-- The following function requires lubridate and tidyverse. -->
+<!-- Given a vector of year(s), you get dataframes with daily and weekly information in your locale. -->
+<!-- Examples: `generate_yearly_dfs()`, `generate_yearly_dfs(2022)`, `generate_yearly_dfs(2022:2025)`. -->
+
+<!-- Note that the weekly summary filters away week 53 (if it exists), and weeks overlapping from previous year, i.e. the first week on monday may not start on January 1st.  -->
+
+<!-- ```{r} -->
+<!-- library(lubridate) -->
+<!-- library(tidyverse) -->
+
+<!-- generate_yearly_dfs <- function(.yr = lubridate::year(lubridate::now()), -->
+<!--                                 .by = "1 days") { -->
+
+<!--   if (length(.yr) == 1) { -->
+<!--     first_day <- str_glue("{.yr}-01-01") -->
+<!--     last_day <- str_glue("{.yr}-12-31") -->
+<!--   } else if (length(.yr) > 1) { -->
+<!--     first_day <- str_glue("{first(.yr)}-01-01") -->
+<!--     last_day <- str_glue("{last(.yr)}-12-31") -->
+<!--   } -->
+
+<!--   x <- tibble( -->
+<!--     datum = seq(lubridate::ymd(first_day), lubridate::ymd(last_day), by = .by), -->
+<!--     yr = lubridate::year(datum), -->
+<!--     m = lubridate::month(datum, label = T), -->
+<!--     w = lubridate::isoweek(datum), # week 1 starts on Jan 1st -->
+<!--     isow = lubridate::isoweek(datum), # week 1 starts on first Monday of the year  -->
+<!--     d = lubridate::day(datum), -->
+<!--     day = lubridate::wday(datum, label = T) -->
+<!--   )  -->
+
+<!--   # weekly summary -->
+<!--   weekly_summary <- x %>% -->
+<!--     filter(!(m == "jan" & w == 52)) %>%  -->
+<!--     filter(!(w == 53)) %>%  -->
+<!--     group_by(yr,  isow) %>% -->
+<!--     mutate(id = row_number()) %>% -->
+<!--     filter(datum == min(datum) | datum == max(datum)) %>% -->
+<!--     mutate(daypart = str_glue("{d} {m}")) %>% -->
+<!--     summarise(period = str_c(daypart, collapse = " - ")) %>% -->
+<!--     ungroup() -->
+
+
+<!--   return(list( -->
+<!--     year_df = x, -->
+<!--     weekly_summary = weekly_summary -->
+<!--   )) -->
+<!-- } -->
+
+
+<!-- # > generate_yearly_dfs() -->
+<!-- # `summarise()` has grouped output by 'yr'. You can override using the `.groups` argument. -->
+<!-- # $year_df -->
+<!-- # # A tibble: 365 x 6 -->
+<!-- #    datum         yr m         w     d day   -->
+<!-- #    <date>     <dbl> <ord> <dbl> <int> <ord> -->
+<!-- #  1 2022-01-01  2022 jan       1     1 lör   -->
+<!-- #  2 2022-01-02  2022 jan       1     2 sön   -->
+<!-- #  3 2022-01-03  2022 jan       1     3 mån   -->
+<!-- #  4 2022-01-04  2022 jan       1     4 tis   -->
+<!-- #  5 2022-01-05  2022 jan       1     5 ons   -->
+<!-- #  6 2022-01-06  2022 jan       1     6 tor   -->
+<!-- #  7 2022-01-07  2022 jan       1     7 fre   -->
+<!-- #  8 2022-01-08  2022 jan       2     8 lör   -->
+<!-- #  9 2022-01-09  2022 jan       2     9 sön   -->
+<!-- # 10 2022-01-10  2022 jan       2    10 mån   -->
+<!-- # # ... with 355 more rows -->
+<!-- #  -->
+<!-- # $weekly_summary -->
+<!-- # # A tibble: 53 x 3 -->
+<!-- # # Groups:   yr [1] -->
+<!-- #       yr     w Period        -->
+<!-- #    <dbl> <dbl> <chr>           -->
+<!-- #  1  2022     1 1 jan - 7 jan   -->
+<!-- #  2  2022     2 8 jan - 14 jan  -->
+<!-- #  3  2022     3 15 jan - 21 jan -->
+<!-- #  4  2022     4 22 jan - 28 jan -->
+<!-- #  5  2022     5 29 jan - 4 feb  -->
+<!-- #  6  2022     6 5 feb - 11 feb  -->
+<!-- #  7  2022     7 12 feb - 18 feb -->
+<!-- #  8  2022     8 19 feb - 25 feb -->
+<!-- #  9  2022     9 26 feb - 4 mar  -->
+<!-- # 10  2022    10 5 mar - 11 mar  -->
+<!-- # # ... with 43 more rows -->
+<!-- ``` -->
+
+<!-- Using the function above you can easily generate a calendar: -->
+
+<!-- ```{r} -->
+<!-- generate_yearly_dfs()$year_df %>%  -->
+<!--   select(-d,-w) %>%  -->
+<!--   group_by(yr, m, isow) %>%  -->
+<!--   pivot_wider(names_from = day, values_from = datum) %>%  -->
+<!--   select(yr, m, isow, mån:fre, lör, sön) -->
+
+<!-- # # A tibble: 63 x 10 -->
+<!-- # # Groups:   yr, m, isow [63] -->
+<!-- #       yr m      isow mån        tis        ons        tor        fre        lör        sön        -->
+<!-- #    <dbl> <ord> <dbl> <date>     <date>     <date>     <date>     <date>     <date>     <date>     -->
+<!-- #  1  2022 jan      52 NA         NA         NA         NA         NA         2022-01-01 2022-01-02 -->
+<!-- #  2  2022 jan       1 2022-01-03 2022-01-04 2022-01-05 2022-01-06 2022-01-07 2022-01-08 2022-01-09 -->
+<!-- #  3  2022 jan       2 2022-01-10 2022-01-11 2022-01-12 2022-01-13 2022-01-14 2022-01-15 2022-01-16 -->
+<!-- #  4  2022 jan       3 2022-01-17 2022-01-18 2022-01-19 2022-01-20 2022-01-21 2022-01-22 2022-01-23 -->
+<!-- #  5  2022 jan       4 2022-01-24 2022-01-25 2022-01-26 2022-01-27 2022-01-28 2022-01-29 2022-01-30 -->
+<!-- #  6  2022 jan       5 2022-01-31 NA         NA         NA         NA         NA         NA         -->
+<!-- #  7  2022 feb       5 NA         2022-02-01 2022-02-02 2022-02-03 2022-02-04 2022-02-05 2022-02-06 -->
+<!-- #  8  2022 feb       6 2022-02-07 2022-02-08 2022-02-09 2022-02-10 2022-02-11 2022-02-12 2022-02-13 -->
+<!-- #  9  2022 feb       7 2022-02-14 2022-02-15 2022-02-16 2022-02-17 2022-02-18 2022-02-19 2022-02-20 -->
+<!-- # 10  2022 feb       8 2022-02-21 2022-02-22 2022-02-23 2022-02-24 2022-02-25 2022-02-26 2022-02-27 -->
+<!-- ``` -->
+
+
+
+
+
+## Purrr
+
+### map: apply function to each element of list or vector
+
+```{r}
+mtcars %>% map(., sum) # sum each col in df
+pmap_dbl(mtcars, sum) # sum of each row in df
+mods <- by_cyl %>% map(~ lm(mpg ~ wt, data = .)) # in each df, create linear model
+```
+
+[Why use map instead of lapply?](https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply)
+
+-   Syntacically more convenient: You can use model formulas like `~ . + 1` instead of `function(x) x + 1`
+
+-   Type-specific: you know exactly what type is returned (double, character, dataframe, etc).
+
+-   Nicely integrated with tidyverse
+
+### Create an empty tibble with column names from vector and 0 rows
+
+```{r}
+default_cols <- c("Survey", "sub_area", "Insats")
+
+default_df <- default_cols %>% purrr::map_dfc(setNames, object = list(character()))
+# A tibble: 0 x 3
+# ... with 3 variables: Survey <chr>, sub_area <chr>, Insats <chr>
+```
+
+### Nest: split dataframe into list of dataframes
+
+```{r}
+library(tidyverse)
+n_iris <- iris %>%  group_by(Species) %>%  nest()
+## A tibble: 3 x 2
+## Groups:   Species [3]
+#  Species    data             
+#  <fct>      <list>           
+#1 setosa     <tibble [50 x 4]>
+#2 versicolor <tibble [50 x 4]>
+#3 virginica  <tibble [50 x 4]>
+```
+
+### Join each element in nested dataframe with another dataframe
+
+```{r}
+join_df <- function(df_nest, df_other) {
+  df_all <- inner_join(df_nest, df_other, by = c("name1" = "name2"))
+  return(df_all)
+}
+
+tmp_n2 <- tmp_n %>%
+  mutate(new_data = map(data, ~ join_df(., df_of_interest)))
+```
+
+### Read nested files
+
+Consider the dataframe df:
+
+| matrix | filePathIn  |
+|--------|-------------|
+| A      | my_dir/A.px |
+| B      | my_dir/B.px |
+| C      | my_dir/C.px |
+
+```{r}
+inFile_n <- df %>% group_by(matrix) %>% nest()
+# lÃ¤s in alla matriser:
+inFile_alla <- inFile_n %>% 
+  mutate( rrr = map(data, function(x) read.px(x$filePathIn) ) )
+# alternatively:
+#inFile_n %>% 
+#  mutate( rrr = map(data, ~ read.px(.x$filePathIn)  ) )
+```
+
+where:
+
+inFile_n:
+
+| matrix \<chr\> | data \<list\>        |
+|----------------|----------------------|
+| A              | \<tibble \[1 x 2\]\> |
+| B              | \<tibble \[1 x 2\]\> |
+| C              | \<tibble \[1 x 2\]\> |
+
+inFile_alla:
+
+| matrix \<chr\> | data \<list\>        | rrr \<list\>               |
+|----------------|----------------------|----------------------------|
+| A              | \<tibble \[1 x 2\]\> | \<tibble \[27,000 x 7\]\>  |
+| B              | \<tibble \[1 x 2\]\> | \<tibble \[25,200 x 6\]\>  |
+| C              | \<tibble \[1 x 2\]\> | \<tibble \[126,000 x 7\]\> |
+
+
+
+
+
+
+
+
+## Coordinates and maps
+
+### Convert SWEREF89 to WGS84
+
+```{r}
+convert_sweref99_to_wgs84 <- function(.x, .y){
+  # SWEREF 99
+  sweref99 <- sf::st_sfc(sf::st_point(c(.x, .y), dim = "XY"), crs = 3006)
+  wgs84 <- sf::st_transform(sweref99, crs = 4326)
+  sf::st_coordinates(wgs84)
+}
+convert_sweref99_to_wgs84(6398983, 320011)
+#          X       Y
+# 1 61.74469 1.97728
+```
+
+
+
+## Stringr string manipulation
+
+See [stringr.R](R/stringr.R) for a walk-through.
+
+### Generate acronyms
+
+Based on the first character of each word in a string.
+Returns a character vector.
+
+```{r, message=F}
+library(tidyverse)
+generate_varcodes <- function(s) {
+ str_split(s, boundary("word")) %>%
+    map(~str_sub(.x, 1,1)) %>%
+    map(str_to_upper) %>%
+    map(str_c, collapse = "") %>%
+    unlist()
+}
+mpg %>% 
+  select(model) %>% 
+  distinct() %>% 
+  mutate(acronym = generate_varcodes(model)) %>% 
+  head()
+```
+
+
+
+## Conversions
+
+### Terajoule (TJ) to (thousand) tons of oil equivalent
+
+```{r}
+tj_to_ttoe <- function(tj) {
+  # For converting Terajoule to Thousand tons of oil equivalent
+  tj/(0.041868*1000)
+}
+```
+
+
+
+
+
+
+## PX
+
+### Retrieve data from PXWeb
+
+After selecting variables for a table, you can choose to retrieve the data in some of the following ways.
+
+
+### POST request with json query
+
+Note: you can also specify "format": "json" in the query to get the data directly as json.
+
+```{r}
+library(httr)
+url <- "https://pxweb.nordicstatistics.org:443/api/v1/en/Nordic Statistics/Geography and climate/Land use/DENS01.px"
+url <- URLencode(url) # convert whitespace to ascii %20
+
+query <- '{
+  "query": [
+    {
+      "code": "time",
+      "selection": {
+        "filter": "item",
+        "values": [
+          "2016",
+          "2017",
+          "2018",
+          "2019"
+        ]
+      }
+    }
+  ],
+  "response": {
+    "format": "px"
+  }
+}'
+
+r <- POST(url, body=query)
+px <- content(r, type="text", encoding = "Windows-1252")
+px
+# Save as px file:
+fileConn <- file("testpx.px")
+writeLines(px, fileConn)
+close(fileConn)
+
+
+# Alternatively, load it directly in R by saving to temporary file path
+txtPath <- tempfile(fileext = ".px")
+writeLines(text = px, con = txtPath)
+close(txtPath)
+library(pxR)
+d <- pxR::read.px(txtPath, encoding = "iso-8859-15") %>% as_tibble()
+
+
+```
+
+### Tab delimited
+
+Save query -\> Update the query with a fixed starting time point and the new time periods -\> Tab delimited with heading.
+
+This may generate something like this: `https://pxweb.nhwstat.org:443/Prod/sq/0978ea50-2b97-4a48-bc58-d4a71806336e`.
+
+To see how it was selected, add `?select`: `https://pxweb.nhwstat.org:443/Prod/sq/0978ea50-2b97-4a48-bc58-d4a71806336e?select`.
+
+To download it, add `.relational_table`: `https://pxweb.nhwstat.org:443/Prod/sq/0978ea50-2b97-4a48-bc58-d4a71806336e.relational_table`
+
+```{r}
+as_tibble(read_delim(
+  "https://pxweb.nhwstat.org:443/Prod/sq/0978ea50-2b97-4a48-bc58-d4a71806336e.relational_table",
+  locale = locale(encoding = "latin1"),
+  delim = "\t" ) )
+```
+
+## Read a px-file in R
+
+```{r}
+library(pxR)
+px_in <- read.px("abcd10.px",  encoding='iso-8859-15')
+```
+
+## Write/export a px-file
+
+```{r}
+library(pxR)
+write.px(
+  px_in,
+  "abcd10_new.px",
+  fileEncoding = "iso-8859-15"
+)
+```
+
+## Pxweb
+
+```{r}
+library(pxweb)
+pxweb::pxweb_interactive() # interactively browse statistical databases and download px-files via API queries
+```
+
+
+
+
+<!-- ## Table 1 : nice summary tables -->
+
+<!--     library(table1)  -->
+<!--     # or: -->
+<!--     library(tableone) -->
+
+<!-- with flextable: -->
+
+<!-- ```{r} -->
+<!-- tableone2df <- function(tableone){ -->
+<!--   rows <- nrow(tableone) -->
+<!--   cols <- ncol(tableone) -->
+<!--   rowsXcols <- rows*cols -->
+<!--   colnames <- colnames(tableone) -->
+<!--   rownames <- rownames(tableone) -->
+
+<!--   listoflists <- list() -->
+<!--   for (i in 1:cols){ -->
+<!--     start <- (i*rows+1)-rows -->
+<!--     end <- i*rows -->
+<!--     listoflists[[i]] <- tableone[start:end] -->
+<!--   } -->
+<!--   dataframe <- as.data.frame(listoflists, col.names = colnames, row.names = rownames) -->
+<!--   return(dataframe) -->
+<!-- } -->
+
+<!-- # then do: -->
+<!-- flextable::flextable(tableone2df(table_1)  %>% rownames_to_column("Variable")) -->
+<!-- ``` -->
+
+
+
+
+
+
+

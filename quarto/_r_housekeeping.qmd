@@ -1,0 +1,66 @@
+---
+author: "Emil Westin"
+format: gfm
+execute: 
+  eval: false
+editor: 
+  markdown: 
+    wrap: sentence
+---
+
+
+## Updating R
+
+The following code assumes you are using windows and can be run from RStudio.
+The version of R can usually be found here `C:\Program Files\R\R-4.2.0`.
+[More info](https://cran.r-project.org/bin/windows/base/rw-FAQ.html#What_0027s-the-best-way-to-upgrade_003f "R for Windows FAQ").
+
+```{r}
+install.packages("installr")
+library(installr)
+# Run the following 
+# (you can also just type installr::updateR() and choose options interactively)
+installr::updateR(browse_news = T, 
+                  fast = F,
+                  install_R = T, 
+                  copy_packages = T, 
+                  copy_site_files = T,
+                  keep_old_packages = T,
+                  update_packages = F, # this will be done in next step
+                  start_new_R = F,
+                  quit_R = F
+                  )
+# When the above is completed, restart R, exit R studio and reopen with a fresh session
+
+# Reinstall the copied packages to match the latest version of R
+update.packages(checkBuilt=TRUE, ask=FALSE) 
+
+# Double check that the packages have been built with the latest version of R:
+installed.packages()
+```
+
+
+## Unload library/package from R session without restarting
+
+```{r}
+# unloading library(officer)
+detach(package:officer)
+```
+
+
+## RStudio useful shortcuts
+
+|                                                                            | Command                            |
+|----------------------------------------------------------------------------|------------------------------------|
+| Restart R-session and unload packages:                                     | `Command`/`Ctrl` + `Shift` + `F10` |
+| Comment/uncomment single/multiple lines:                                   | `Ctrl`+ `Shift` + `c`              |
+| Display command palette:                                                   | `Ctrl`+ `Shift` + `p`              |
+| Auto-indent:                                                               | `Ctrl` + `i`                       |
+| Edit multiple lines simultaneusly (increase the blinking line vertically): | `Ctrl` + `Alt` + `up / down`       |
+| Duplicate current line:                                                    | `Alt` + `Shift` + `up / down`      |
+| Insert assignment (`<-`):                                                  | `Alt` + `-`                        |
+| Insert pipe operator (`%>%`):                                              | `Ctrl` + `Shift` + `m`             |
+| Delete current line:                                                       | `Ctrl` + `d`                       |
+| Multiple word selection:                                                   | `Ctrl` + `Alt` + double left click |
+| Run code from beginning to line                                            | `Ctrl` + `Alt` + `b`               |
+| Move/shift line up/down                                                    | `Alt` + `up / down`                |

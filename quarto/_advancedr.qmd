@@ -1,0 +1,85 @@
+---
+author: "Emil Westin"
+format: gfm
+execute: 
+  eval: false
+editor: 
+  markdown: 
+    wrap: sentence
+---
+
+## Advanced programming in R
+
+
+### For-loops
+
+Never use `for (i in 1:lenght(n))` because it will fail if `length(n)` is 0, i.e. it will evaluate to `1 0`.
+
+Use `seq_along` or `seq_len` instead.
+
+### Preallocate the output container
+
+For faster looping.
+
+```{r}
+out <- vector("list", length(n))
+# out <- vector("numeric", length(n)) #alternatively
+for (i in seq_len(n)) {
+out[[i]] <- 1 + i
+}
+```
+
+
+
+### Convert variable name into a string
+
+Using deparse + substitute
+
+```{r}
+print_path <- function(path) {
+  print(stringr::str_glue("{deparse(substitute(path))} = {path}"))
+}
+```
+
+
+
+## Quote contents as a quosure
+
+Code - a sequence of symbols/constants/calls that will return a result if evaluated.
+Code can be:
+
+\(i\) Evaluated immediately (Standard Eval), (ii) Quoted to use later (Non-Standard Eval).
+
+Quosure- An expression that has been saved with an environment (aka a closure).  
+A quosure can be evaluated later in the stored environment to return a predictable result.
+
+```{r}
+a <- 1
+b <- 2
+q <- rlang::quo(a+b)
+# <quosure>
+#expr: ^a + b
+#env:  global
+```
+
+Evaluate it with `rlang::eval_tidy(q)`, returning 3.
+
+### Quote within function
+
+Useful when doing ggplot functions.
+For example with this function you can create a function like this `f(mtcars, disp, mpg )`, where disp and mpg are columns within the dataframe mtcars (included in tidyverse).
+!! uncoutes the symbol.
+
+```{r}
+library(tidyverse)
+f <- function(df,a,b){
+  a <- rlang::enquo(a)
+  b <- rlang::enquo(b)
+  # !! unquotes the symbol 
+  df %>%
+    ggplot(aes(x=!!a,y=!!b)) + 
+    geom_point()
+}
+mtcars
+f(mtcars, disp, mpg )
+```

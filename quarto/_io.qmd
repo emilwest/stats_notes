@@ -1,0 +1,436 @@
+---
+author: "Emil Westin"
+format: gfm
+execute: 
+  eval: false
+editor: 
+  markdown: 
+    wrap: sentence
+---
+
+# Excel: create/write/load/manipulate
+
+## Load specific excel sheet and write to it without overwriting other sheets
+
+Note: for this to work, the file obviously needs to exist beforehand.
+If needed, create an empty workbook beforehand:
+
+```{r}
+wb <- createWorkbook(title = str_glue("Månadsuppdatering {upp_datum}"))
+addWorksheet(wb, "Session_info")
+addWorksheet(wb, "Log")
+saveWorkbook(wb, file = path_to_file, overwrite = TRUE)
+```
+
+Now if we want to update the 'Log'-sheet only and not overwrite anything else:
+
+```{r}
+library(openxlsx)
+library(tidyverse) # (optional, for using tibble etc)
+wb <- openxlsx::loadWorkbook(path_to_file)
+df <- openxlsx::readWorkbook(wb, sheet = "Log")
+df <- as_tibble(df)
+
+# * do stuff to df*
+# write data to the same sheet
+openxlsx::writeData(wb = wb, sheet = "Log", x = df)
+# save it:
+openxlsx::saveWorkbook(wb, path_to_file, overwrite = TRUE)
+```
+
+This is the absolutely best method if you want to add more sheets as time goes and gives the most flexibility.
+It also preserves the original formatting of the file that is loaded and allows you to add any styling you want at any time.
+
+## Read excel files in R
+
+If you're just interested in reading the excel data without manipulating it too much (when saving it), these are some of the simplest options.
+
+```{r}
+# Read xlsx/xls:
+readxl::read_xlsx(name_of_file) 
+readxl::read_xls(name_of_file) # or readxl::read_excel(name_of_file) for guessing xls or xlsx
+# Read xlsx:
+openxlsx::read.xlsx(name_of_file) # only for xlsx
+
+# The following library is the best for ensuring the encoding is correct. 
+# Especially when the columns contain messy data, maybe there is is a mix of , or . in a number column. 
+# This function will ensure it is read exactly as it is written in the excel-file. Requires name or index of sheet.
+library(xlsx)
+xlsx::read.xlsx(name_of_file, sheetIndex = 1, encoding = "UTF-8")
+
+# Custom function useful when used for reading multiple excel files in purrr::map() 
+read_my_excel <- function(x) {
+  print(str_glue("Reading {x}"))
+  # try(openxlsx::read.xlsx(x, sep.names = " ") %>% 
+  #       as_tibble())
+  try(xlsx::read.xlsx(x, sheetIndex = 1, encoding = "UTF-8") %>% 
+        as_tibble())
+}
+# something like this: (saved as df)
+excel_df <- list.files(dir_where_excel_files_are, full.names = T) %>% 
+  set_names(~basename(.) %>% str_remove(".xlsx")) %>% 
+  enframe(name = "filename") %>% 
+  mutate(excel_in = map(value, read_my_excel))
+
+
+
+# Password protected excel:
+library("excel.link")
+xl.read.file(indata, password = "mypswd", write.res.password="mypswd")
+
+# Write excel files:
+library(openxlsx)
+write.xlsx(df, file = "Output/myfile.xlsx")
+```
+
+## Write multiple data frames as sheets in single excel file
+
+Option 1 (simplest):
+
+```{r}
+# Write multiple data frames as sheets in single excel file:
+list_of_datasets <- list("Sheet name 1" = df1, 
+                         "Sheet name 2" = df2,
+                         "Sheet name 3" = df3)
+openxlsx::write.xlsx(list_of_datasets, file = "Output/myfile.xlsx")    
+```
+
+Option 2 (more customization):
+
+```{r}
+library(openxlsx)
+library(tidyverse)
+ 
+# Split dataframe into list of tables
+dat <- split(mtcars, mtcars$cyl)
+ 
+wb <- createWorkbook()
+ 
+# loop trough list of splitted tables, adding worksheets and styles:
+map2(.x = dat, .y = names(dat),
+     .f = function(data, name) {
+       addWorksheet(wb, name)
+       freezePane(wb, name, firstActiveRow = 2)
+       writeData(wb, name, data, withFilter = TRUE)
+     })
+ 
+saveWorkbook(wb, file = "Output/myfile.xlsx", overwrite = TRUE)
+```
+
+If you don't need to apply any styling for each sheet you can just do:
+
+```{r}
+dat <- split(mtcars, mtcars$cyl)
+openxlsx::write.xlsx(dat, file = "Output/myfile.xlsx")   
+```
+
+## Add comments to cells
+
+```{r}
+comments <- c("comment 1",
+"comment 2",
+"comment 3")
+# add comments to columns:
+map(1:length(comments),
+      ~ writeComment(wb, 1, col = .x, row = 1, 
+                     comment = createComment(comment = comments[.x], visible = F)))
+
+# add comments to rows:
+map(1:length(comments),
+      ~ writeComment(wb, 1, col = 1, row = .x, 
+                     comment = createComment(comment = comments[.x], visible = F)))
+                     
+```
+
+## Openxlsx template
+
+```{r, eval=F, message=F, warning = F}
+# header style
+hs1 <- openxlsx::createStyle(
+  fontColour = "#ffffff", fgFill = "#4F80BD",
+  halign = "center", valign = "center", textDecoration = "bold",
+  border = "TopBottomLeftRight", fontSize = 14
+)
+
+curr_sheetname <- str_glue("<insert_sheetname_here>")
+wb <- openxlsx::createWorkbook()
+openxlsx::addWorksheet(wb, curr_sheetname)
+
+# If you want to change base font: 
+openxlsx::modifyBaseFont(wb, fontSize = 12, fontColour = "black", fontName = "Arial Narrow")
+
+# Write data
+openxlsx::writeData(wb, sheet = curr_sheetname, data, withFilter = T, headerStyle = hs1)
+openxlsx::freezePane(wb, sheet = curr_sheetname, firstRow = T)
+openxlsx::setColWidths(wb, 1, cols = 1:ncol(data), widths = "auto")
+
+# Optional styling
+# Add bgcolor based on cell values. Based on min/max when rule=NULL
+conditionalFormatting(wb, 
+                      curr_sheetname,
+                      cols = ncol(data)-3, 
+                      rows = 2:(nrow(data)+1),
+                      style = c("lightblue", "darkred"),
+                      rule = NULL,
+                      type = "colourScale"
+)
+
+# Change format of columns
+openxlsx::addStyle(wb, sheet = curr_sheetname, createStyle(numFmt = "NUMBER"), rows = 2:nrow(tmp), cols = 1)
+# map(cols_to_format,
+#         ~openxlsx::addStyle(wb, sheet = curr_enkät, createStyle(numFmt = "NUMBER"), rows = 2:nrow(tmp), cols = .x))
+
+openxlsx::saveWorkbook(wb, file = str_glue("Output/insert_name.xlsx"), overwrite = T)
+
+```
+
+## Openxlsx write one table after another on the same sheet
+
+```{r, eval=F,}
+counter <- 1
+for (i in seq_along(x)) {
+  startindex <- counter
+  tmp <- x[[i]]
+  n <- nrow(tmp)+1 # antal rader + en rad för kolumnen
+  title <- str_remove(names(x[i]), "X") # enkätfrågan + ta bort X
+  
+  openxlsx::writeData(wb, curr_enkät, title, startRow = startindex, startCol = 1)
+  openxlsx::addStyle(wb, curr_enkät, style, rows = startindex, cols = 1)
+  openxlsx::writeDataTable(wb, curr_enkät, tmp, startRow = startindex+1, startCol = 1)
+  
+  counter <- counter + n + 1 + 1
+  
+  rm(tmp)
+  rm(title)
+  rm(startindex)
+  rm(n)
+}
+```
+
+## Read dates
+
+When importing dates from Excel into R, dates are represented as days since 1899-12-30.
+Usually this is done automatically, but in some cases there may be text in the columns, then you can use this method (text -\> NA):
+
+```{r}
+as.Date(44301, origin = "1899-12-30")
+```
+
+All versions of Excel for Windows calculate dates based on the 1900 date system.
+However for older versions of Mac, the 1904 date system is needed.
+So it is a good idea to double check with the data so that your imported dates look as expected.
+[Link](https://support.microsoft.com/en-us/office/date-systems-in-excel-e7fe7167-48a9-4b96-bb53-5612a800b487 "Date systems in excel")
+
+If the column contains both dates and text for some reason, and you want to keep the text, use this function:
+
+```{r}
+# Function for converting excel-dates in 1900-date system to R-dates, while keeping texts as they are
+# if the column has a mix of texts and dates
+convertd <- function(x) {
+  x <- ifelse(str_detect(x, "^[0-9]+$"), as.character(as.Date(as.numeric(x), origin = "1899-12-30")), x)
+  return(x)
+}
+convertd(c(22,"aa"))
+# [1] "1900-01-21" "aa" 
+```
+
+## Add a plot to an excel sheet
+
+```{r}
+library(tidyverse)
+library(openxlsx)
+wb <- createWorkbook()
+addWorksheet(wb, "Sheet 1", gridLines = FALSE)
+p <- iris %>% 
+    ggplot(aes(x=Sepal.Length, y = Sepal.Width)) +
+    geom_point()
+print(p)
+insertPlot(wb, sheet = "Sheet 1", width = 20, height = 20, fileType = "png", units = "cm")
+## Save workbook
+saveWorkbook(wb, "insertPlotExample2.xlsx", overwrite = TRUE)
+```
+
+## Add multiple plots into single excel sheet
+
+```{r}
+library(tidyverse)
+library(openxlsx)
+wb <- createWorkbook()
+addWorksheet(wb, "Sheet 1", gridLines = FALSE)
+
+ccc <- iris$Species %>%  unique 
+
+startrow <- 1
+for (i in ccc) {
+  #print(i)
+  p <- iris %>% 
+    filter(Species == i) %>% 
+    ggplot(aes(x=Sepal.Length, y = Sepal.Width)) +
+    geom_point()
+    
+  print(p)
+  insertPlot(wb, sheet = "Sheet 1", startRow = startrow, width = 20, height = 20, fileType = "png", units = "cm")
+  startrow <- startrow + 45
+}
+
+getwd()
+## Save workbook
+saveWorkbook(wb, "insertPlotExample2.xlsx", overwrite = TRUE)
+```
+
+## Read multiple excel sheets from single excel file into a single data frame
+
+Credits to <https://dominicroye.github.io/en/2019/import-excel-sheets-with-r/>
+
+```{r}
+in_path <- "path/to/excelfile.xlsx"
+
+# read multiple sheets and join them into single dataframe:
+df <- in_path %>%
+  readxl::excel_sheets() %>% # vector containing name of sheets
+  set_names() %>% # sets the names of vector with names of sheets
+  # map_df: a list of tables joined with bind_rows into single dataframe:
+  purrr::map_df(readxl::read_excel,
+    path = in_path,
+    .id = "level" # creates column called level with names of the sheets
+  )
+```
+
+## Read multiple excel sheets for multiple excel files into a single data frame
+
+```{r}
+read_multiple_excel_sheets <- function(path, idname = "sheet") {
+  print(str_glue("Reading {path} with id = {idname} for each sheet"))
+  path %>%
+    readxl::excel_sheets() %>% 
+    set_names() %>% 
+  map_df(read_excel, path = path, .id = idname)
+}
+
+df <- dir(pattern = "xlsx") %>% 
+           map_df(read_multiple_excel,
+                  .id = "level")
+```
+
+
+
+
+
+
+# Read CSV files in R
+
+Read multiple csv files in directory using summarise.
+
+See <https://www.tidyverse.org/blog/2020/03/dplyr-1-0-0-summarise/>
+
+```{r}
+library(tidyverse)
+# reading all csv files in current directory:
+tibble(path = dir(pattern = "\\.csv$")) %>% 
+  rowwise(path) %>% 
+  summarise(read_csv(path))
+```
+
+Or read from any directory:
+
+```{r}
+path <- "C:/Users/my_usrname/output/csv"
+
+df <- list.files(path, full.names = T, include.dirs = F) %>% 
+  set_names(basename(.)) %>% 
+  map_df(.x = ., 
+         .f = read_delim,
+         delim = ";", 
+         col_types = cols(.default = "c"),
+         .id = "matris")
+```
+
+
+
+If the csv files has multiple columns with same names, try to merge them together.
+For example, all columns starting with 'SOURCE':
+
+```{r}
+# get colnames
+source_cols <- res[str_detect(names(res), "SOURCE.*")] %>% names()
+x <- res[source_cols]
+res$SOURCE <- do.call(paste, c(x, sep = " # ")) # paste all cols together, separate with # in this case 
+res <- res %>% select(-setdiff(source_cols, "SOURCE")) # remove all other columns 
+```
+
+
+
+
+# read_delim : read any character delimited file
+
+This is useful, especially since csv files may in fact be separated with semicolon (;) and not comma, which may be due to the locale and OS used when the csv file was saved.
+For example, in Swedish, comma (,) is used as a decimal separator.
+
+```{r}
+res <- list.files(path = indir, pattern = "*.csv", full.names = TRUE) %>%
+  map_df(read_delim,
+         delim = ";", 
+         col_types = cols(.default = "c"), # read all cols as chr
+         locale = locale(encoding = "iso-8859-15"), # specify locale if needed, in this case  ISO Latin 9 (western europe)
+         id="filename")
+```
+
+
+
+# Officer: Export R results to Word report
+
+```{r}
+library(flextable) # converting dataframes to flextable objects
+library(officer) # for adding data to word document, like flextables
+
+# simplest example:
+tab1 <- matrix( c(1,2,3,4), ncol=2, nrow=2)
+word_export <- read_docx()
+word_export <- word_export %>% body_add_flextable( as.data.frame.matrix(tab1) %>% flextable()  )
+print(word_export, 'try.docx')
+```
+
+```{r}
+# add new page:
+mydoc %>% body_add_break()
+```
+
+Function for adding R table to word document:
+
+```{r}
+myft <- function(mydoc, tab, title) {
+  res <- body_add_par(mydoc, "")
+  res <- body_add_par(mydoc, title, style = "Tabellrubrik_")
+  res <- body_add_flextable(mydoc, flextable(tab %>% as.data.frame.matrix() %>% rownames_to_column(" ")) %>% autofit(), align = "left") 
+  return(res)
+}
+mydoc <- myft(mydoc, tt0, "Table 1. xxx")
+```
+
+## Officer template
+
+```{r}
+library(flextable)
+library(officer)
+
+setwd("<set working dir>")
+getwd()
+
+inmall <- "word_template.docx"
+utmall <- "out_file.docx"
+
+# RAPPORT: IMPORT --------------------------------------------------------------
+mydoc <- read_docx(inmall)
+
+# RAPPORT: TITLE PAGE ----------------------------------------------------------
+mydoc <- body_replace_all_text(mydoc, "TITLE", "My title page", only_at_cursor = F)
+mydoc <- body_replace_all_text(mydoc, "DATE", as.character(Sys.Date()), only_at_cursor = F)
+
+# RAPPORT: SECTION 1 -----------------------------------------------------------
+mydoc <- body_add_par(mydoc, "Descriptive statistics", style = "heading 1", pos = "before")
+
+# RAPPORT: EXPORT --------------------------------------------------------------
+print(mydoc, utmall)
+shell.exec(utmall)
+```
+

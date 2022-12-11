@@ -1,0 +1,191 @@
+---
+author: "Emil Westin"
+format: gfm
+execute: 
+  eval: false
+editor: 
+  markdown: 
+    wrap: sentence
+---
+
+
+## Statistical tests
+
+### Calculate power in t-test
+
+```{r}
+# delta: difference in means
+# Number of subjects needed to obtain 80% power
+power.t.test(delta = 10, sd = 19, power = 0.8, sig.level = 0.05)
+# calculate power from sample size:
+power.t.test(delta = 10, sd = 19, n=100, sig.level = 0.05)
+```
+
+### Wilcoxon rank sum test
+
+Also known as the Mann-Whitney U test.
+
+```{r}
+wilcox.test(df$num ~ temp$group)
+```
+
+### t-test
+
+Tests difference in means.
+
+```{r}
+t.test(temp$num ~ temp$group)
+```
+
+### Correlation incl p-values and confidence interval
+
+```{r}
+cor.test()
+```
+
+### Fisher's exact test
+
+For testing the null hypothesis of independence of rows and columns in a contingency table with fixed marginals.
+
+```{r}
+fisher.test( matrix(c(2,10,20,3),nrow=2,ncol=2)  )
+# odds ratio: 0.035, p=0.00008124
+```
+
+In Python:
+
+``` python
+import scipy.stats as stats
+oddsratio, pvalue = stats.fisher_exact([[2, 10], [20, 3]])
+# (0.03, 8.124495626949326e-05)
+```
+
+### Cohen's Kappa Coefficient
+
+Kappa measures the agreement between two variables, taking into account the agreement that would happen by chance.
+Kappa = (O-E) / (1-E), where O = observed agreement, E = expected agreement assuming independence.
+
+```{r}
+library(psych) 
+tab<-matrix(c(12,20,20,12),ncol=2,nrow=2)
+#     [,1] [,2]
+#[1,]   12   20
+#[2,]   20   12
+psych::cohen.kappa(tab) # -0.25
+```
+
+### Calculate binomial confidence interval
+
+```{r}
+binom.test(40, 95) # num successes, num trials
+```
+
+With CI in parenthesis for.ex.
+(10.1-15.5%) calculated from percentage of success:
+
+```{r}
+library(stringr)
+calc_conf <- function(perc, n){
+  test <- round(perc*n)
+  res  <- binom.test(test, n)
+  lower <- res$conf.int[1] %>% round(3) *100 
+  upper <- res$conf.int[2] %>% round(3) *100
+  lower <- format(lower, nsmall = 1)
+  upper <- format(upper, nsmall = 1)
+  return(str_glue("({lower}-{upper}%)"))
+}
+calc_conf(0.42, 95) # (32.0-52.7%)
+```
+
+### Calculate difference in binomial confidence intervals
+
+```{r}
+library(DescTools)
+# x = number of successes in group 1 or 2, n = number of trials in group 1 or 2 
+BinomDiffCI(x1=40,n1=95,x2=2,n2=47)
+```
+
+Nicely formatted CI calculated from percentage of success:
+
+```{r}
+library(stringr)
+bindiff <- function(perc_1, n_1, perc_2, n_2){
+  test1 <- round(perc_1*n_1)
+  test2 <- round(perc_2*n_2) 
+  
+  res <- BinomDiffCI(test1,n_1,test2,n_2)
+  val <- res[1] %>% round(3) *100
+  lower <- res[2] %>% round(3) *100
+  upper <- res[3] %>% round(3) *100
+  val <- format(val, nsmall = 1)
+  lower <- format(lower, nsmall = 1)
+  upper <- format(upper, nsmall = 1)
+  
+  return(
+    list(test1=test1,test2=test2, 
+    ci = str_glue("{val}% ({lower}-{upper}%)")
+    ))
+}
+bindiff(0.42,95,0.042,47) # 37.8% (24.2-48.0%)
+```
+
+### Ordinal logistic regression
+
+Proportional odds: the effect of the independent variables on the dependent variable is constant for all levels in the dependent variable.
+
+### Mixed model
+
+<https://m-clark.github.io/mixed-models-with-R/random_intercepts.html>
+
+Random intercepts model: group-specific intercepts with own unique effects.
+E.g. (1 \| student) the intercept 1 is allowed to vary between student to student.
+The random effect is to the left of \|.
+
+
+### Survival analysis
+
+#### Generate survival curves
+
+```{r}
+library(survival) # survival curves
+fit1 <- survfit(Surv( time , survival ) ~ variable, data=df)
+
+# Survival plot:
+#install.packages("survminer")
+library(survminer)
+ggsurvplot(fit1)
+```
+
+### Cox regression
+
+```{r}
+library(survival) 
+fit1 <- coxph(Surv( time , survival ) ~ variable, data=df)
+summary(fit1)
+```
+
+
+
+### Check outliers in boxplots:
+
+```{r}
+#| eval: true
+library(tidyverse)
+is_outlier <- function(x) {
+  return(x < quantile(x, 0.25,na.rm = T) - 1.5 * IQR(x, na.rm = T) | x > quantile(x, 0.75, na.rm = T) + 1.5 * IQR(x,na.rm=T))
+}
+
+# example: number of outlier per variable
+mtcars %>% 
+  summarise(across(where(is.numeric), is_outlier)) %>% 
+  summarise(across(everything(), ~sum(.==TRUE))) %>% 
+  t()
+
+```
+
+Note: outliers in `boxplot()` is computed differently.
+In that case, use `boxplot.stats()$out` to see outlier values.
+
+
+
+

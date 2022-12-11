@@ -1,0 +1,16 @@
+---
+author: "Emil Westin"
+format: gfm
+execute: 
+  eval: false
+editor: 
+  markdown: 
+    wrap: sentence
+---
+
+# Regex
+
+## Find numbers
+
+`[0-9]+\.?[0-9]{0,}` 
+

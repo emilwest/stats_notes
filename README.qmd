@@ -1,0 +1,43 @@
+---
+author: "Emil Westin"
+format: gfm
+execute: 
+  eval: false
+  message: false
+  warning: false
+output-file: "./README.md"
+---
+
+
+![Stats notes](img/wordcloud2.png)
+
+
+This document contains notes I make about R, data science and software engineering in the context of statistics.
+
+How to use this document: search for a keyword with `Ctrl` + `f` or scroll trough.
+
+
+{{< include ./quarto/_r_housekeeping.qmd >}}
+
+{{< include ./quarto/_io.qmd >}}
+
+{{< include ./quarto/_data_wrangling.qmd >}}
+
+{{< include ./quarto/_ggplot2.qmd >}}
+
+{{< include ./quarto/_stats_theory.qmd >}}
+
+{{< include ./quarto/_statistical_tests.qmd >}}
+
+{{< include ./quarto/_advancedr.qmd >}}
+
+{{< include ./quarto/_apis.qmd >}}
+
+{{< include ./quarto/_system.qmd >}}
+
+{{< include ./quarto/_regex.qmd >}}
+
+------------------------------------
+
+{{< include ./quarto/_fun_stuff.qmd >}}
+

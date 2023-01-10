@@ -5,6 +5,7 @@ library(leaflet)
 # https://api.trafikinfo.trafikverket.se/Console
 # https://developer.trafiklab.se/node/33092/keys
 
+getwd()
 api_key <- read_lines(file = "./R/trafikverket_apikey.txt") # only local key, not commited
 url <- "https://api.trafikinfo.trafikverket.se/v2/data.json"
 
@@ -213,9 +214,9 @@ plot_traffic <- function(.data, x, y, .icondim = 16) {
 # x$content
 # x$Message %>% enframe
 
-
-x %>% 
-  plot_traffic(313975.98, 6405213.04)
+# 
+# x %>% 
+#   plot_traffic(313975.98, 6405213.04)
 
 
 # x[1,]$SWEREF99TM
@@ -331,7 +332,7 @@ shinyApp(ui = ui, server = server)
 
 get_traffic_info()
 
-get_polisen(.date = "2022-07", .location = "Lyrestad")
+get_polisen(.date = "2022-11", .location = "Stockholm")
 
 av  %>%
   filter(PunktNr == 9539)

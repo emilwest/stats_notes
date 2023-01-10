@@ -520,7 +520,7 @@ library(tidyverse)
 map_df(iris, ~sum(is.na(.))) %>% pivot_longer(everything(), names_to = "Variable", values_to = "n")
 ```
 
-    # A tibble: 5 x 2
+    # A tibble: 5 × 2
       Variable         n
       <chr>        <int>
     1 Sepal.Length     0
@@ -634,7 +634,7 @@ df %>%
   separate_rows(B)
 ```
 
-    # A tibble: 5 x 2
+    # A tibble: 5 × 2
           A B         
       <dbl> <chr>     
     1     1 apple     
@@ -662,7 +662,7 @@ band_members %>%
   left_join(band_members, by = character())
 ```
 
-    # A tibble: 9 x 4
+    # A tibble: 9 × 4
       name.x band.x  name.y band.y 
       <chr>  <chr>   <chr>  <chr>  
     1 Mick   Stones  Mick   Stones 
@@ -695,7 +695,7 @@ Table band instruments:
 band_members %>% inner_join(band_instruments)
 ```
 
-    # A tibble: 2 x 3
+    # A tibble: 2 × 3
       name  band    plays 
       <chr> <chr>   <chr> 
     1 John  Beatles guitar
@@ -705,7 +705,7 @@ band_members %>% inner_join(band_instruments)
 band_members %>% left_join(band_instruments)
 ```
 
-    # A tibble: 3 x 3
+    # A tibble: 3 × 3
       name  band    plays 
       <chr> <chr>   <chr> 
     1 Mick  Stones  <NA>  
@@ -716,7 +716,7 @@ band_members %>% left_join(band_instruments)
 band_members %>% right_join(band_instruments)
 ```
 
-    # A tibble: 3 x 3
+    # A tibble: 3 × 3
       name  band    plays 
       <chr> <chr>   <chr> 
     1 John  Beatles guitar
@@ -727,7 +727,7 @@ band_members %>% right_join(band_instruments)
 band_members %>% full_join(band_instruments)
 ```
 
-    # A tibble: 4 x 3
+    # A tibble: 4 × 3
       name  band    plays 
       <chr> <chr>   <chr> 
     1 Mick  Stones  <NA>  
@@ -786,7 +786,7 @@ iris_long <- iris %>%
 x_long
 ```
 
-    # A tibble: 4 x 3
+    # A tibble: 4 × 3
       Species name         value
       <chr>   <chr>        <dbl>
     1 setosa  Sepal.Length     1
@@ -800,7 +800,7 @@ x_long %>%
   head(10)
 ```
 
-    # A tibble: 10 x 3
+    # A tibble: 10 × 3
        Species    name         value
        <fct>      <chr>        <dbl>
      1 setosa     Petal.Length     3
@@ -1078,13 +1078,13 @@ mods <- by_cyl %>% map(~ lm(mpg ~ wt, data = .)) # in each df, create linear mod
 [Why use map instead of
 lapply?](https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply)
 
--   Syntacically more convenient: You can use model formulas like
-    `~ . + 1` instead of `function(x) x + 1`
+- Syntacically more convenient: You can use model formulas like
+  `~ . + 1` instead of `function(x) x + 1`
 
--   Type-specific: you know exactly what type is returned (double,
-    character, dataframe, etc).
+- Type-specific: you know exactly what type is returned (double,
+  character, dataframe, etc).
 
--   Nicely integrated with tidyverse
+- Nicely integrated with tidyverse
 
 ### Create an empty tibble with column names from vector and 0 rows
 
@@ -1614,7 +1614,7 @@ p_X <- df %>%
  ( p_pdf + p_X)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-138-1.png)
+![](README_files/figure-gfm/unnamed-chunk-69-1.png)
 
 ### Relationships between cdf and inverse cdf, quantiles and sample quantiles
 
@@ -1794,10 +1794,20 @@ wilcox.test(df$num ~ temp$group)
 
 ### t-test
 
-Tests difference in means.
+Tests difference in means (two-sample test). Assumptions: your data
+values are independent, are randomly sampled from two normal
+populations. The two independent groups are by default treated as not
+having equal variances in the t.test function but can be changed.
+
+$H_0: \mu_1 - \mu_2 = 0$ $H_1: \mu_1 - \mu_2 \neq 0$
 
 ``` r
-t.test(temp$num ~ temp$group)
+# sleep data:
+# Data which show the effect of two soporific drugs
+# (increase in hours of sleep compared to control) on 10 patients.
+# extra = numeric increase in hours of sleep 
+# group = drug given
+t.test(extra ~ group, data = sleep)
 ```
 
 ### Correlation incl p-values and confidence interval
@@ -1827,8 +1837,9 @@ oddsratio, pvalue = stats.fisher_exact([[2, 10], [20, 3]])
 ### Cohen’s Kappa Coefficient
 
 Kappa measures the agreement between two variables, taking into account
-the agreement that would happen by chance. Kappa = (O-E) / (1-E), where
-O = observed agreement, E = expected agreement assuming independence.
+the agreement that would happen by chance.
+
+$\kappa = \frac{(O-E)}{(1-E)}, \text{ where 0 = observed agreement, E = expected agreement assuming independence}$
 
 ``` r
 library(psych) 

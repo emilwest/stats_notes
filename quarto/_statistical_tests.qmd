@@ -31,10 +31,20 @@ wilcox.test(df$num ~ temp$group)
 
 ### t-test
 
-Tests difference in means.
+Tests difference in means (two-sample test).
+Assumptions: your data values are independent, are randomly sampled from two normal populations. 
+The two independent groups are by default treated as not having equal variances in the t.test function but can be changed. 
+
+$H_0: \mu_1 - \mu_2 = 0$
+$H_1: \mu_1 - \mu_2 \neq 0$
 
 ```{r}
-t.test(temp$num ~ temp$group)
+# sleep data:
+# Data which show the effect of two soporific drugs
+# (increase in hours of sleep compared to control) on 10 patients.
+# extra = numeric increase in hours of sleep 
+# group = drug given
+t.test(extra ~ group, data = sleep)
 ```
 
 ### Correlation incl p-values and confidence interval
@@ -63,7 +73,8 @@ oddsratio, pvalue = stats.fisher_exact([[2, 10], [20, 3]])
 ### Cohen's Kappa Coefficient
 
 Kappa measures the agreement between two variables, taking into account the agreement that would happen by chance.
-Kappa = (O-E) / (1-E), where O = observed agreement, E = expected agreement assuming independence.
+
+$\kappa = \frac{(O-E)}{(1-E)}, \text{ where 0 = observed agreement, E = expected agreement assuming independence}$
 
 ```{r}
 library(psych) 

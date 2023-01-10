@@ -1799,7 +1799,9 @@ values are independent, are randomly sampled from two normal
 populations. The two independent groups are by default treated as not
 having equal variances in the t.test function but can be changed.
 
-$H_0: \mu_1 - \mu_2 = 0$ $H_1: \mu_1 - \mu_2 \neq 0$
+$H_0: \mu_1 - \mu_2 = 0$
+
+$H_1: \mu_1 - \mu_2 \neq 0$
 
 ``` r
 # sleep data:

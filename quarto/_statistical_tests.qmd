@@ -40,13 +40,21 @@ $H_0: \mu_1 - \mu_2 = 0$
 $H_1: \mu_1 - \mu_2 \neq 0$
 
 ```{r}
+#| eval: true
+library(dplyr)
+
 # sleep data:
 # Data which show the effect of two soporific drugs
 # (increase in hours of sleep compared to control) on 10 patients.
 # extra = numeric increase in hours of sleep 
 # group = drug given
+sleep %>% group_by(group) %>% dplyr::slice_sample(n = 3)
+
 t.test(extra ~ group, data = sleep)
 ```
+
+In this case, $p = 0.079 < 0.05$ indicating statistical significance and we reject the null hypothesis in favor of
+the alternative that the true difference in means between group 1 and group 2 is not equal to 0.
 
 ### Correlation incl p-values and confidence interval
 

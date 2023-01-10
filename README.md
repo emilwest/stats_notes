@@ -1804,13 +1804,46 @@ $H_0: \mu_1 - \mu_2 = 0$
 $H_1: \mu_1 - \mu_2 \neq 0$
 
 ``` r
+library(dplyr)
+
 # sleep data:
 # Data which show the effect of two soporific drugs
 # (increase in hours of sleep compared to control) on 10 patients.
 # extra = numeric increase in hours of sleep 
 # group = drug given
+sleep %>% group_by(group) %>% dplyr::slice_sample(n = 3)
+```
+
+    # A tibble: 6 × 3
+    # Groups:   group [2]
+      extra group ID   
+      <dbl> <fct> <fct>
+    1   2   1     10   
+    2   0.7 1     1    
+    3   0.8 1     8    
+    4   5.5 2     7    
+    5   0.8 2     2    
+    6   4.4 2     6    
+
+``` r
 t.test(extra ~ group, data = sleep)
 ```
+
+
+        Welch Two Sample t-test
+
+    data:  extra by group
+    t = -1.8608, df = 17.776, p-value = 0.07939
+    alternative hypothesis: true difference in means between group 1 and group 2 is not equal to 0
+    95 percent confidence interval:
+     -3.3654832  0.2054832
+    sample estimates:
+    mean in group 1 mean in group 2 
+               0.75            2.33 
+
+In this case, $p = 0.079 < 0.05$ indicating statistical significance and
+we reject the null hypothesis in favor of the alternative that the true
+difference in means between group 1 and group 2 is not equal to 0.
 
 ### Correlation incl p-values and confidence interval
 

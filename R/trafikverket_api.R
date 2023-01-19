@@ -240,18 +240,27 @@ library(shiny)
 library(lubridate)
 
 avkontr <- "L:/Myndigheter/Trafikverket/TRV_5161_Skattning hastighetsindex/Document/Memo/Månadsrapport-Avvikelsekontroll_2022.xlsx"
+avkontr_2021 <- "L:/Myndigheter/Trafikverket/TRV_5161_Skattning hastighetsindex/Document/Memo/Månadsrapport-Avvikelsekontroll_2021.xlsx"
 
 manad <- lubridate::now() %>% lubridate::month()
-manad <- (manad-1) %>% month(label = T) %>% str_to_title()
+if (manad == 1) {
+  manad <- "Dec"
+} else {
+  manad <- (manad-1) %>% month(label = T) %>% str_to_title()
+}
+
 
 
 av1 <- readxl::read_excel(avkontr)
+av2021 <- readxl::read_excel(avkontr_2021)
 
 av <- av1 %>% 
   filter(Månad == manad) %>% 
   filter(is.na(Bortfallsvikt) | Bortfallsvikt == 0) %>% 
   filter(is.na(Kontrolldatum))
 
+av2021 <- av2021 %>% 
+  filter(Månad == manad) 
 
 radio_choices <- av$PunktNr %>% unique %>%  set_names()
 
@@ -266,14 +275,19 @@ ui <- fluidPage(
     sidebarPanel(
       radioButtons("radio", 
                    h3("Punktnummer"),
-                   choices = radio_choices, selected = 9539)
+                   choices = radio_choices)
     ),
     
     # Show a plot of the generated distribution
     mainPanel(
       textOutput("txt"),
+      h4(str_glue("Kommentarer övriga månader i år:")),
       tableOutput("table"),
+      h4(str_glue("Kommentar {manad} 2021:")),
+      tableOutput("table2021"),
+      h4(str_glue("Koordinater slang:")),
       leafletOutput("plotSlang"),
+      h4(str_glue("Trafikhändelser i närheten av slang:")),
       leafletOutput("trafikPlot")
     )
   )
@@ -297,6 +311,12 @@ server <- function(input, output) {
   output$table <- renderTable({
     av1 %>% 
       filter(Månad != manad  & !is.na(Kommentar) & PunktNr == input$radio) %>% 
+      select(Månad, Kommentar)
+  })
+  
+  output$table2021 <- renderTable({
+    av2021 %>% 
+      filter(!is.na(Kommentar) & PunktNr == input$radio) %>% 
       select(Månad, Kommentar)
   })
   
@@ -330,14 +350,14 @@ shinyApp(ui = ui, server = server)
 
 # TODO lägg till knapp 'Reload/Refresh' som laddar excelfilen på nytt 
 
-get_traffic_info()
-
-get_polisen(.date = "2022-11", .location = "Stockholm")
-
-av  %>%
-  filter(PunktNr == 9539)
-
-
-
+# get_traffic_info()
+# 
+# get_polisen(.date = "2022-11", .location = "Stockholm")
+# 
+# av  %>%
+#   filter(PunktNr == 9539)
+# 
+# 
+# 
 
 

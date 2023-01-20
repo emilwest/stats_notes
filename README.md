@@ -1842,10 +1842,10 @@ t.test(extra ~ group, data = sleep)
                0.75            2.33 
 
 In this case, $p = 0.079 > 0.05$ indicating no statistical significance.
-There is not enough evidence to reject the null hypothesis that the
-difference in mean hourly sleep increase is equal in group 1 and 2. The
-mean sleep increase in group 2 is however higher, we may need a larger
-sample size to increase the power of the test.
+There is not enough evidence to reject the null hypothesis that there is
+zero difference in mean hourly sleep increase between group 1 and group
+2. The mean sleep increase in group 2 is however higher, we may need a
+larger sample size to increase the power of the test.
 
 ### Correlation incl p-values and confidence interval
 

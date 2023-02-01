@@ -54,7 +54,7 @@ To estimate the parameters, a sample $s$ is drawn of size $n$ according to a sam
 
 ### Simple random sample (OSU - obundet slumpmässigt urval)
 
-Without replacement. The definition of OSU is that each possible combination of samples drawn of (fixed) size $n$ from $N$ are equally likely (have the same probability of being drawn).
+Without replacement, ie an object can only be included in a sample once. The definition of OSU is that each possible combination of samples drawn of (fixed) size $n$ from $N$ are equally likely (have the same probability of being drawn).
 
 $p(s) = \frac{1}{\binom{N}{n}}$
 
@@ -180,24 +180,56 @@ $E(\hat{\bar{y}}_U) =  \frac{E(\sum_s y_k/\pi_k)}{N}  = \frac{\sum_U y_k}{N} = \
 
 ### Variance of the Horvitz-Thompson Estimator
 
-$V(\hat{t}) = \sum_{k \in U} \sum_{l \in U} (\pi_{kl} -\pi_{k}\pi_{l}) \frac{y_k}{\pi_{k}} \frac{y_l}{\pi_{l}}$
+Variance of a linear combination of variables general formula:
 
-$\pi_{k} = \frac{n}{N}$
-
-
-$\pi_{kl} = P(k\&l \in s) = \frac{\binom{2}{2}{\binom{N-2}{n-2}}}{\binom{N}{n}} = \frac{n(n-1)}{N(N-1)}, k \neq l$
-
-
-Note
-
-$\sum_{k \in U} \pi_{k} = N \frac{n}{N} = n$
-
-$\sum_{k \neq j} \pi_{kl} = N \frac{n(n-1)}{N(N-1)} = \frac{n(n-1)}{(N-1)} $
+$$
+\begin{align}
+Var(a_1x_1 + \dots a_nx_n) &= \sum_{i=1}^n a_i^2 V(x_i) + 2 \sum_{i=1}^n \sum_{j>i}^n a_i a_j \text{ Cov}(x_i,x_j) \\
+&= \sum_{i=1}^n a_i^2 V(x_i) +  \sum_{i=1}^n \sum_{j=1}^n a_i a_j \text{ Cov}(x_i,x_j), i\neq j
+\end{align}
+$$
 
 
-OSU:
 
-$V(\hat{t}) = N^2\frac{1-\frac{n}{N}}{n} S^2_{yU}$
+$$
+\begin{align}
+V(\hat{t}) &= V(\sum_{k \in s}\frac{y_k}{\pi_k}) \\
+&=  V(\sum_{k \in U} I_k \frac{y_k}{\pi_k}) \\
+&= \sum_{k \in U} (\frac{y_k}{\pi_k})^2 V(I_k) +  \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} \text{ Cov}(I_k,I_l), k\neq l
+\end{align}
+$$
+
+
+Where the variance of the inclusion indicator variable is
+
+$$V(I_k) = E[I_k - E(I_k)]^2 = E[I_k^2] - [E(I_k)]^2 = E[I_k] - [E(I_k)]^2 \\
+= \pi_k-\pi_k^2 = \pi_k(1-\pi_k)$$
+
+
+and the covariance
+
+$\text{ Cov}(I_k,I_l) = E[I_k I_l] - E[I_k]E[I_l] = \pi_{kl}-\pi_k \pi_l$
+
+Also note that $\pi_{kk} = \pi_{k}$
+
+Collect expressions
+
+$$
+\begin{align}
+V(\hat{t}) &= \sum_{k \in U} (\frac{y_k}{\pi_k})^2 V(I_k) +  \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} \text{ Cov}(I_k,I_l), k\neq l \\
+&=  \sum_{k \in U} (\frac{y_k}{\pi_k})^2 \pi_k(1-\pi_k) +  \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l), k\neq l \\
+&= \sum_{k \in U} \frac{y_k}{\pi_k}\frac{y_k}{\pi_k} (\pi_{kk}-\pi_k\pi_k) + \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l), k\neq l \\
+&= \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l) \\
+&= \sum_{k \in U} \sum_{l \in U} (\pi_{kl}-\pi_k \pi_l)  \frac{y_k}{\pi_k} \frac{y_l}{\pi_l}
+\end{align}
+$$
+
+Notice that the two sums could be simplified to a single sum because when $k=l$ the first term has the same form as the second term. Imagine that the first term was the diagonal in a covariance matrix and the second term was on the diagonals. 
+
+It can be shown that
+
+
+$V(\hat{t}) = \sum_{k \in U} \sum_{l \in U} (\pi_{kl}-\pi_k \pi_l)  \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} = N^2\frac{1-\frac{n}{N}}{n} S^2_{yU}$
 
 where 
 
@@ -209,24 +241,33 @@ S^2_{yU} &= \frac{1}{N-1}\sum_{k \in U} (y_k - \bar{y}_U)^2 \\
 $$
 
 
-Härledning
+
+
+Proof:
 
 $$
-\begin{align}
-V(\hat{t}) &= \sum_{k \in U} \sum_{l \in U} (\pi_{kl} -\pi_{k}\pi_{l}) \frac{y_k}{\pi_{k}} \frac{y_l}{\pi_{l}} \\
-&=  (\sum_{k \in U} \sum_{l \in U}\pi_{kl} - \sum_{k \in U} \sum_{l \in U}\pi_{k}\pi_{l}) \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_{k}} \frac{y_l}{\pi_{l}} \\
-&=  (\frac{n(n-1)}{(N-1)} - n^2) n^2 \sum_{k \in U} y_k \sum_{l \in U} y_l \\
-&= \sum_{k \in U} \sum_{l \in U} (\frac{n(n-1)}{N(N-1)} -\frac{n}{N}\frac{n}{N}) \frac{y_k}{\frac{n}{N}} \frac{y_l}{\frac{n}{N}} \\
-&= \sum_{k \in U} \sum_{l \in U} (\frac{N}{n}\frac{N}{n} \frac{n(n-1)}{N(N-1)} -\frac{n}{N}\frac{n}{N}\frac{N}{n}\frac{N}{n}) y_k y_l \\
-&= \sum_{k \in U} \sum_{l \in U} (\frac{N}{n} \frac{(n-1)}{(N-1)} - 1) y_k y_l \\
-&= \sum_{k \in U} \sum_{l \in U} (\frac{N}{n} \frac{(n-1)}{(N-1)} y_k y_l  - y_k y_l ) 
+\begin{align} 
+V(\hat{t}) &= \sum_{k \in U} \sum_{l \in U} (\pi_{kl}-\pi_k \pi_l)  \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} \\
+&= \sum_{k \in U} \frac{y_k}{\pi_k}\frac{y_k}{\pi_k} (\pi_{kk}-\pi_k\pi_k) + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l) \\
+&= \sum_{k \in U} \frac{y_k}{\frac{n}{N}}\frac{y_k}{\frac{n}{N}} (\frac{n}{N}-\frac{n}{N}\frac{n}{N}) +  \sum_{k \in U, \\ k \neq l} \sum_{l \in U}  (\frac{n(n-1)}{N(N-1)}-\frac{n}{N} \frac{n}{N}) \frac{y_k}{\frac{n}{N}} \frac{y_l}{\frac{n}{N}} \\
+&= \sum_{k \in U}  \frac{n}{N}(1-\frac{n}{N}) \frac{N^2}{n^2} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{n}{N}(\frac{n-1}{N-1}-\frac{n}{N})\frac{N^2}{n^2}y_k y_l, \text{break out} \\
+&=  \frac{N^2}{n^2}(1 - \frac{n}{N})\frac{n}{N} (\sum_{k \in U} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) y_k y_l) \\
+&= N^2 \frac{(1 - \frac{n}{N})}{n}\frac{1}{N} (\sum_{k \in U} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) y_k y_l) \\
+&= N^2 \frac{(1 - \frac{n}{N})}{n}\frac{1}{N} (\sum_{k \in U} y_k^2 + \frac{1}{N-1} \sum_{k \in U, \\ k \neq l} \sum_{l \in U}  y_k y_l) \\
+&= N^2 \frac{(1 - \frac{n}{N})}{n} S^2_{yU}
+
 \end{align}
 $$
 
 
+Note that $\frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) = \frac{1}{(\frac{N-n}{N})}(\frac{N(n-1)-n(N-1)}{N(N-1)}) = \frac{1}{(\frac{N-n}{N})}(\frac{n-N}{N(N-1)}) = \frac{N}{N-n} (\frac{n-N}{N(N-1)}) = \frac{1}{N-1}$
 
 
+$N^2/n, n/N, (1-n/N)$ broke out.
 
+and
 
+$\pi_{k} = \frac{n}{N}$
 
+$\pi_{kl} = P(k\&l \in s) = \frac{\binom{2}{2}{\binom{N-2}{n-2}}}{\binom{N}{n}} = \frac{n(n-1)}{N(N-1)}, k \neq l$
 

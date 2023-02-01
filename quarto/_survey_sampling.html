@@ -95,7 +95,7 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="sampling-design">Sampling design</h2>
 <section id="simple-random-sample-osu---obundet-slumpmässigt-urval" class="level3">
 <h3 class="anchored" data-anchor-id="simple-random-sample-osu---obundet-slumpmässigt-urval">Simple random sample (OSU - obundet slumpmässigt urval)</h3>
-<p>Without replacement. The definition of OSU is that each possible combination of samples drawn of (fixed) size <span class="math inline">\(n\)</span> from <span class="math inline">\(N\)</span> are equally likely (have the same probability of being drawn).</p>
+<p>Without replacement, ie an object can only be included in a sample once. The definition of OSU is that each possible combination of samples drawn of (fixed) size <span class="math inline">\(n\)</span> from <span class="math inline">\(N\)</span> are equally likely (have the same probability of being drawn).</p>
 <p><span class="math inline">\(p(s) = \frac{1}{\binom{N}{n}}\)</span></p>
 <p>For example, consider the objects A, B, C, D, E (<span class="math inline">\(N=5\)</span>). If we select <span class="math inline">\(n=3\)</span> objects, this can be done in <span class="math inline">\(\binom{5}{3} = \frac{5!}{3!(5-3)!} = 10\)</span> different ways. The probability for each of the possible samples is <span class="math inline">\(p(s) = 1/10=0.1\)</span>. The sum of all <span class="math inline">\(p(s)=1\)</span> ie <span class="math inline">\(\sum_{\text{all s}} p(s) = 1\)</span>.</p>
 <div class="cell">
@@ -191,14 +191,39 @@ ul.task-list li input[type="checkbox"] {
 <p><span class="math inline">\(E(\hat{\bar{y}}_U) = \frac{E(\sum_s y_k/\pi_k)}{N} = \frac{\sum_U y_k}{N} = \frac{t}{N}\)</span></p>
 <section id="variance-of-the-horvitz-thompson-estimator" class="level3">
 <h3 class="anchored" data-anchor-id="variance-of-the-horvitz-thompson-estimator">Variance of the Horvitz-Thompson Estimator</h3>
-<p><span class="math inline">\(V(\hat{t}) = \sum_{k \in U} \sum_{l \in U} (\pi_{kl} -\pi_{k}\pi_{l}) \frac{y_k}{\pi_{k}} \frac{y_l}{\pi_{l}}\)</span></p>
-<p><span class="math inline">\(\pi_{k} = \frac{n}{N}\)</span></p>
-<p><span class="math inline">\(\pi_{kl} = P(k\&amp;l \in s) = \frac{\binom{2}{2}{\binom{N-2}{n-2}}}{\binom{N}{n}} = \frac{n(n-1)}{N(N-1)}, k \neq l\)</span></p>
-<p>Note</p>
-<p><span class="math inline">\(\sum_{k \in U} \pi_{k} = N \frac{n}{N} = n\)</span></p>
-<p>$<em>{k j} </em>{kl} = N = $</p>
-<p>OSU:</p>
-<p><span class="math inline">\(V(\hat{t}) = N^2\frac{1-\frac{n}{N}}{n} S^2_{yU}\)</span></p>
+<p>Variance of a linear combination of variables general formula:</p>
+<p><span class="math display">\[
+\begin{align}
+Var(a_1x_1 + \dots a_nx_n) &amp;= \sum_{i=1}^n a_i^2 V(x_i) + 2 \sum_{i=1}^n \sum_{j&gt;i}^n a_i a_j \text{ Cov}(x_i,x_j) \\
+&amp;= \sum_{i=1}^n a_i^2 V(x_i) +  \sum_{i=1}^n \sum_{j=1}^n a_i a_j \text{ Cov}(x_i,x_j), i\neq j
+\end{align}
+\]</span></p>
+<p><span class="math display">\[
+\begin{align}
+V(\hat{t}) &amp;= V(\sum_{k \in s}\frac{y_k}{\pi_k}) \\
+&amp;=  V(\sum_{k \in U} I_k \frac{y_k}{\pi_k}) \\
+&amp;= \sum_{k \in U} (\frac{y_k}{\pi_k})^2 V(I_k) +  \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} \text{ Cov}(I_k,I_l), k\neq l
+\end{align}
+\]</span></p>
+<p>Where the variance of the inclusion indicator variable is</p>
+<p><span class="math display">\[V(I_k) = E[I_k - E(I_k)]^2 = E[I_k^2] - [E(I_k)]^2 = E[I_k] - [E(I_k)]^2 \\
+= \pi_k-\pi_k^2 = \pi_k(1-\pi_k)\]</span></p>
+<p>and the covariance</p>
+<p><span class="math inline">\(\text{ Cov}(I_k,I_l) = E[I_k I_l] - E[I_k]E[I_l] = \pi_{kl}-\pi_k \pi_l\)</span></p>
+<p>Also note that <span class="math inline">\(\pi_{kk} = \pi_{k}\)</span></p>
+<p>Collect expressions</p>
+<p><span class="math display">\[
+\begin{align}
+V(\hat{t}) &amp;= \sum_{k \in U} (\frac{y_k}{\pi_k})^2 V(I_k) +  \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} \text{ Cov}(I_k,I_l), k\neq l \\
+&amp;=  \sum_{k \in U} (\frac{y_k}{\pi_k})^2 \pi_k(1-\pi_k) +  \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l), k\neq l \\
+&amp;= \sum_{k \in U} \frac{y_k}{\pi_k}\frac{y_k}{\pi_k} (\pi_{kk}-\pi_k\pi_k) + \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l), k\neq l \\
+&amp;= \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l) \\
+&amp;= \sum_{k \in U} \sum_{l \in U} (\pi_{kl}-\pi_k \pi_l)  \frac{y_k}{\pi_k} \frac{y_l}{\pi_l}
+\end{align}
+\]</span></p>
+<p>Notice that the two sums could be simplified to a single sum because when <span class="math inline">\(k=l\)</span> the first term has the same form as the second term. Imagine that the first term was the diagonal in a covariance matrix and the second term was on the diagonals.</p>
+<p>It can be shown that</p>
+<p><span class="math inline">\(V(\hat{t}) = \sum_{k \in U} \sum_{l \in U} (\pi_{kl}-\pi_k \pi_l) \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} = N^2\frac{1-\frac{n}{N}}{n} S^2_{yU}\)</span></p>
 <p>where</p>
 <p><span class="math display">\[
 \begin{align}
@@ -206,18 +231,23 @@ S^2_{yU} &amp;= \frac{1}{N-1}\sum_{k \in U} (y_k - \bar{y}_U)^2 \\
 &amp;= \frac{1}{N} (\sum_{k \in U} y^2_k - \frac{1}{N-1}\sum_{k \in U}\sum_{l \in U} y_ky_l), k \neq l
 \end{align}
 \]</span></p>
-<p>Härledning</p>
-<p><span class="math display">\[
-\begin{align}
-V(\hat{t}) &amp;= \sum_{k \in U} \sum_{l \in U} (\pi_{kl} -\pi_{k}\pi_{l}) \frac{y_k}{\pi_{k}} \frac{y_l}{\pi_{l}} \\
-&amp;=  (\sum_{k \in U} \sum_{l \in U}\pi_{kl} - \sum_{k \in U} \sum_{l \in U}\pi_{k}\pi_{l}) \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_{k}} \frac{y_l}{\pi_{l}} \\
-&amp;=  (\frac{n(n-1)}{(N-1)} - n^2) n^2 \sum_{k \in U} y_k \sum_{l \in U} y_l \\
-&amp;= \sum_{k \in U} \sum_{l \in U} (\frac{n(n-1)}{N(N-1)} -\frac{n}{N}\frac{n}{N}) \frac{y_k}{\frac{n}{N}} \frac{y_l}{\frac{n}{N}} \\
-&amp;= \sum_{k \in U} \sum_{l \in U} (\frac{N}{n}\frac{N}{n} \frac{n(n-1)}{N(N-1)} -\frac{n}{N}\frac{n}{N}\frac{N}{n}\frac{N}{n}) y_k y_l \\
-&amp;= \sum_{k \in U} \sum_{l \in U} (\frac{N}{n} \frac{(n-1)}{(N-1)} - 1) y_k y_l \\
-&amp;= \sum_{k \in U} \sum_{l \in U} (\frac{N}{n} \frac{(n-1)}{(N-1)} y_k y_l  - y_k y_l )
-\end{align}
-\]</span></p>
+<p>Proof</p>
+<p>$$ <span class="math display">\[\begin{align}
+V(\hat{t}) &amp;= \sum_{k \in U} \sum_{l \in U} (\pi_{kl}-\pi_k \pi_l)  \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} \\
+&amp;= \sum_{k \in U} \frac{y_k}{\pi_k}\frac{y_k}{\pi_k} (\pi_{kk}-\pi_k\pi_k) + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l) \\
+&amp;= \sum_{k \in U} \frac{y_k}{\frac{n}{N}}\frac{y_k}{\frac{n}{N}} (\frac{n}{N}-\frac{n}{N}\frac{n}{N}) +  \sum_{k \in U, \\ k \neq l} \sum_{l \in U}  (\frac{n(n-1)}{N(N-1)}-\frac{n}{N} \frac{n}{N}) \frac{y_k}{\frac{n}{N}} \frac{y_l}{\frac{n}{N}} \\
+&amp;= \sum_{k \in U}  \frac{n}{N}(1-\frac{n}{N}) \frac{N^2}{n^2} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{n}{N}(\frac{n-1}{N-1}-\frac{n}{N})\frac{N^2}{n^2}y_k y_l, \text{break out} \\
+&amp;=  \frac{N^2}{n^2}(1 - \frac{n}{N})\frac{n}{N} (\sum_{k \in U} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) y_k y_l) \\
+&amp;= N^2 \frac{(1 - \frac{n}{N})}{n}\frac{1}{N} (\sum_{k \in U} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) y_k y_l) \\
+&amp;= N^2 \frac{(1 - \frac{n}{N})}{n}\frac{1}{N} (\sum_{k \in U} y_k^2 + \frac{1}{N-1} \sum_{k \in U, \\ k \neq l} \sum_{l \in U}  y_k y_l) \\
+&amp;= N^2 \frac{(1 - \frac{n}{N})}{n} S^2_{yU}
+
+\end{align}\]</span> $$</p>
+<p>Note that <span class="math inline">\(\frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) = \frac{1}{(\frac{N-n}{N})}(\frac{N(n-1)-n(N-1)}{N(N-1)}) = \frac{1}{(\frac{N-n}{N})}(\frac{n-N}{N(N-1)}) = \frac{N}{N-n} (\frac{n-N}{N(N-1)}) = \frac{1}{N-1}\)</span></p>
+<p><span class="math inline">\(N^2/n, n/N, (1-n/N)\)</span> broke out.</p>
+<p>and</p>
+<p><span class="math inline">\(\pi_{k} = \frac{n}{N}\)</span></p>
+<p><span class="math inline">\(\pi_{kl} = P(k\&amp;l \in s) = \frac{\binom{2}{2}{\binom{N-2}{n-2}}}{\binom{N}{n}} = \frac{n(n-1)}{N(N-1)}, k \neq l\)</span></p>
 </section>
 </section>
 </section>

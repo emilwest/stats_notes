@@ -1797,7 +1797,11 @@ s^2 &= \frac{1}{n-1} \sum_i^n (y_i-\bar{y})^2 \\
 $$
 
 Where
-$\bar{y} = \frac{1}{n} \sum_i^n y_i, \sum_i^n\bar{y} = n\bar{y} = \sum_i^n y_i, \bar{y}^2 = \frac{1}{n^2} (\sum_i^n y_i)^2, n\bar{y}^2 = \frac{1}{n} (\sum_i^n y_i)^2$.
+
+$$\bar{y} =  \frac{1}{n} \sum_i^n y_i, \\
+\sum_i^n\bar{y} = n\bar{y} = \sum_i^n y_i, \\
+\bar{y}^2 =  \frac{1}{n^2} (\sum_i^n y_i)^2, \\
+n\bar{y}^2 = \frac{1}{n} (\sum_i^n y_i)^2$$.
 
 ## Statistical tests
 

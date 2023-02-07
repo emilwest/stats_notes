@@ -1772,6 +1772,33 @@ between 0 and 100. Quantiles can go from anything to anything.
 Also note that for samples from the normal distribution, the median may
 not equal the sample quantile but they should not be far apart.
 
+## Sample variance
+
+The sample variance can be expressed in many ways, here are the two most
+common ways:
+
+$$
+\begin{align}
+s^2 &= \frac{1}{n-1} \sum_i^n (y_i-\bar{y})^2 \\
+&= \frac{1}{n-1} (\sum_i^n y_i^2 - \frac{1}{n} (\sum_i^n y_i)^2)
+\end{align}
+$$
+
+Proof:
+
+$$
+\begin{align}
+s^2 &= \frac{1}{n-1} \sum_i^n (y_i-\bar{y})^2 \\
+&= \frac{1}{n-1} \sum_i^n(y_i^2 - 2 y_i \bar{y} + \bar{y}^2) \\
+&=  \frac{1}{n-1} (\sum_i^n y_i^2 - 2 \bar{y} \sum_i^n y_i + n\bar{y}^2) \\
+&= \frac{1}{n-1} (\sum_i^n y_i^2 - 2 \frac{1}{n} (\sum_i^n y_i)^2 + \frac{1}{n} (\sum_i^n y_i) ^2) \\
+&= \frac{1}{n-1} (\sum_i^n y_i^2 - \frac{1}{n} (\sum_i^n y_i)^2)
+\end{align}
+$$
+
+Where
+$\bar{y} = \frac{1}{n} \sum_i^n y_i, \sum_i^n\bar{y} = n\bar{y} = \sum_i^n y_i, \bar{y}^2 = \frac{1}{n^2} (\sum_i^n y_i)^2, n\bar{y}^2 = \frac{1}{n} (\sum_i^n y_i)^2$.
+
 ## Statistical tests
 
 ### Calculate power in t-test

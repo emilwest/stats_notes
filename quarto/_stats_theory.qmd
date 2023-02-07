@@ -261,3 +261,8 @@ $$
 n\bar{y}^2 &= \frac{1}{n} (\sum_i^n y_i)^2
 \end{align}
 $$
+
+
+--
+
+

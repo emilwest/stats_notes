@@ -1807,6 +1807,15 @@ n\bar{y}^2 &= \frac{1}{n} (\sum_i^n y_i)^2
 \end{align}
 $$
 
+The sum of the deviations from the mean of a measurement is always equal
+to 0
+
+$$
+\begin{align}
+\sum_i^n (y_i-\bar{y}) = \sum_i^n y_i - n \bar{y} = \sum_i^n y_i - \sum_i^n y_i = 0
+\end{align}
+$$
+
 –
 
 ## Statistical tests

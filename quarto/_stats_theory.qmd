@@ -313,7 +313,7 @@ Assume that $\{B_1, B_2, ..., B_k\}$ is a partition of $S$ such that $P(B_i)>0$ 
 
 $$
 \begin{align}
-P(B_j|A) &= \frac{P(A|B_j) P(B_j)}{ \sum_{i=1}^k P(A|B_i)P(B_i)}
+P(B_j|A) &= \frac{P(A|B_j) P(B_j)}{ \sum^k_{i=1} P(A|B_i)P(B_i)}
 \end{align}
 $$
 

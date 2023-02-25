@@ -1860,7 +1860,7 @@ $P(B_i)>0$ for $i = 1,2,...,k$. Then
 
 $$
 \begin{align}
-P(B_j|A) &= \frac{P(A|B_j) P(B_j)}{ \sum\limits_^{k}_{i=1} P(A|B_i)P(B_i)}
+P(B_j|A) &= \frac{P(A|B_j) P(B_j)}{ \sum_{i=1}^{k} P(A|B_i)P(B_i)}
 \end{align}
 $$
 

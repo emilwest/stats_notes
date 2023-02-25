@@ -1873,6 +1873,8 @@ the random variable $Y$.
 
 ### Expected value
 
+–
+
 ## Statistical tests
 
 ### Calculate power in t-test

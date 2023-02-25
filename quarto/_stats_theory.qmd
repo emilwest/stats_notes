@@ -316,6 +316,9 @@ $$
 P(B_j|A) = \frac{P(A|B_j)P(B_j)}{\sum_{i=1}^k P(A|B_i)P(B_i)}
 \end{align}
 $$
+
+--
+
 ### Random variable
 
 A random variable, denoted in capitals, is a real-valued function for which the domain is a sample space. For example, let $Y$ = number of heads obtained tossing two coins. Let $y$ denote the observed value of the random variable $Y$. 
@@ -326,4 +329,3 @@ A random variable, denoted in capitals, is a real-valued function for which the 
 
 
 
---

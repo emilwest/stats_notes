@@ -276,4 +276,54 @@ $$
 
 --
 
+## Probability theory
+
+
+### Set theory 
+
+Conditional probability of event A, given that event B has occurred:
+
+$$
+\begin{align}
+P(A|B) = \frac{P(A \cap B)}{P(B)}
+\end{align}
+$$
+Multiplicative law of probability: $P(A \cap B) = P(A)P(B|A) = P(B)P(A|B)$ .
+
+If A and B are independent, it holds that $P(A|B) = P(A)$ and $P(A \cap B) = P(A)P(B)$.
+
+$P(A \cap B \cap C) = P(A)P(B|A)P(C|A \cap B)$.
+
+Additive law of probability: $P(A \cup B) = P(A) + P(B) - P(A \cap B)$.
+
+
+### The Law of Total Probability
+
+The collection of sets $\{B_1, B_2, ..., B_k\}$ is a partition of the sample space $S$ if $S = B_1 \cup B_2 \cup \cdots \cup B_k$ and $B_i \cap B_j = \emptyset, i \neq j$ for some positive integer $k$.
+Then for any event A
+
+$$
+\begin{align}
+P(A) = \sum_{i=1}^k P(A|B_i)P(B_i)
+\end{align}
+$$
+### Bayes Rule:
+
+Assume that $\{B_1, B_2, ..., B_k\}$ is a partition of $S$ such that $P(B_i)>0$ for $i = 1,2,...,k$. Then
+
+$$
+\begin{align}
+P(B_j|A) = \frac{P(A|B_j)P(B_j)}{\sum_{i=1}^k P(A|B_i)P(B_i)}
+\end{align}
+$$
+### Random variable
+
+A random variable, denoted in capitals, is a real-valued function for which the domain is a sample space. For example, let $Y$ = number of heads obtained tossing two coins. Let $y$ denote the observed value of the random variable $Y$. 
+
+
+### Expected value
+
+
+
+
 

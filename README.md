@@ -520,7 +520,7 @@ library(tidyverse)
 map_df(iris, ~sum(is.na(.))) %>% pivot_longer(everything(), names_to = "Variable", values_to = "n")
 ```
 
-    # A tibble: 5 × 2
+    # A tibble: 5 x 2
       Variable         n
       <chr>        <int>
     1 Sepal.Length     0
@@ -634,7 +634,7 @@ df %>%
   separate_rows(B)
 ```
 
-    # A tibble: 5 × 2
+    # A tibble: 5 x 2
           A B         
       <dbl> <chr>     
     1     1 apple     
@@ -662,7 +662,7 @@ band_members %>%
   left_join(band_members, by = character())
 ```
 
-    # A tibble: 9 × 4
+    # A tibble: 9 x 4
       name.x band.x  name.y band.y 
       <chr>  <chr>   <chr>  <chr>  
     1 Mick   Stones  Mick   Stones 
@@ -695,7 +695,7 @@ Table band instruments:
 band_members %>% inner_join(band_instruments)
 ```
 
-    # A tibble: 2 × 3
+    # A tibble: 2 x 3
       name  band    plays 
       <chr> <chr>   <chr> 
     1 John  Beatles guitar
@@ -705,7 +705,7 @@ band_members %>% inner_join(band_instruments)
 band_members %>% left_join(band_instruments)
 ```
 
-    # A tibble: 3 × 3
+    # A tibble: 3 x 3
       name  band    plays 
       <chr> <chr>   <chr> 
     1 Mick  Stones  <NA>  
@@ -716,7 +716,7 @@ band_members %>% left_join(band_instruments)
 band_members %>% right_join(band_instruments)
 ```
 
-    # A tibble: 3 × 3
+    # A tibble: 3 x 3
       name  band    plays 
       <chr> <chr>   <chr> 
     1 John  Beatles guitar
@@ -727,7 +727,7 @@ band_members %>% right_join(band_instruments)
 band_members %>% full_join(band_instruments)
 ```
 
-    # A tibble: 4 × 3
+    # A tibble: 4 x 3
       name  band    plays 
       <chr> <chr>   <chr> 
     1 Mick  Stones  <NA>  
@@ -786,7 +786,7 @@ iris_long <- iris %>%
 x_long
 ```
 
-    # A tibble: 4 × 3
+    # A tibble: 4 x 3
       Species name         value
       <chr>   <chr>        <dbl>
     1 setosa  Sepal.Length     1
@@ -800,7 +800,7 @@ x_long %>%
   head(10)
 ```
 
-    # A tibble: 10 × 3
+    # A tibble: 10 x 3
        Species    name         value
        <fct>      <chr>        <dbl>
      1 setosa     Petal.Length     3
@@ -1078,13 +1078,13 @@ mods <- by_cyl %>% map(~ lm(mpg ~ wt, data = .)) # in each df, create linear mod
 [Why use map instead of
 lapply?](https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply)
 
-- Syntacically more convenient: You can use model formulas like
-  `~ . + 1` instead of `function(x) x + 1`
+-   Syntacically more convenient: You can use model formulas like
+    `~ . + 1` instead of `function(x) x + 1`
 
-- Type-specific: you know exactly what type is returned (double,
-  character, dataframe, etc).
+-   Type-specific: you know exactly what type is returned (double,
+    character, dataframe, etc).
 
-- Nicely integrated with tidyverse
+-   Nicely integrated with tidyverse
 
 ### Create an empty tibble with column names from vector and 0 rows
 
@@ -1818,6 +1818,65 @@ $$
 
 –
 
+## Probability theory
+
+### Set theory
+
+Conditional probability of event A, given that event B has occurred:
+
+$$
+\begin{align}
+P(A|B) = \frac{P(A \cap B)}{P(B)}
+\end{align}
+$$
+
+Multiplicative law of probability:
+$P(A \cap B) = P(A)P(B|A) = P(B)P(A|B)$ .
+
+If A and B are independent, it holds that $P(A|B) = P(A)$ and
+$P(A \cap B) = P(A)P(B)$.
+
+$P(A \cap B \cap C) = P(A)P(B|A)P(C|A \cap B)$.
+
+Additive law of probability: $P(A \cup B) = P(A) + P(B) - P(A \cap B)$.
+
+### The Law of Total Probability
+
+The collection of sets $\{B_1, B_2, ..., B_k\}$ is a partition of the
+sample space $S$ if $S = B_1 \cup B_2 \cup \cdots \cup B_k$ and
+$B_i \cap B_j = \emptyset, i \neq j$ for some positive integer $k$. Then
+for any event A
+
+$$
+\begin{align}
+P(A) = \sum_{i=1}^k P(A|B_i)P(B_i)
+\end{align}
+$$
+
+### Bayes Rule:
+
+Assume that $\{B_1, B_2, ..., B_k\}$ is a partition of $S$ such that
+$P(B_i)>0$ for $i = 1,2,...,k$. Then
+
+$$
+\begin{align}
+P(B_j|A) &= \frac{P(A|B_j) P(B_j)}{ {\sum_{i=1}^{k} P(A|B_i)P(B_i)} }
+\end{align}
+$$
+
+–
+
+### Random variable
+
+A random variable, denoted in capitals, is a real-valued function for
+which the domain is a sample space. For example, let $Y$ = number of
+heads obtained tossing two coins. Let $y$ denote the observed value of
+the random variable $Y$.
+
+### Expected value
+
+–
+
 ## Statistical tests
 
 ### Calculate power in t-test
@@ -1860,7 +1919,7 @@ library(dplyr)
 sleep %>% group_by(group) %>% dplyr::slice_sample(n = 3)
 ```
 
-    # A tibble: 6 × 3
+    # A tibble: 6 x 3
     # Groups:   group [2]
       extra group ID   
       <dbl> <fct> <fct>

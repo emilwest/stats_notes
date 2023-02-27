@@ -2008,7 +2008,7 @@ $$
 
 The probability of selecting both element $k$ and $l$ is
 
-$P(k & l \in s) = P(I_k I_l = 1) = \sum p(s)$ for all s where k and l
+$P(k \& l \in s) = P(I_k I_l = 1) = \sum p(s)$ for all s where k and l
 are included. Note that $I_k I_l = 1$ if and only if both k and l are in
 the sample.
 

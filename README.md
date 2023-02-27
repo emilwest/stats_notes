@@ -1947,6 +1947,20 @@ $\binom{5}{3} = \frac{5!}{3!(5-3)!} = 10$ different ways. The
 probability for each of the possible samples is $p(s) = 1/10=0.1$. The
 sum of all $p(s)=1$ ie $\sum_{\text{all s}} p(s) = 1$.
 
+    # A tibble: 10 × 7
+          Nr A     B     C     D     E     `p(s)`
+       <int> <chr> <chr> <chr> <chr> <chr>  <dbl>
+     1     1 "A"   "B"   "C"   ""    ""       0.1
+     2     2 "A"   "B"   ""    "D"   ""       0.1
+     3     3 "A"   "B"   ""    ""    "E"      0.1
+     4     4 "A"   ""    "C"   "D"   ""       0.1
+     5     5 "A"   ""    "C"   ""    "E"      0.1
+     6     6 "A"   ""    ""    "D"   "E"      0.1
+     7     7 ""    "B"   "C"   "D"   ""       0.1
+     8     8 ""    "B"   "C"   ""    "E"      0.1
+     9     9 ""    "B"   ""    "D"   "E"      0.1
+    10    10 ""    ""    "C"   "D"   "E"      0.1
+
 Note for example that the probability of selecting A is
 $n/N=6/10 = 0.6$. The same probability for B, C, D and E.
 
@@ -1994,7 +2008,7 @@ $$
 
 The probability of selecting both element $k$ and $l$ is
 
-$P(k \\& l \in s) = P(I_k I_l = 1) = \sum p(s)$ for all s where k and l
+$P(k & l \in s) = P(I_k I_l = 1) = \sum p(s)$ for all s where k and l
 are included. Note that $I_k I_l = 1$ if and only if both k and l are in
 the sample.
 
@@ -2015,20 +2029,19 @@ $$
 For example, from the example table we can visually see that selecting
 both A and B has a probability of 0.3 ($\sum p(s) = 0.1+0.1+0.1$).
 
-    # A tibble: 1,000 × 6
-           x       p      pdf      cdf      q     X
-       <dbl>   <dbl>    <dbl>    <dbl>  <dbl> <dbl>
-     1  1    0       1.11e-22 5.63e-23 -Inf    50.1
-     2  1.10 0.00100 1.35e-22 6.85e-23   34.6  49.1
-     3  1.20 0.00200 1.64e-22 8.33e-23   35.6  43.1
-     4  1.30 0.00300 1.99e-22 1.01e-22   36.3  47.0
-     5  1.40 0.00400 2.42e-22 1.23e-22   36.7  51.5
-     6  1.50 0.00501 2.93e-22 1.49e-22   37.1  51.9
-     7  1.59 0.00601 3.55e-22 1.81e-22   37.4  44.0
-     8  1.69 0.00701 4.30e-22 2.20e-22   37.7  48.2
-     9  1.79 0.00801 5.21e-22 2.67e-22   38.0  41.9
-    10  1.89 0.00901 6.30e-22 3.24e-22   38.2  48.7
-    # … with 990 more rows
+    # A tibble: 10 × 7
+          Nr A     B     C     D     E     `p(s)`
+       <int> <chr> <chr> <chr> <chr> <chr>  <dbl>
+     1     1 "A"   "B"   "C"   ""    ""       0.1
+     2     2 "A"   "B"   ""    "D"   ""       0.1
+     3     3 "A"   "B"   ""    ""    "E"      0.1
+     4     4 "A"   ""    "C"   "D"   ""       0.1
+     5     5 "A"   ""    "C"   ""    "E"      0.1
+     6     6 "A"   ""    ""    "D"   "E"      0.1
+     7     7 ""    "B"   "C"   "D"   ""       0.1
+     8     8 ""    "B"   "C"   ""    "E"      0.1
+     9     9 ""    "B"   ""    "D"   "E"      0.1
+    10    10 ""    ""    "C"   "D"   "E"      0.1
 
 which is shown to be equal to
 

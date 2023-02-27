@@ -130,18 +130,25 @@ ul.task-list li input[type="checkbox"] {
 <p><span class="math inline">\(E(I_k^2) = P(I_k^2 = 1)\times 1 + P(I_k^2 = 0)\times 0 = P(I_k^2 = 1) = \pi_k\)</span></p>
 <p>since <span class="math inline">\(I_k^2 = 1^2 = 1\)</span> if <span class="math inline">\(k\in s\)</span>.</p>
 <p>The variance of the inclusion probability is</p>
-<p><span class="math display">\[V(I_k) = E[I_k - E(I_k)]^2 = E[I_k^2] - [E(I_k)]^2 = E[I_k] - [E(I_k)]^2 \\
-= \pi_k-\pi_k^2 = \pi_k(1-\pi_k)\]</span></p>
+<p><span class="math display">\[
+V(I_k) = E[I_k - E(I_k)]^2 \\
+= E[I_k^2] - [E(I_k)]^2 \\
+= E[I_k] - [E(I_k)]^2 \\
+= \pi_k-\pi_k^2  \\
+= \pi_k(1-\pi_k)
+\]</span></p>
+<p>–</p>
 </section>
 <section id="second-order-inclusion-probability" class="level4">
 <h4 class="anchored" data-anchor-id="second-order-inclusion-probability">Second order inclusion probability</h4>
 <p>The probability of selecting both element <span class="math inline">\(k\)</span> and <span class="math inline">\(l\)</span> is</p>
-<p><span class="math inline">\(P(k \&amp; l \in s) = P(I_k I_l = 1) = \sum p(s)\)</span> for all s where k and l are included. Note that <span class="math inline">\(I_k I_l = 1\)</span> if and only if both k and l are in the sample.</p>
+<p><span class="math inline">\(P(k \\&amp; l \in s) = P(I_k I_l = 1) = \sum p(s)\)</span> for all s where k and l are included. Note that <span class="math inline">\(I_k I_l = 1\)</span> if and only if both k and l are in the sample.</p>
 <p><span class="math inline">\(E(I_k I_l ) = P(I_k I_l = 1) = \pi_{kl}\)</span></p>
 <p>which is</p>
 <p><span class="math display">\[
 \begin{align}
-\pi_{kl} = P(k\&amp;l \in s) &amp;= \frac{\binom{2}{2}\binom{N-2}{n-2}}{\binom{N}{n}} \\
+\pi_{kl} &amp;= P(k\&amp;l \in s)  \\
+&amp;= \frac{\binom{2}{2}\binom{N-2}{n-2}}{\binom{N}{n}} \\
 &amp;= \frac{\frac{(N-2)!}{(n-2)![N-2-(n-2)]!}}{\frac{N!}{n!(N-n)!}} \\
 &amp;= \frac{(N-2)!n!(N-n)!}{N!(n-2)!(N-n)!} \\
 &amp;=  \frac{n(n-1)}{N(N-1)}

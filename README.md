@@ -1,3 +1,5 @@
+Survey_sampling
+================
 Emil Westin
 
 ![Stats notes](img/wordcloud2.png)
@@ -520,7 +522,7 @@ library(tidyverse)
 map_df(iris, ~sum(is.na(.))) %>% pivot_longer(everything(), names_to = "Variable", values_to = "n")
 ```
 
-    # A tibble: 5 x 2
+    # A tibble: 5 × 2
       Variable         n
       <chr>        <int>
     1 Sepal.Length     0
@@ -634,7 +636,7 @@ df %>%
   separate_rows(B)
 ```
 
-    # A tibble: 5 x 2
+    # A tibble: 5 × 2
           A B         
       <dbl> <chr>     
     1     1 apple     
@@ -662,7 +664,7 @@ band_members %>%
   left_join(band_members, by = character())
 ```
 
-    # A tibble: 9 x 4
+    # A tibble: 9 × 4
       name.x band.x  name.y band.y 
       <chr>  <chr>   <chr>  <chr>  
     1 Mick   Stones  Mick   Stones 
@@ -695,7 +697,7 @@ Table band instruments:
 band_members %>% inner_join(band_instruments)
 ```
 
-    # A tibble: 2 x 3
+    # A tibble: 2 × 3
       name  band    plays 
       <chr> <chr>   <chr> 
     1 John  Beatles guitar
@@ -705,7 +707,7 @@ band_members %>% inner_join(band_instruments)
 band_members %>% left_join(band_instruments)
 ```
 
-    # A tibble: 3 x 3
+    # A tibble: 3 × 3
       name  band    plays 
       <chr> <chr>   <chr> 
     1 Mick  Stones  <NA>  
@@ -716,7 +718,7 @@ band_members %>% left_join(band_instruments)
 band_members %>% right_join(band_instruments)
 ```
 
-    # A tibble: 3 x 3
+    # A tibble: 3 × 3
       name  band    plays 
       <chr> <chr>   <chr> 
     1 John  Beatles guitar
@@ -727,7 +729,7 @@ band_members %>% right_join(band_instruments)
 band_members %>% full_join(band_instruments)
 ```
 
-    # A tibble: 4 x 3
+    # A tibble: 4 × 3
       name  band    plays 
       <chr> <chr>   <chr> 
     1 Mick  Stones  <NA>  
@@ -786,7 +788,7 @@ iris_long <- iris %>%
 x_long
 ```
 
-    # A tibble: 4 x 3
+    # A tibble: 4 × 3
       Species name         value
       <chr>   <chr>        <dbl>
     1 setosa  Sepal.Length     1
@@ -800,7 +802,7 @@ x_long %>%
   head(10)
 ```
 
-    # A tibble: 10 x 3
+    # A tibble: 10 × 3
        Species    name         value
        <fct>      <chr>        <dbl>
      1 setosa     Petal.Length     3
@@ -1078,13 +1080,13 @@ mods <- by_cyl %>% map(~ lm(mpg ~ wt, data = .)) # in each df, create linear mod
 [Why use map instead of
 lapply?](https://stackoverflow.com/questions/45101045/why-use-purrrmap-instead-of-lapply)
 
--   Syntacically more convenient: You can use model formulas like
-    `~ . + 1` instead of `function(x) x + 1`
+- Syntacically more convenient: You can use model formulas like
+  `~ . + 1` instead of `function(x) x + 1`
 
--   Type-specific: you know exactly what type is returned (double,
-    character, dataframe, etc).
+- Type-specific: you know exactly what type is returned (double,
+  character, dataframe, etc).
 
--   Nicely integrated with tidyverse
+- Nicely integrated with tidyverse
 
 ### Create an empty tibble with column names from vector and 0 rows
 
@@ -1828,9 +1830,7 @@ $$
 \begin{align}
 P(A|B) = \frac{P(A \cap B)}{P(B)}
 \end{align}
-$$
-
-Multiplicative law of probability:
+$$ Multiplicative law of probability:
 $P(A \cap B) = P(A)P(B|A) = P(B)P(A|B)$ .
 
 If A and B are independent, it holds that $P(A|B) = P(A)$ and
@@ -1851,9 +1851,7 @@ $$
 \begin{align}
 P(A) = \sum_{i=1}^k P(A|B_i)P(B_i)
 \end{align}
-$$
-
-### Bayes Rule:
+$$ \### Bayes Rule:
 
 Assume that $\{B_1, B_2, ..., B_k\}$ is a partition of $S$ such that
 $P(B_i)>0$ for $i = 1,2,...,k$. Then
@@ -1876,6 +1874,257 @@ the random variable $Y$.
 ### Expected value
 
 –
+
+# Survey sampling
+
+Survey sampling is a statistical process (statistisk undersökning)
+characterized by the following:
+
+- A well-defined finite set of elements, a population. It must be clear
+  which elements are a part of the population you wish to study.
+
+- The elements are measurable and there is a need for information about
+  some population parameters.
+
+- A sampling frame (urvalsram) is needed, i.e. an operational
+  representation of the elements. For example a hierarchy of sampling
+  units that associate each element with a sampling unit.
+
+- A sample (stickprov) of elements is done by sampling sampling units
+  from the sampling frame accoridning to some sample design
+  (urvalsdesign), such that each element has a known positive
+  probability of being selected. An exception being a total survey
+  (totalundersökning) where all elements are selected.
+
+- The sampled elements are observed (measured) with regards to the set
+  of variables that are of interest for the survey accordning to a
+  measurement plan.
+
+- The collected observations are finally used to estimate population
+  parameters (total, mean, percent, quotients, regression coefficients,
+  …) where information is needed.
+
+## Notation
+
+Typically, the set notation is used in survey sampling. The variable
+(undersökningsvariabeln) is denoted as $y$ instead of the traditional
+$x$.
+
+$\bar{y} = \frac{1}{n}\sum_{i \in s}y_i, \text{ where }s= {1,2,...,n}$
+
+The population is
+
+$U = {1,2,...,k,...,N}$
+
+Let $y_k$ denote the value of element $k$ in the population.
+
+The parameter (målstorhet) $t$ (the total of $y$) is very important.
+
+$t = t_y = \sum_{k \in U} y_k = \sum_{U} y_k = y_1 + y_2 + ... + y_N$
+
+The mean is a function of the total:
+
+$\bar{y}_U = \frac{\sum_U y_k}{N} = \frac{\sum_U y_k}{\sum_U 1} = \frac{\sum_U y_k}{\sum_U z_k} = \frac{t_y}{t_z}, \text{ where } z_k = 1$
+
+To estimate the parameters, a sample $s$ is drawn of size $n$ according
+to a sampling design $p(s)$. In some sampling designs, $N$ is known and
+can be trated as a constant. In others, $N$ must be estimated.
+
+## Sampling design
+
+### Simple random sample (OSU - obundet slumpmässigt urval)
+
+Without replacement, ie an object can only be included in a sample once.
+The definition of OSU is that each possible combination of samples drawn
+of (fixed) size $n$ from $N$ are equally likely (have the same
+probability of being drawn).
+
+$p(s) = \frac{1}{\binom{N}{n}}$
+
+For example, consider the objects A, B, C, D, E ($N=5$). If we select
+$n=3$ objects, this can be done in
+$\binom{5}{3} = \frac{5!}{3!(5-3)!} = 10$ different ways. The
+probability for each of the possible samples is $p(s) = 1/10=0.1$. The
+sum of all $p(s)=1$ ie $\sum_{\text{all s}} p(s) = 1$.
+
+Note for example that the probability of selecting A is
+$n/N=6/10 = 0.6$. The same probability for B, C, D and E.
+
+#### First order inclusion probability
+
+Inklusionssannolikhet (första ordningens).
+
+The probability of selecting element $k$ is
+
+$P(k \in s) = \pi_k = \sum p(s)$ for all $s$ where $k$ is inkluded.
+
+In the example above for $N=5,n=3$, $\pi_k = n/N = 0.6$ (for OSU).
+
+This can be shown by asking: what is the probability of an event
+happening k times in n trials, without replacement? We can use the
+hypergeometric distribution.
+
+$P(k \in s) = \frac{\binom{1}{1}\binom{N-1}{n-1}}{\binom{N}{n}} = \frac{\frac{(N-1)!}{(n-1)![N-1-(n-1)]!}}{\frac{N!}{n!(N-n)!}} = \frac{(N-1)!n!(N-n)!}{N!(n-1)!(N-n)!} = \frac{n}{N}$
+
+An indicator variable can be used to indicate if element k is included
+in the sample: $I_k = 1$ if $k\in s$ and $I_k = 0$ if $k \notin s$.
+$I_k$ is a Bernoulli random variable.
+
+$E(I_k) = P(I_k = 1)\times 1 + P(I_k = 0)\times 0 = P(I_k = 1) = \pi_k$
+
+Also note that:
+
+$E(I_k^2) = P(I_k^2 = 1)\times 1 + P(I_k^2 = 0)\times 0 = P(I_k^2 = 1) = \pi_k$
+
+since $I_k^2 = 1^2 = 1$ if $k\in s$.
+
+The variance of the inclusion probability is
+
+$$V(I_k) = E[I_k - E(I_k)]^2 = E[I_k^2] - [E(I_k)]^2 = E[I_k] - [E(I_k)]^2 \\
+= \pi_k-\pi_k^2 = \pi_k(1-\pi_k)$$
+
+#### Second order inclusion probability
+
+The probability of selecting both element $k$ and $l$ is
+
+$P(k \& l \in s) = P(I_k I_l = 1) = \sum p(s)$ for all s where k and l
+are included. Note that $I_k I_l = 1$ if and only if both k and l are in
+the sample.
+
+$E(I_k I_l ) = P(I_k I_l = 1) = \pi_{kl}$
+
+which is
+
+$$
+\begin{align}
+\pi_{kl} = P(k\&l \in s) &= \frac{\binom{2}{2}\binom{N-2}{n-2}}{\binom{N}{n}} \\
+&= \frac{\frac{(N-2)!}{(n-2)![N-2-(n-2)]!}}{\frac{N!}{n!(N-n)!}} \\
+&= \frac{(N-2)!n!(N-n)!}{N!(n-2)!(N-n)!} \\
+&=  \frac{n(n-1)}{N(N-1)}
+\end{align}
+$$
+
+For example, from the example table we can visually see that selecting
+both A and B has a probability of 0.3 ($\sum p(s) = 0.1+0.1+0.1$).
+
+which is shown to be equal to
+
+$\pi_{kl} = \frac{3(2-1)}{5(5-1)} = \frac{6}{20} = \frac{3}{10} = 0.3$
+
+## Horvitz-Thompson Estimator
+
+The HT-estimator is a general unbiased estimator regardless of the
+sampling design.
+
+$\hat{t} = \hat{t}_y = \hat{t}_{yHT} = \sum_{k \in s} \frac{y_k}{\pi_k} = \sum_{k \in s}d_k y_k = \frac{N}{n} \sum_{k \in s} y_k = N\bar{y}_s$
+
+where $d_k = 1/\pi_k = N/n$ (OSU) is the design weight (designvikt) and
+is often added as a variable to the dataset.
+
+The design weight can be interpreted as how many objects a certain
+object from the sample shall represent. If $N=1000, n=100$, then
+
+$\pi_k = n/N = 100/1000 = 0.1$
+
+$d_k = N/n = 1000/100 = 10$
+
+For example, for a sample of 100 schools from a population of 1000
+schools, each school in the sample represents 10 schools in the
+population.
+
+$E(\hat{t}) = E(\sum_{k \in s} \frac{y_k}{\pi_k}) = E(\sum_{k \in U} I_k \frac{y_k}{\pi_k}) = \sum_{k \in U} E(I_k) \frac{y_k}{\pi_k} = \sum_{k \in U} \pi_k \frac{y_k}{\pi_k} = \sum_{k \in U} y_k = t$
+
+Note that:
+
+- Indcator variable $I_k$ was added so sum over s changed to sum over U
+
+- $y$ is regarded as a fixed constant in this type of survey sampling.
+  The randomness is instead introduced from the sampling design. The
+  advantage is that no assumptions are needed (in the case of full
+  response).
+
+Note that the mean is estimated with
+
+$\hat{\bar{y}}_U = \frac{\sum_s y_k/\pi_k}{\sum_s d_k} = \frac{\hat{t}_{HT}}{\hat{N}} = \frac{\sum_{k \in s} (N/n)y_k}{N} = \frac{1}{n} \sum_{k \in s} y_k = \bar{y}_s$
+
+In OSU, $\hat{N} = \sum_s d_k = \sum_s N/n = N/n \sum_s 1 = N$.
+
+$E(\hat{\bar{y}}_U) = \frac{E(\sum_s y_k/\pi_k)}{N} = \frac{\sum_U y_k}{N} = \frac{t}{N}$
+
+### Variance of the Horvitz-Thompson Estimator
+
+Variance of a linear combination of variables general formula:
+
+$$
+\begin{align}
+Var(a_1x_1 + \dots a_nx_n) &= \sum_{i=1}^n a_i^2 V(x_i) + 2 \sum_{i=1}^n \sum_{j>i}^n a_i a_j \text{ Cov}(x_i,x_j) \\
+&= \sum_{i=1}^n a_i^2 V(x_i) +  \sum_{i=1}^n \sum_{j=1}^n a_i a_j \text{ Cov}(x_i,x_j), i\neq j
+\end{align}
+$$
+
+$$
+\begin{align}
+V(\hat{t}) &= V(\sum_{k \in s}\frac{y_k}{\pi_k}) \\
+&=  V(\sum_{k \in U} I_k \frac{y_k}{\pi_k}) \\
+&= \sum_{k \in U} (\frac{y_k}{\pi_k})^2 V(I_k) +  \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} \text{ Cov}(I_k,I_l), k\neq l
+\end{align}
+$$
+
+Where the variance of the inclusion indicator variable is
+
+$$V(I_k) = E[I_k - E(I_k)]^2 = E[I_k^2] - [E(I_k)]^2 = E[I_k] - [E(I_k)]^2 \\
+= \pi_k-\pi_k^2 = \pi_k(1-\pi_k)$$
+
+and the covariance
+
+$\text{ Cov}(I_k,I_l) = E[I_k I_l] - E[I_k]E[I_l] = \pi_{kl}-\pi_k \pi_l$
+
+Also note that $\pi_{kk} = \pi_{k}$
+
+Collect expressions
+
+$$
+\begin{align}
+V(\hat{t}) &= \sum_{k \in U} (\frac{y_k}{\pi_k})^2 V(I_k) +  \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} \text{ Cov}(I_k,I_l), k\neq l \\
+&=  \sum_{k \in U} (\frac{y_k}{\pi_k})^2 \pi_k(1-\pi_k) +  \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l), k\neq l \\
+&= \sum_{k \in U} \frac{y_k}{\pi_k}\frac{y_k}{\pi_k} (\pi_{kk}-\pi_k\pi_k) + \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l), k\neq l \\
+&= \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l) \\
+&= \sum_{k \in U} \sum_{l \in U} (\pi_{kl}-\pi_k \pi_l)  \frac{y_k}{\pi_k} \frac{y_l}{\pi_l}
+\end{align}
+$$
+
+Notice that the two sums could be simplified to a single sum because
+when $k=l$ the first term has the same form as the second term. Imagine
+that the first term was the diagonal in a covariance matrix and the
+second term was on the diagonals.
+
+It can be shown that
+
+$V(\hat{t}) = \sum_{k \in U} \sum_{l \in U} (\pi_{kl}-\pi_k \pi_l) \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} = N^2\frac{1-\frac{n}{N}}{n} S^2_{yU}$
+
+where
+
+$$
+\begin{align} 
+S^2_{yU} &= \frac{1}{N-1}\sum_{k \in U} (y_k - \bar{y}_U)^2 \\
+&= \frac{1}{N} (\sum_{k \in U} y^2_k - \frac{1}{N-1}\sum_{k \in U}\sum_{l \in U} y_ky_l), k \neq l
+\end{align}
+$$
+
+Proof:
+
+\$\$ \$\$
+
+Note that
+$\frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) = \frac{1}{(\frac{N-n}{N})}(\frac{N(n-1)-n(N-1)}{N(N-1)}) = \frac{1}{(\frac{N-n}{N})}(\frac{n-N}{N(N-1)}) = \frac{N}{N-n} (\frac{n-N}{N(N-1)}) = \frac{1}{N-1}$
+
+$N^2/n, n/N, (1-n/N)$ broke out.
+
+and
+
+$\pi_{k} = \frac{n}{N}$
+
+$\pi_{kl} = P(k\&l \in s) = \frac{\binom{2}{2}{\binom{N-2}{n-2}}}{\binom{N}{n}} = \frac{n(n-1)}{N(N-1)}, k \neq l$
 
 ## Statistical tests
 
@@ -1919,7 +2168,7 @@ library(dplyr)
 sleep %>% group_by(group) %>% dplyr::slice_sample(n = 3)
 ```
 
-    # A tibble: 6 x 3
+    # A tibble: 6 × 3
     # Groups:   group [2]
       extra group ID   
       <dbl> <fct> <fct>

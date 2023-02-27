@@ -27,6 +27,8 @@ How to use this document: search for a keyword with `Ctrl` + `f` or scroll troug
 
 {{< include ./quarto/_stats_theory.qmd >}}
 
+{{< include ./quarto/_survey_sampling.qmd >}}
+
 {{< include ./quarto/_statistical_tests.qmd >}}
 
 {{< include ./quarto/_advancedr.qmd >}}

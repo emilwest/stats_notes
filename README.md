@@ -2052,7 +2052,9 @@ $\pi_{kl} = \frac{3(2-1)}{5(5-1)} = \frac{6}{20} = \frac{3}{10} = 0.3$
 The HT-estimator is a general unbiased estimator regardless of the
 sampling design.
 
-$\hat{t} = \hat{t}_y = \hat{t}_{yHT} = \sum_{k \in s} \frac{y_k}{\pi_k} = \sum_{k \in s}d_k y_k = \frac{N}{n} \sum_{k \in s} y_k = N\bar{y}_s$
+$$
+\hat{t} = \hat{t}_y = \hat{t}_{yHT} = \sum_{k \in s} \frac{y_k}{\pi_k} = \sum_{k \in s}d_k y_k = \frac{N}{n} \sum_{k \in s} y_k = N\bar{y}_s
+$$
 
 where $d_k = 1/\pi_k = N/n$ (OSU) is the design weight (designvikt) and
 is often added as a variable to the dataset.

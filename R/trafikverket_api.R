@@ -237,10 +237,11 @@ plot_traffic <- function(.data, x, y, .icondim = 16) {
 
 
 library(shiny)
+library(shinydashboard)
 library(lubridate)
 
-avkontr <- "L:/Myndigheter/Trafikverket/TRV_5161_Skattning hastighetsindex/Document/Memo/Månadsrapport-Avvikelsekontroll_2022.xlsx"
-avkontr_2021 <- "L:/Myndigheter/Trafikverket/TRV_5161_Skattning hastighetsindex/Document/Memo/Månadsrapport-Avvikelsekontroll_2021.xlsx"
+avkontr <- "L:/Myndigheter/Trafikverket/TRV_5161_Skattning hastighetsindex/Document/Memo/Månadsrapport-Avvikelsekontroll_2023.xlsx"
+avkontr_previous <- "L:/Myndigheter/Trafikverket/TRV_5161_Skattning hastighetsindex/Document/Memo/Månadsrapport-Avvikelsekontroll_2022.xlsx"
 
 manad <- lubridate::now() %>% lubridate::month()
 if (manad == 1) {
@@ -249,80 +250,191 @@ if (manad == 1) {
   manad <- (manad-1) %>% month(label = T) %>% str_to_title()
 }
 
+# test
+# manad <- "Feb"
 
 
 av1 <- readxl::read_excel(avkontr)
-av2021 <- readxl::read_excel(avkontr_2021)
+avprev <- readxl::read_excel(avkontr_previous)
 
 av <- av1 %>% 
   filter(Månad == manad) %>% 
   filter(is.na(Bortfallsvikt) | Bortfallsvikt == 0) %>% 
   filter(is.na(Kontrolldatum))
 
-av2021 <- av2021 %>% 
+avprev <- avprev %>% 
   filter(Månad == manad) 
+
 
 radio_choices <- av$PunktNr %>% unique %>%  set_names()
 
-# Define UI for application that draws a histogram
-ui <- fluidPage(
+radio_choices_list <- as.list(radio_choices)
+
+# ui <- fluidPage(
+#   
+#   # Application title
+#   titlePanel("Hastighetsindex"),
+#   
+#   # Sidebar with a slider input for number of bins 
+#   sidebarLayout(
+#     sidebarPanel(
+#       radioButtons("radio", 
+#                    h3("Punktnummer"),
+#                    choices = radio_choices)
+#     ),
+#     
+#     # Show a plot of the generated distribution
+#     mainPanel(
+#       shinydashboard::infoBox("Punktnummer"),
+#       textOutput("txt"),
+#       h4(str_glue("Kommentarer övriga månader i år:")),
+#       tableOutput("table"),
+#       h4(str_glue("Kommentar {manad} 2022:")),
+#       tableOutput("table2021"),
+#       h4(str_glue("Koordinater slang:")),
+#       leafletOutput("plotSlang"),
+#       h4(str_glue("Trafikhändelser i närheten av slang:")),
+#       leafletOutput("trafikPlot")
+#     )
+#   )
+# )
+
+#?dashboardSidebar
+
+
+
+
+ui <- dashboardPage(
+
   
   # Application title
-  titlePanel("Hastighetsindex"),
+  dashboardHeader(title = "Hastighetsindex"),
   
   # Sidebar with a slider input for number of bins 
-  sidebarLayout(
-    sidebarPanel(
-      radioButtons("radio", 
-                   h3("Punktnummer"),
-                   choices = radio_choices)
+  dashboardSidebar(
+    sidebarMenu(id = "tabs",
+                sidebarSearchForm(textId = "searchText", buttonId = "searchButton", label = "Sök punktnummer..."),
+                menuItem("Punktnummer",
+                         startExpanded = T,
+                         lapply(radio_choices, function(x) {
+                           menuSubItem(x, tabName = paste0(x))})
+                )
+    )),
+  
+  # Show a plot of the generated distribution
+  dashboardBody(
+    fluidRow(
+      infoBoxOutput("punktnr"),
+      infoBoxOutput("vägnr"),
+      infoBoxOutput("hastighet"),
+      infoBoxOutput("ADT"),
+      infoBoxOutput("plats"),
+      infoBoxOutput("syskonnr")
     ),
     
-    # Show a plot of the generated distribution
-    mainPanel(
-      textOutput("txt"),
-      h4(str_glue("Kommentarer övriga månader i år:")),
-      tableOutput("table"),
-      h4(str_glue("Kommentar {manad} 2021:")),
-      tableOutput("table2021"),
-      h4(str_glue("Koordinater slang:")),
-      leafletOutput("plotSlang"),
-      h4(str_glue("Trafikhändelser i närheten av slang:")),
-      leafletOutput("trafikPlot")
+    fluidRow(
+      box(tableOutput("table"), title = "Kommentarer övriga månader i år:"),
+      box(tableOutput("table2021"), title = str_glue("Kommentar {manad} 2022:"))
+      ),
+    
+    
+    fluidRow(
+      box(leafletOutput("plotSlang"), title = "Slangens koordinater:"),
+      box(leafletOutput("trafikPlot"), title = "Trafikhändelser i närheten av slang:")
     )
+
   )
 )
+
+
+
+
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  output$txt <- renderText({
-    x <- av %>%
-      filter(PunktNr == input$radio)
-    str_glue("You have selected {input$radio}
-             Vägnr: {x$VägNr} 
-             Län: {x$Län}
-             Hastighet: {x$Hastighet}
-             ÅDT: {x$ÅDT}
-             
-             ")
+  # infoBoxOutput("punktnr"),
+  # infoBoxOutput("vägnr"),
+  # infoBoxOutput("hastighet"),
+  # infoBoxOutput("ADT"),
+  # infoBoxOutput("plats"),
+  # infoBoxOutput("syskonnr")
+  # 
+  
+  # Filtrerar ut data för selekterad punkt 
+  curr_punkt <- reactive({
+    av %>% 
+      filter(PunktNr == input$tabs)
   })
   
-  output$table <- renderTable({
+  # hela årets punkter
+  curr_punkt_all <- reactive({
     av1 %>% 
-      filter(Månad != manad  & !is.na(Kommentar) & PunktNr == input$radio) %>% 
-      select(Månad, Kommentar)
+      filter(PunktNr == input$tabs)
+  })
+  
+  curr_punkt_prev <- reactive({
+    avprev %>% 
+      filter(PunktNr == input$tabs)
+  })
+    
+    
+  output$punktnr <- shinydashboard::renderInfoBox({
+    data <- curr_punkt()
+    infoBox(
+      "Punktnummer:", data$PunktNr, icon = icon("list"),
+      color = "purple"
+    )
+  })
+  
+  output$vägnr <- shinydashboard::renderInfoBox({
+    data <- curr_punkt()
+    infoBox(
+      "Väg:", data$VägNr, icon = icon("road"),
+      color = "blue"
+    )
+  })
+  
+  output$hastighet <- shinydashboard::renderInfoBox({
+    data <- curr_punkt()
+    infoBox(
+      "Hastighet:", data$Hastighet, icon = icon("gauge-high"),
+      color = "red"
+    )
+  })
+  
+  output$ADT <- shinydashboard::renderInfoBox({
+    data <- curr_punkt()
+    infoBox(
+      "ÅDT:", data$ÅDT, icon = icon("car-on"),
+      color = "orange"
+    )
+  })
+  
+  output$plats <- shinydashboard::renderInfoBox({
+    data <- curr_punkt()
+    infoBox(
+      "Plats:", data$Plats, icon = icon("location-dot"),
+      color = "orange"
+    )
+  })
+  
+  
+
+  output$table <- renderTable({
+    curr_punkt_all() %>% 
+      filter(Månad != manad  & !is.na(Kommentar)) %>% 
+      select(Månad, Kommentar) 
   })
   
   output$table2021 <- renderTable({
-    av2021 %>% 
-      filter(!is.na(Kommentar) & PunktNr == input$radio) %>% 
+    curr_punkt_prev() %>% 
+      filter(!is.na(Kommentar)) %>% 
       select(Månad, Kommentar)
   })
   
   output$plotSlang <- renderLeaflet({
-    x <- av %>%
-      filter(PunktNr == input$radio)
+    x <- curr_punkt()
     
     leaflet() %>% 
       addTiles() %>% 
@@ -332,8 +444,7 @@ server <- function(input, output) {
   
   output$trafikPlot <- renderLeaflet({
     # generate bins based on input$bins from ui.R
-    x <- av %>%
-      filter(PunktNr == input$radio)
+    x <- curr_punkt()
     # 
     y <- get_traffic_info(.x = as.character(x$`X-koord`), .y = as.character(x$`Y-koord`))
     if (nrow(y)>0) {
@@ -347,6 +458,8 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
+
 
 # TODO lägg till knapp 'Reload/Refresh' som laddar excelfilen på nytt 
 

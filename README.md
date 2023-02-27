@@ -2008,7 +2008,7 @@ $$
 
 The probability of selecting both element $k$ and $l$ is
 
-$P(k \& l \in s) = P(I_k I_l = 1) = \sum p(s)$ for all s where k and l
+$P(k \cap l \in s) = P(I_k I_l = 1) = \sum p(s)$ for all s where k and l
 are included. Note that $I_k I_l = 1$ if and only if both k and l are in
 the sample.
 
@@ -2018,7 +2018,7 @@ which is
 
 $$
 \begin{align}
-\pi_{kl} &= P(k\&l \in s)  \\ 
+\pi_{kl} &= P(k \cap l \in s)  \\ 
 &= \frac{\binom{2}{2}\binom{N-2}{n-2}}{\binom{N}{n}} \\
 &= \frac{\frac{(N-2)!}{(n-2)![N-2-(n-2)]!}}{\frac{N!}{n!(N-n)!}} \\
 &= \frac{(N-2)!n!(N-n)!}{N!(n-2)!(N-n)!} \\
@@ -2149,7 +2149,18 @@ $$
 
 Proof:
 
-\$\$ \$\$
+$$
+\begin{align} 
+V(\hat{t}) &= \sum_{k \in U} \sum_{l \in U} (\pi_{kl}-\pi_k \pi_l)  \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} \\
+&= \sum_{k \in U} \frac{y_k}{\pi_k}\frac{y_k}{\pi_k} (\pi_{kk}-\pi_k\pi_k) + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l) \\
+&= \sum_{k \in U} \frac{y_k}{\frac{n}{N}}\frac{y_k}{\frac{n}{N}} (\frac{n}{N}-\frac{n}{N}\frac{n}{N}) +  \sum_{k \in U, \\ k \neq l} \sum_{l \in U}  (\frac{n(n-1)}{N(N-1)}-\frac{n}{N} \frac{n}{N}) \frac{y_k}{\frac{n}{N}} \frac{y_l}{\frac{n}{N}} \\
+&= \sum_{k \in U}  \frac{n}{N}(1-\frac{n}{N}) \frac{N^2}{n^2} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{n}{N}(\frac{n-1}{N-1}-\frac{n}{N})\frac{N^2}{n^2}y_k y_l, \text{break out} \\
+&=  \frac{N^2}{n^2}(1 - \frac{n}{N})\frac{n}{N} (\sum_{k \in U} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) y_k y_l) \\
+&= N^2 \frac{(1 - \frac{n}{N})}{n}\frac{1}{N} (\sum_{k \in U} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) y_k y_l) \\
+&= N^2 \frac{(1 - \frac{n}{N})}{n}\frac{1}{N} (\sum_{k \in U} y_k^2 + \frac{1}{N-1} \sum_{k \in U, \\ k \neq l} \sum_{l \in U}  y_k y_l) \\
+&= N^2 \frac{(1 - \frac{n}{N})}{n} S^2_{yU}
+\end{align}
+$$
 
 Note that
 $\frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) = \frac{1}{(\frac{N-n}{N})}(\frac{N(n-1)-n(N-1)}{N(N-1)}) = \frac{1}{(\frac{N-n}{N})}(\frac{n-N}{N(N-1)}) = \frac{N}{N-n} (\frac{n-N}{N(N-1)}) = \frac{1}{N-1}$

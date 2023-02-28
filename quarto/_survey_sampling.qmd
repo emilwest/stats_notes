@@ -303,7 +303,7 @@ The algorithm simply assigns a random number drawn from uniform distribution (0,
 Here is an implementation in R/tidyverse:
 
 ```{r}
-#| echo: false
+#| echo: true
 #| eval: true
 #| warning: false 
 

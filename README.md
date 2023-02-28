@@ -2198,6 +2198,28 @@ smallest k items.
 
 Here is an implementation in R/tidyverse:
 
+``` r
+library(tidyverse)
+library(survey)
+data(api)
+
+k <- 3
+# if you have stratum, you can also create a column 'small n'/'nh' with the number of observation to select from each stratum and use that instead of k
+
+selection <- apistrat %>% 
+  mutate(unif = runif(n = n())) %>% 
+  # sorterar data on stratum (stype) and uniform random variable value
+  arrange(stype, unif) %>% 
+  group_by(stype) %>%
+  mutate(x = sequence(n())) %>%
+  # vi väljer ut nh första raderna per stratum
+  filter(x <= k) %>%
+  ungroup()
+
+
+selection %>% select(1:4, enroll, unif, x)
+```
+
     # A tibble: 9 × 7
       cds            stype name            sname                enroll    unif     x
       <chr>          <fct> <chr>           <chr>                 <int>   <dbl> <int>

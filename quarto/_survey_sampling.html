@@ -142,12 +142,12 @@ V(I_k) = E[I_k - E(I_k)]^2 \\
 <section id="second-order-inclusion-probability" class="level4">
 <h4 class="anchored" data-anchor-id="second-order-inclusion-probability">Second order inclusion probability</h4>
 <p>The probability of selecting both element <span class="math inline">\(k\)</span> and <span class="math inline">\(l\)</span> is</p>
-<p><span class="math inline">\(P(k \&amp; l \in s) = P(I_k I_l = 1) = \sum p(s)\)</span> for all s where k and l are included. Note that <span class="math inline">\(I_k I_l = 1\)</span> if and only if both k and l are in the sample.</p>
+<p><span class="math inline">\(P(k \cap l \in s) = P(I_k I_l = 1) = \sum p(s)\)</span> for all s where k and l are included. Note that <span class="math inline">\(I_k I_l = 1\)</span> if and only if both k and l are in the sample.</p>
 <p><span class="math inline">\(E(I_k I_l ) = P(I_k I_l = 1) = \pi_{kl}\)</span></p>
 <p>which is</p>
 <p><span class="math display">\[
 \begin{align}
-\pi_{kl} &amp;= P(k\&amp;l \in s)  \\
+\pi_{kl} &amp;= P(k \cap l \in s)  \\
 &amp;= \frac{\binom{2}{2}\binom{N-2}{n-2}}{\binom{N}{n}} \\
 &amp;= \frac{\frac{(N-2)!}{(n-2)![N-2-(n-2)]!}}{\frac{N!}{n!(N-n)!}} \\
 &amp;= \frac{(N-2)!n!(N-n)!}{N!(n-2)!(N-n)!} \\
@@ -180,7 +180,9 @@ V(I_k) = E[I_k - E(I_k)]^2 \\
 <section id="horvitz-thompson-estimator" class="level2">
 <h2 class="anchored" data-anchor-id="horvitz-thompson-estimator">Horvitz-Thompson Estimator</h2>
 <p>The HT-estimator is a general unbiased estimator regardless of the sampling design.</p>
-<p><span class="math inline">\(\hat{t} = \hat{t}_y = \hat{t}_{yHT} = \sum_{k \in s} \frac{y_k}{\pi_k} = \sum_{k \in s}d_k y_k = \frac{N}{n} \sum_{k \in s} y_k = N\bar{y}_s\)</span></p>
+<p><span class="math display">\[
+\hat{t} = \hat{t}_y = \hat{t}_{yHT} = \sum_{k \in s} \frac{y_k}{\pi_k} = \sum_{k \in s}d_k y_k = \frac{N}{n} \sum_{k \in s} y_k = N\bar{y}_s
+\]</span></p>
 <p>where <span class="math inline">\(d_k = 1/\pi_k = N/n\)</span> (OSU) is the design weight (designvikt) and is often added as a variable to the dataset.</p>
 <p>The design weight can be interpreted as how many objects a certain object from the sample shall represent. If <span class="math inline">\(N=1000, n=100\)</span>, then</p>
 <p><span class="math inline">\(\pi_k = n/N = 100/1000 = 0.1\)</span></p>
@@ -193,7 +195,9 @@ V(I_k) = E[I_k - E(I_k)]^2 \\
 <li><p><span class="math inline">\(y\)</span> is regarded as a fixed constant in this type of survey sampling. The randomness is instead introduced from the sampling design. The advantage is that no assumptions are needed (in the case of full response).</p></li>
 </ul>
 <p>Note that the mean is estimated with</p>
-<p><span class="math inline">\(\hat{\bar{y}}_U = \frac{\sum_s y_k/\pi_k}{\sum_s d_k} = \frac{\hat{t}_{HT}}{\hat{N}} = \frac{\sum_{k \in s} (N/n)y_k}{N} = \frac{1}{n} \sum_{k \in s} y_k = \bar{y}_s\)</span></p>
+<p><span class="math display">\[
+\hat{\bar{y}}_U = \frac{\sum_s y_k/\pi_k}{\sum_s d_k} = \frac{\hat{t}_{HT}}{\hat{N}} = \frac{\sum_{k \in s} (N/n)y_k}{N} = \frac{1}{n} \sum_{k \in s} y_k = \bar{y}_s
+\]</span></p>
 <p>In OSU, <span class="math inline">\(\hat{N} = \sum_s d_k = \sum_s N/n = N/n \sum_s 1 = N\)</span>.</p>
 <p><span class="math inline">\(E(\hat{\bar{y}}_U) = \frac{E(\sum_s y_k/\pi_k)}{N} = \frac{\sum_U y_k}{N} = \frac{t}{N}\)</span></p>
 <section id="variance-of-the-horvitz-thompson-estimator" class="level3">
@@ -239,22 +243,86 @@ S^2_{yU} &amp;= \frac{1}{N-1}\sum_{k \in U} (y_k - \bar{y}_U)^2 \\
 \end{align}
 \]</span></p>
 <p>Proof:</p>
-<p>$$ <span class="math display">\[\begin{align}
+<p><span class="math display">\[
+\begin{align}
 V(\hat{t}) &amp;= \sum_{k \in U} \sum_{l \in U} (\pi_{kl}-\pi_k \pi_l)  \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} \\
 &amp;= \sum_{k \in U} \frac{y_k}{\pi_k}\frac{y_k}{\pi_k} (\pi_{kk}-\pi_k\pi_k) + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l) \\
 &amp;= \sum_{k \in U} \frac{y_k}{\frac{n}{N}}\frac{y_k}{\frac{n}{N}} (\frac{n}{N}-\frac{n}{N}\frac{n}{N}) +  \sum_{k \in U, \\ k \neq l} \sum_{l \in U}  (\frac{n(n-1)}{N(N-1)}-\frac{n}{N} \frac{n}{N}) \frac{y_k}{\frac{n}{N}} \frac{y_l}{\frac{n}{N}} \\
-&amp;= \sum_{k \in U}  \frac{n}{N}(1-\frac{n}{N}) \frac{N^2}{n^2} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{n}{N}(\frac{n-1}{N-1}-\frac{n}{N})\frac{N^2}{n^2}y_k y_l, \text{break out} \\
+&amp;= \sum_{k \in U}  \frac{n}{N}(1-\frac{n}{N}) \frac{N^2}{n^2} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{n}{N}(\frac{n-1}{N-1}-\frac{n}{N})\frac{N^2}{n^2}y_k y_l \\
 &amp;=  \frac{N^2}{n^2}(1 - \frac{n}{N})\frac{n}{N} (\sum_{k \in U} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) y_k y_l) \\
 &amp;= N^2 \frac{(1 - \frac{n}{N})}{n}\frac{1}{N} (\sum_{k \in U} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) y_k y_l) \\
 &amp;= N^2 \frac{(1 - \frac{n}{N})}{n}\frac{1}{N} (\sum_{k \in U} y_k^2 + \frac{1}{N-1} \sum_{k \in U, \\ k \neq l} \sum_{l \in U}  y_k y_l) \\
 &amp;= N^2 \frac{(1 - \frac{n}{N})}{n} S^2_{yU}
-
-\end{align}\]</span> $$</p>
+\end{align}
+\]</span></p>
 <p>Note that <span class="math inline">\(\frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) = \frac{1}{(\frac{N-n}{N})}(\frac{N(n-1)-n(N-1)}{N(N-1)}) = \frac{1}{(\frac{N-n}{N})}(\frac{n-N}{N(N-1)}) = \frac{N}{N-n} (\frac{n-N}{N(N-1)}) = \frac{1}{N-1}\)</span></p>
 <p><span class="math inline">\(N^2/n, n/N, (1-n/N)\)</span> broke out.</p>
 <p>and</p>
 <p><span class="math inline">\(\pi_{k} = \frac{n}{N}\)</span></p>
-<p><span class="math inline">\(\pi_{kl} = P(k\&amp;l \in s) = \frac{\binom{2}{2}{\binom{N-2}{n-2}}}{\binom{N}{n}} = \frac{n(n-1)}{N(N-1)}, k \neq l\)</span></p>
+<p><span class="math inline">\(\pi_{kl} = P(k \cap l \in s) = \frac{\binom{2}{2}{\binom{N-2}{n-2}}}{\binom{N}{n}} = \frac{n(n-1)}{N(N-1)}, k \neq l\)</span></p>
+</section>
+</section>
+<section id="dragningsschema-urvalsschema" class="level2">
+<h2 class="anchored" data-anchor-id="dragningsschema-urvalsschema">Dragningsschema (Urvalsschema)</h2>
+<p>An algorithm for performing sampling (urvalsdragning). The goal of the algorithm is to fulfill the sampling design.</p>
+<ul>
+<li><p>Dragsekventiella: En serie slumpmässiga försök från hela populationen. Ex Bingolotto med tombola med numren 1 till 37.</p></li>
+<li><p>Listsekventiella: Urvalsramens enheter gås igenom enhet för enhet. Ett slumpmässigt försök utförs för varje enhet för att avgöra om enheten ska ingå i urvalet eller inte. (most common)</p></li>
+</ul>
+<section id="sunter" class="level3">
+<h3 class="anchored" data-anchor-id="sunter">Sunter</h3>
+<p>For OSU, the most common algorithm is Sunter (1977). The algorithm simply assigns a random number drawn from uniform distribution (0,1) as a key to each item, then sorts all items using the key and selects the smallest k items.</p>
+<p>Here is an implementation in R/tidyverse:</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 7
+  cds            stype name            sname                enroll    unif     x
+  &lt;chr&gt;          &lt;fct&gt; &lt;chr&gt;           &lt;chr&gt;                 &lt;int&gt;   &lt;dbl&gt; &lt;int&gt;
+1 01612596002216 E     Thornhill Eleme Thornhill Elementary    227 0.00377     1
+2 37680986066997 E     Miller Elementa Miller Elementary       437 0.00465     2
+3 15737426009633 E     Faller Elementa Faller Elementary       342 0.0118      3
+4 43696664338950 H     Willow Glen Hig Willow Glen High       1032 0.0970      1
+5 49738824935482 H     Rancho Cotate H Rancho Cotate High     1586 0.113       2
+6 33752423330552 H     Rancho Verde Hi Rancho Verde High      1894 0.137       3
+7 19648406021125 M     Benton (Reginal Benton (Reginald M.…    775 0.0221      1
+8 37683386059653 M     Marston Middle  Marston Middle         1162 0.0247      2
+9 42692866060032 M     Goleta Valley J Goleta Valley Junio…    802 0.0715      3</code></pre>
+</div>
+</div>
+</section>
+<section id="bernoulli-sampling" class="level3">
+<h3 class="anchored" data-anchor-id="bernoulli-sampling">Bernoulli sampling</h3>
+<p>Elements in the frame (ramen) <span class="math inline">\(k=1,2,...,N\)</span>. Let <span class="math inline">\(\pi\)</span> be a fixed constant <span class="math inline">\(0 &lt; \pi &lt; 1\)</span>.</p>
+<p>Let <span class="math inline">\(\varepsilon_1,\varepsilon_2, ..., \varepsilon_N\)</span> be <span class="math inline">\(N\)</span> independent generated random variables from a uniform distribution in the interval (0,1).</p>
+<p>Schema: element <span class="math inline">\(k\)</span> is chosen if <span class="math inline">\(\varepsilon_k &lt; \pi\)</span>.</p>
+<p>The sample size is random. The expected sample size it <span class="math inline">\(N \times \pi\)</span>.</p>
+</section>
+<section id="systematic-sampling" class="level3">
+<h3 class="anchored" data-anchor-id="systematic-sampling">Systematic sampling</h3>
+<p>Systematiskt urval. This design is not measurable because the variance cannot be estimated.</p>
+<p>Let 𝑎 be sampling interval Let 𝑛 be the integer part by dividing 𝑁/𝑎 and let 𝑐 be the rest Then, 𝑁=𝑛𝑎+𝑐</p>
+<ol type="1">
+<li><p>200=20×10+0</p></li>
+<li><p>201=20×10+1</p></li>
+<li><p>207=20×10+7</p></li>
+</ol>
+<p>If rest 𝑐&gt;0 the sample will be 𝑛 or 𝑛+1</p>
+<p>In 3) above, 𝑛=21 with random start between 1 and 7 In 3) above, 𝑛=20 with random start between 8 and 10</p>
+<p>This sampling design can be useful for sampling in a geographical area, for example a grid of 1x1 meter squares are the objects. Compared to OSU the sampling may be more evenly distributed, whereas OSU can sample many observations in a certain location.</p>
+</section>
+<section id="poisson-sampling" class="level3">
+<h3 class="anchored" data-anchor-id="poisson-sampling">Poisson sampling</h3>
+<p>If <span class="math inline">\(x_k\)</span> is a help variable correlated with <span class="math inline">\(y_k\)</span>, then it’s possible to choose</p>
+<p><span class="math inline">\(\pi_k = x_k / t_x, n x_k &lt; t_x\)</span></p>
+<p>A list sequential schema is given by:</p>
+<p>Let <span class="math inline">\(\varepsilon_1,\varepsilon_2, ..., \varepsilon_N\)</span> be <span class="math inline">\(N\)</span> independent generated random variables from a uniform distribution in the interval (0,1). Element <span class="math inline">\(k\)</span> is chosen if <span class="math inline">\(\varepsilon_k &lt; \pi\)</span>.</p>
+</section>
+<section id="probability-proportional-to-size-sampling" class="level3">
+<h3 class="anchored" data-anchor-id="probability-proportional-to-size-sampling">Probability Proportional to Size sampling</h3>
+<ul>
+<li>pps (with replacement)</li>
+</ul>
+<p>-<span class="math inline">\(\pi\)</span>ps (without replacement)</p>
 </section>
 </section>
 </section>

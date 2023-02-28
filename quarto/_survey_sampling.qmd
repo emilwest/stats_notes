@@ -283,3 +283,103 @@ $\pi_{k} = \frac{n}{N}$
 
 $\pi_{kl} = P(k \cap l \in s) = \frac{\binom{2}{2}{\binom{N-2}{n-2}}}{\binom{N}{n}} = \frac{n(n-1)}{N(N-1)}, k \neq l$
 
+
+
+
+## Dragningsschema (Urvalsschema)
+
+An algorithm for performing sampling (urvalsdragning). The goal of the algorithm is to fulfill the sampling design.
+
+* Dragsekventiella: En serie slumpmässiga försök från hela populationen. Ex Bingolotto  med tombola med numren 1 till 37.
+
+* Listsekventiella: Urvalsramens enheter gås igenom enhet för enhet. Ett slumpmässigt försök utförs för varje enhet för att avgöra om enheten ska ingå i urvalet eller inte. (most common)
+
+
+### Sunter
+
+For OSU, the most common algorithm is Sunter (1977).
+The algorithm simply assigns a random number drawn from uniform distribution (0,1) as a key to each item, then sorts all items using the key and selects the smallest k items.
+
+Here is an implementation in R/tidyverse:
+
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false 
+
+library(tidyverse)
+library(survey)
+data(api)
+
+k <- 3
+# if you have stratum, you can also create a column 'small n'/'nh' with the number of observation to select from each stratum and use that instead of k
+
+selection <- apistrat %>% 
+  mutate(unif = runif(n = n())) %>% 
+  # sorterar data on stratum (stype) and uniform random variable value
+  arrange(stype, unif) %>% 
+  group_by(stype) %>%
+  mutate(x = sequence(n())) %>%
+  # vi väljer ut nh första raderna per stratum
+  filter(x <= k) %>%
+  ungroup()
+
+
+selection %>% select(1:4, enroll, unif, x)
+
+```
+
+
+### Bernoulli sampling
+
+Elements in the frame (ramen) $k=1,2,...,N$. Let $\pi$ be a fixed constant $0 < \pi < 1$. 
+
+Let $\varepsilon_1,\varepsilon_2, ..., \varepsilon_N$ be $N$ independent generated random variables from a uniform distribution in the interval (0,1).
+
+Schema: element $k$ is chosen if $\varepsilon_k < \pi$.
+
+The sample size is random. The expected sample size it $N \times \pi$.
+
+### Systematic sampling
+
+Systematiskt urval. This design is not measurable because the variance cannot be estimated. 
+
+Let 𝑎 be sampling interval
+Let 𝑛 be the integer part by dividing 𝑁/𝑎 and let 𝑐 be the rest
+Then, 𝑁=𝑛𝑎+𝑐
+
+1) 200=20×10+0
+
+2) 201=20×10+1
+
+3) 207=20×10+7
+
+If rest 𝑐>0 the sample will be 𝑛 or 𝑛+1
+
+In 3) above, 𝑛=21  with random start between 1 and 7
+In 3) above, 𝑛=20  with random start between 8 and 10
+
+
+This sampling design can be useful for sampling in a geographical area, for example a grid of 1x1 meter squares are the objects. Compared to OSU the sampling may be more evenly distributed, whereas OSU can sample many observations in a certain location. 
+
+
+### Poisson sampling
+
+If $x_k$ is a help variable correlated with $y_k$, then it's possible to choose
+
+$\pi_k = x_k / t_x, n x_k < t_x$
+
+A list sequential schema is given by:
+
+Let $\varepsilon_1,\varepsilon_2, ..., \varepsilon_N$ be $N$ independent generated random variables from a uniform distribution in the interval (0,1).
+Element $k$ is chosen if $\varepsilon_k < \pi$.
+
+
+### Probability Proportional to Size sampling
+
+- pps (with replacement)
+
+- $\pi$ps (without replacement)
+
+
+

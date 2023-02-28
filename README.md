@@ -2177,6 +2177,96 @@ $\pi_{k} = \frac{n}{N}$
 
 $\pi_{kl} = P(k \cap l \in s) = \frac{\binom{2}{2}{\binom{N-2}{n-2}}}{\binom{N}{n}} = \frac{n(n-1)}{N(N-1)}, k \neq l$
 
+## Dragningsschema (Urvalsschema)
+
+An algorithm for performing sampling (urvalsdragning). The goal of the
+algorithm is to fulfill the sampling design.
+
+- Dragsekventiella: En serie slumpmässiga försök från hela populationen.
+  Ex Bingolotto med tombola med numren 1 till 37.
+
+- Listsekventiella: Urvalsramens enheter gås igenom enhet för enhet. Ett
+  slumpmässigt försök utförs för varje enhet för att avgöra om enheten
+  ska ingå i urvalet eller inte. (most common)
+
+### Sunter
+
+For OSU, the most common algorithm is Sunter (1977). The algorithm
+simply assigns a random number drawn from uniform distribution (0,1) as
+a key to each item, then sorts all items using the key and selects the
+smallest k items.
+
+Here is an implementation in R/tidyverse:
+
+    # A tibble: 9 × 7
+      cds            stype name            sname                enroll    unif     x
+      <chr>          <fct> <chr>           <chr>                 <int>   <dbl> <int>
+    1 19647256015473 E     Lowell Elementa Lowell Elementary       450 3.54e-4     1
+    2 19647336018568 E     One Hundred Twe One Hundred Twelfth…    446 6.31e-4     2
+    3 01612596001754 E     Crocker Highlan Crocker Highlands E…    266 1.32e-3     3
+    4 34674473435930 H     Mira Loma High  Mira Loma High         1148 7.58e-2     1
+    5 34674393437555 H     Sacramento High Sacramento High        1389 1.21e-1     2
+    6 31669513134657 H     Lincoln High (C Lincoln High (Char)     599 1.22e-1     3
+    7 38684786062038 M     Everett Middle  Everett Middle          491 7.31e-2     1
+    8 19648406021125 M     Benton (Reginal Benton (Reginald M.…    775 7.53e-2     2
+    9 01611926066476 M     King (Martin Lu King (Martin Luther…    618 8.28e-2     3
+
+### Bernoulli sampling
+
+Elements in the frame (ramen) $k=1,2,...,N$. Let $\pi$ be a fixed
+constant $0 < \pi < 1$.
+
+Let $\varepsilon_1,\varepsilon_2, ..., \varepsilon_N$ be $N$ independent
+generated random variables from a uniform distribution in the interval
+(0,1).
+
+Schema: element $k$ is chosen if $\varepsilon_k < \pi$.
+
+The sample size is random. The expected sample size it $N \times \pi$.
+
+### Systematic sampling
+
+Systematiskt urval. This design is not measurable because the variance
+cannot be estimated.
+
+Let 𝑎 be sampling interval Let 𝑛 be the integer part by dividing 𝑁/𝑎 and
+let 𝑐 be the rest Then, 𝑁=𝑛𝑎+𝑐
+
+1)  200=20×10+0
+
+2)  201=20×10+1
+
+3)  207=20×10+7
+
+If rest 𝑐\>0 the sample will be 𝑛 or 𝑛+1
+
+In 3) above, 𝑛=21 with random start between 1 and 7 In 3) above, 𝑛=20
+with random start between 8 and 10
+
+This sampling design can be useful for sampling in a geographical area,
+for example a grid of 1x1 meter squares are the objects. Compared to OSU
+the sampling may be more evenly distributed, whereas OSU can sample many
+observations in a certain location.
+
+### Poisson sampling
+
+If $x_k$ is a help variable correlated with $y_k$, then it’s possible to
+choose
+
+$\pi_k = x_k / t_x, n x_k < t_x$
+
+A list sequential schema is given by:
+
+Let $\varepsilon_1,\varepsilon_2, ..., \varepsilon_N$ be $N$ independent
+generated random variables from a uniform distribution in the interval
+(0,1). Element $k$ is chosen if $\varepsilon_k < \pi$.
+
+### Probability Proportional to Size sampling
+
+- pps (with replacement)
+
+- $\pi$ps (without replacement)
+
 ## Statistical tests
 
 ### Calculate power in t-test
@@ -2223,12 +2313,12 @@ sleep %>% group_by(group) %>% dplyr::slice_sample(n = 3)
     # Groups:   group [2]
       extra group ID   
       <dbl> <fct> <fct>
-    1   2   1     10   
-    2   0.7 1     1    
-    3   0.8 1     8    
-    4   5.5 2     7    
-    5   0.8 2     2    
-    6   4.4 2     6    
+    1  -0.1 1     5    
+    2  -0.2 1     3    
+    3   3.7 1     7    
+    4  -0.1 2     5    
+    5   4.6 2     9    
+    6   3.4 2     10   
 
 ``` r
 t.test(extra ~ group, data = sleep)

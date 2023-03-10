@@ -345,7 +345,9 @@ The sample size is random. The expected sample size it $N \times \pi$.
 Systematiskt urval. This design is not measurable because the variance cannot be estimated. 
 
 Let 𝑎 be sampling interval
+
 Let 𝑛 be the integer part by dividing 𝑁/𝑎 and let 𝑐 be the rest
+
 Then, 𝑁=𝑛𝑎+𝑐
 
 1) 200=20×10+0

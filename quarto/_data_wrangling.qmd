@@ -806,6 +806,31 @@ pxweb::pxweb_interactive() # interactively browse statistical databases and down
 
 
 
+## Add time series break to long format
+
+When you want to include both time series on the year of a time series break. 
+For example: 2018, 2019A, 2019B, 2020
+
+
+```{r}
+add_time_series_breaks <- function(.data) {
+  .data %>%
+    pivot_longer(-År, names_to = "namn") %>%
+    drop_na(value) %>%
+    mutate(letter = ifelse(str_detect(namn, "fram till"), "A", "B")) %>%
+    mutate(metod = str_extract(namn, ", [mM]etod.*$|^[mM]etod.*,")) %>%
+    mutate(namn = str_remove(namn, metod) %>% str_squish()) %>%
+    distinct() %>%
+    group_by(År, namn) %>%
+    mutate(n = n()) %>%
+    arrange(År, letter) %>%
+    ungroup() %>%
+    mutate(År = ifelse(n == 2, str_c(År, letter), År)) %>%
+    select(År, namn, value) %>%
+    pivot_wider(names_from = namn)
+
+}
+```
 
 
 

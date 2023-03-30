@@ -240,8 +240,8 @@ library(shiny)
 library(shinydashboard)
 library(lubridate)
 
-avkontr <- "L:/Myndigheter/Trafikverket/TRV_5161_Skattning hastighetsindex/Document/Memo/Månadsrapport-Avvikelsekontroll_2023.xlsx"
-avkontr_previous <- "L:/Myndigheter/Trafikverket/TRV_5161_Skattning hastighetsindex/Document/Memo/Månadsrapport-Avvikelsekontroll_2022.xlsx"
+avkontr <- ""
+avkontr_previous <- ""
 
 manad <- lubridate::now() %>% lubridate::month()
 if (manad == 1) {
@@ -270,50 +270,17 @@ radio_choices <- av$PunktNr %>% unique %>%  set_names()
 
 radio_choices_list <- as.list(radio_choices)
 
-# ui <- fluidPage(
-#   
-#   # Application title
-#   titlePanel("Hastighetsindex"),
-#   
-#   # Sidebar with a slider input for number of bins 
-#   sidebarLayout(
-#     sidebarPanel(
-#       radioButtons("radio", 
-#                    h3("Punktnummer"),
-#                    choices = radio_choices)
-#     ),
-#     
-#     # Show a plot of the generated distribution
-#     mainPanel(
-#       shinydashboard::infoBox("Punktnummer"),
-#       textOutput("txt"),
-#       h4(str_glue("Kommentarer övriga månader i år:")),
-#       tableOutput("table"),
-#       h4(str_glue("Kommentar {manad} 2022:")),
-#       tableOutput("table2021"),
-#       h4(str_glue("Koordinater slang:")),
-#       leafletOutput("plotSlang"),
-#       h4(str_glue("Trafikhändelser i närheten av slang:")),
-#       leafletOutput("trafikPlot")
-#     )
-#   )
-# )
-
-#?dashboardSidebar
-
-
-
 
 ui <- dashboardPage(
 
   
   # Application title
-  dashboardHeader(title = "Hastighetsindex"),
+  dashboardHeader(title = "h"),
   
   # Sidebar with a slider input for number of bins 
   dashboardSidebar(
     sidebarMenu(id = "tabs",
-                sidebarSearchForm(textId = "searchText", buttonId = "searchButton", label = "Sök punktnummer..."),
+                sidebarSearchForm(textId = "searchText", buttonId = "searchButton", label = "Sök..."),
                 menuItem("Punktnummer",
                          startExpanded = T,
                          lapply(radio_choices, function(x) {
@@ -339,8 +306,8 @@ ui <- dashboardPage(
     
     
     fluidRow(
-      box(leafletOutput("plotSlang"), title = "Slangens koordinater:"),
-      box(leafletOutput("trafikPlot"), title = "Trafikhändelser i närheten av slang:")
+      box(leafletOutput("plotSlang"), title = "k:"),
+      box(leafletOutput("trafikPlot"), title = "Trafikhändelser i närheten:")
     )
 
   )
@@ -459,18 +426,5 @@ server <- function(input, output) {
 # Run the application 
 shinyApp(ui = ui, server = server)
 
-
-
-# TODO lägg till knapp 'Reload/Refresh' som laddar excelfilen på nytt 
-
-# get_traffic_info()
-# 
-# get_polisen(.date = "2022-11", .location = "Stockholm")
-# 
-# av  %>%
-#   filter(PunktNr == 9539)
-# 
-# 
-# 
 
 

@@ -279,11 +279,12 @@ for (i in seq_len(length(grafer))) {
   #print("Extracting data from chart")
   tmp <- tibble()
   #i <- 2
+  cats <- get_cat_from_series(series[[1]])
   for (j in seq_along(series)) {
     z <- get_table(series[[j]])
     
     if (nrow(tmp)==0 | (nrow(z) > nrow(tmp)) ) {
-      tmp <- bind_rows(tmp, z)
+      tmp <- left_join(cats, z, by = c("cat", "idx"))
     } else {
       tmp <- left_join(tmp, z, by = c("cat", "idx"))
     }

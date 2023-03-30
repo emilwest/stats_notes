@@ -1,5 +1,4 @@
 ---
-title: "Survey_sampling"
 author: "Emil Westin"
 format: html
 editor: source
@@ -382,6 +381,71 @@ Element $k$ is chosen if $\varepsilon_k < \pi$.
 - pps (with replacement)
 
 - $\pi$ps (without replacement)
+
+
+
+## Calibration
+
+
+
+```{r}
+#| eval: false
+
+library(devtools)
+devtools::install_github(repo = "DiegoZardetto/ReGenesees")
+library(ReGenesees)
+
+# skapa designinformation
+design4 <- e.svydesign(data = as.data.frame(data),
+                        ids = ~id,
+                        strata = ~stratum,
+                        weights = ~designvikt,
+                        fpc = ~StoraN
+)
+design4
+
+
+#utb  3535715 2654451 1488358
+
+# skapa en population template, det behövs för kalibrering
+aux4 <- pop.template(design4, calmodel=~(aldkon+utb-1), partition = F)
+aux4
+aux4[1] <- 841269
+aux4[2] <- 950487
+aux4[3] <- 1236159
+aux4[4] <- 830221
+aux4[5] <- 796725
+aux4[6] <- 911748
+aux4[7] <- 1211723
+aux4[8] <- 900192
+aux4[9] <- 2654451 # OBS! utb kategori 2
+aux4[10] <- 1488358 # OBS! utb kategori 3
+
+aux4
+
+# kalibrering utförs här
+descal4 <- e.calibrate(design = design4,
+                        df.population = aux4,
+                        calmodel= ~(aldkon+utb-1),
+                        partition = FALSE,
+                        calfun = "linear",
+                        bounds = c(-100, 100),
+                        aggregate.stage = NULL
+)
+
+summary(descal1b)
+weights(descal1b) %>% unique
+data$ald
+
+# Estimationsanrop
+svystatTM(descal4, ~y, by = ~ald)
+svystatTM(descal4, ~y, by = ~ald, estimator = c("Mean"))
+
+
+
+```
+
+
 
 
 

@@ -80,3 +80,91 @@ model_htext_hils <- textTrain(word_embeddings$texts$harmonywords,
 
 # Examine the correlation between predicted and observed Harmony in life scale scores
 model_htext_hils$results
+
+
+
+
+
+# -----------------------------------------
+# svensk modell
+
+
+numerisk_text <- textEmbed(
+  texts = svar$text,
+  model = "KBLab/sentence-bert-swedish-cased",
+  layers = -2,
+  aggregation_from_tokens_to_texts = "mean",
+  keep_token_embeddings = FALSE)
+
+
+
+
+numerisk_text
+
+
+
+View(numerisk_text$texts$texts)
+
+
+install.packages("glmnet")
+
+# Träna modellen:
+m1 <- textTrainRegression(x = numerisk_text$texts$texts, 
+                          y = svar$Kategori,
+                          model = "logistic",
+                          multi_cores = TRUE)
+
+# Utvärderingsresultat:
+m1$results_metrics
+
+
+
+
+# Nya fritextsvar:
+nya_svar <- data.frame(texter = c("Det mesta är bra här, så jag är nöjd",
+                                  "Jag vill inte skriva nåt!",
+                                  "Riktigt pissställe, allt är dåligt",
+                                  "Det är svårt att kontakta personalen, de svarar inte när man ringer dem.",
+                                  "Det vore fel av mig att säga något annat än att jag inte är missnöjd."))
+
+# Gör om de nya svaren till numeriska data:
+numerisk_text_nya <- textEmbed(
+  texts = nya_svar$text,
+  model = "KBLab/sentence-bert-swedish-cased",
+  layers = -2,
+  aggregation_from_tokens_to_texts = "mean",
+  keep_token_embeddings = FALSE)
+
+
+
+# Använd modellen för att klassificera de nya svaren:
+textPredict(m1, numerisk_text_nya$texts)
+
+# Använd modellen för att få sannolikheten att svaren hör till de olika kategorierna:
+textPredict(m1, numerisk_text_nya$texts, type = "prob")
+
+# Spara modellen:
+saveRDS(m1, "min-sprakmodell.rds")
+
+# För att sedan läsa in modellen från filen:
+inlast_modell <- readRDS("min-sprakmodell.rds")
+
+install.packages("ranger")
+# Träna modellen:
+m2 <- textTrainRandomForest(x = numerisk_text$texts$texts, 
+                            y = svar$Kategori,
+                            multi_cores = TRUE)
+
+# Kan ge varningar om "UNRELIABLE VALUE", som rör seed - strunta i dem.
+
+# Resultat:
+m2$results
+
+# Prediktioner för nya fritextsvar:
+textPredict(m2, numerisk_text_nya$texts)
+
+ 
+# https://huggingface.co/KBLab/bart-base-swedish-cased
+# https://huggingface.co/gpt2
+
+

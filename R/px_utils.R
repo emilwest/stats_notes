@@ -600,3 +600,79 @@ pxjob_split <- function(
   }
   file.remove(con)
 }
+
+
+# keyword;varname;valname;value
+# CHARSET;;;ANSI
+# CODEPAGE;;;iso-8859-15
+# AXIS-VERSION;;;2013
+# LANGUAGE;;;sv
+# CONTENTS;;;XXXX01: titel
+# STUB;;;län,typ
+# HEADING;;;år
+# TIMEVAL;år;A1;2022
+# UNITS;;;Antal
+# SUBJECT-AREA;;;Hej
+# SUBJECT-CODE;;;XXXX
+# DECIMALS;;;0
+# SOURCE;;;Källa
+# CONTACT;;;Källa
+# CREATION-DATE;;;20230531 15:31
+# NOTE;;;Här ligger fotnoten för hela tabellen
+# VALUENOTE;län;Östergötland;Här är en specifik fotnot för Östergötland
+# ELIMINATION;län;;Riket
+
+
+
+Q <- '"'
+E <- ";"
+e <- "="
+comma <- ","
+oq <- "("
+eq <- ")"
+
+addquotes <- function(txt) {
+  str_c(Q, txt, Q)
+}
+
+splitlist <- function(txt) {
+  str_split_1(txt, ",") %>% 
+    addquotes() %>% 
+    str_c(collapse=",")
+}
+
+meta <- meta %>% 
+  mutate(value_parsed = map_chr(value, splitlist))
+
+meta 
+
+
+
+meta %>% 
+  mutate(s = ifelse(is.na(varname) & is.na(valname),
+                    str_c(keyword, e, value_parsed, E),
+                    NA
+  ),
+  
+  s = ifelse(!is.na(varname) & is.na(valname),
+             str_c(keyword, oq, Q, varname, Q, eq, e, value_parsed, E),
+             s
+             
+  ),
+  
+  s = ifelse(!is.na(varname) & !is.na(valname),
+             str_c(keyword, oq, Q, varname, Q, comma, Q, valname, Q, eq, e, value_parsed, E),
+             s
+             
+             
+  )
+  ) 
+
+
+
+
+
+
+
+
+

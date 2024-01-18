@@ -5,7 +5,7 @@ execute:
   eval: false
   message: false
   warning: false
-output-file: "./README.md"
+output-file: "README.md"
 ---
 
 

@@ -1,5 +1,3 @@
-Survey_sampling
-================
 Emil Westin
 
 ![Stats notes](img/wordcloud2.png)
@@ -224,6 +222,7 @@ openxlsx::writeData(wb, sheet = curr_sheetname, data, withFilter = T, headerStyl
 openxlsx::freezePane(wb, sheet = curr_sheetname, firstRow = T)
 openxlsx::setColWidths(wb, 1, cols = 1:ncol(data), widths = "auto")
 
+
 # Optional styling
 # Add bgcolor based on cell values. Based on min/max when rule=NULL
 conditionalFormatting(wb, 
@@ -241,6 +240,45 @@ openxlsx::addStyle(wb, sheet = curr_sheetname, createStyle(numFmt = "NUMBER"), r
 #         ~openxlsx::addStyle(wb, sheet = curr_enkät, createStyle(numFmt = "NUMBER"), rows = 2:nrow(tmp), cols = .x))
 
 openxlsx::saveWorkbook(wb, file = str_glue("Output/insert_name.xlsx"), overwrite = T)
+
+# For multiple sheets at once:
+wb <- openxlsx::createWorkbook()
+openxlsx::modifyBaseFont(wb, fontSize = 11, fontColour = "black", fontName = "Arial")
+sheets <- df$respondentkategori |> unique()
+map(sheets, ~openxlsx::addWorksheet(wb, .x))
+map(sheets, ~openxlsx::writeData(wb, sheet = .x, df |> filter(respondentkategori==.x), withFilter = T, headerStyle = hs1))
+map(sheets, ~openxlsx::freezePane(wb, sheet = .x, firstRow = T))
+map(sheets, ~openxlsx::setColWidths(wb, sheet = .x, cols = 1:ncol(df |> filter(respondentkategori==.x)), widths = "auto"))
+openxlsx::saveWorkbook(wb, file = str_glue("Output/insert_name.xlsx"), overwrite = T)
+```
+
+## Openxlsx conditional formatting based on text
+
+``` r
+wb <- openxlsx::createWorkbook()
+sheets <- c("sheet1", "sheet2")
+mycolors <- list("Grön" = createStyle(fgFill = "#23FF00"),
+     "Gul" = createStyle(fgFill = "#FFFB00"),
+     "Röd" = createStyle(fgFill = "#FF0000")
+     )
+target_cols <- c("col1", "col2")
+
+conditional_colors_by_text <- function(wb, sheets, colors, target_cols) {
+  for (i in target_cols) {
+    for (.color in names(colors)) {
+      map(.x = sheets,
+          ~ addStyle(wb = wb, 
+                     sheet = .x,
+                     style = mycolors[[.color]], 
+                     rows = which(grepl(svar1 |> filter(respondentkategori == .x) |> select(all_of(i)) |> pull(), pattern = .color)) + 1,
+                     cols = which(names(svar1 |> filter(respondentkategori == .x)) %in% i)
+          )
+      )
+    }
+  }
+}
+
+conditional_colors_by_text(wb, sheets, mycolors, target_cols)
 ```
 
 ## Openxlsx write one table after another on the same sheet
@@ -1339,6 +1377,31 @@ pxweb::pxweb_interactive() # interactively browse statistical databases and down
 <!-- flextable::flextable(tableone2df(table_1)  %>% rownames_to_column("Variable")) -->
 <!-- ``` -->
 
+## Add time series break to long format
+
+When you want to include both time series on the year of a time series
+break. For example: 2018, 2019A, 2019B, 2020
+
+``` r
+add_time_series_breaks <- function(.data) {
+  .data %>%
+    pivot_longer(-År, names_to = "namn") %>%
+    drop_na(value) %>%
+    mutate(letter = ifelse(str_detect(namn, "fram till"), "A", "B")) %>%
+    mutate(metod = str_extract(namn, ", [mM]etod.*$|^[mM]etod.*,")) %>%
+    mutate(namn = str_remove(namn, metod) %>% str_squish()) %>%
+    distinct() %>%
+    group_by(År, namn) %>%
+    mutate(n = n()) %>%
+    arrange(År, letter) %>%
+    ungroup() %>%
+    mutate(År = ifelse(n == 2, str_c(År, letter), År)) %>%
+    select(År, namn, value) %>%
+    pivot_wider(names_from = namn)
+
+}
+```
+
 ## ggplot2
 
 ### Time series with lubridate
@@ -1616,7 +1679,7 @@ p_X <- df %>%
  ( p_pdf + p_X)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-69-1.png)
+![](README_files/figure-commonmark/unnamed-chunk-71-1.png)
 
 ### Relationships between cdf and inverse cdf, quantiles and sample quantiles
 
@@ -1689,25 +1752,25 @@ sd <- 5
 plotnn(10, mu, sd)
 ```
 
-![](README_files/figure-gfm/cdf-1.png)
+![](README_files/figure-commonmark/cdf-1.png)
 
 ``` r
 plotnn(100, mu, sd)
 ```
 
-![](README_files/figure-gfm/cdf-2.png)
+![](README_files/figure-commonmark/cdf-2.png)
 
 ``` r
 plotnn(1000, mu, sd)
 ```
 
-![](README_files/figure-gfm/cdf-3.png)
+![](README_files/figure-commonmark/cdf-3.png)
 
 ``` r
 plotnn(100000, mu, sd)
 ```
 
-![](README_files/figure-gfm/cdf-4.png)
+![](README_files/figure-commonmark/cdf-4.png)
 
 Here is a QQ-plot to illustrate the observed quantiles (y-axis) vs the
 theoretical quantiles (x-axis). This can be used to assess normality.
@@ -1751,7 +1814,7 @@ p4 <- plotqq(100000,mu,sd)
   (p3+p4)
 ```
 
-![](README_files/figure-gfm/qq_plot-1.png)
+![](README_files/figure-commonmark/qq_plot-1.png)
 
 ## The difference between percentile, quantile and quartile
 
@@ -2251,8 +2314,11 @@ The sample size is random. The expected sample size it $N \times \pi$.
 Systematiskt urval. This design is not measurable because the variance
 cannot be estimated.
 
-Let 𝑎 be sampling interval Let 𝑛 be the integer part by dividing 𝑁/𝑎 and
-let 𝑐 be the rest Then, 𝑁=𝑛𝑎+𝑐
+Let 𝑎 be sampling interval
+
+Let 𝑛 be the integer part by dividing 𝑁/𝑎 and let 𝑐 be the rest
+
+Then, 𝑁=𝑛𝑎+𝑐
 
 1)  200=20×10+0
 
@@ -2288,6 +2354,60 @@ generated random variables from a uniform distribution in the interval
 - pps (with replacement)
 
 - $\pi$ps (without replacement)
+
+## Calibration
+
+``` r
+library(devtools)
+devtools::install_github(repo = "DiegoZardetto/ReGenesees")
+library(ReGenesees)
+
+# skapa designinformation
+design4 <- e.svydesign(data = as.data.frame(data),
+                        ids = ~id,
+                        strata = ~stratum,
+                        weights = ~designvikt,
+                        fpc = ~StoraN
+)
+design4
+
+
+#utb  3535715 2654451 1488358
+
+# skapa en population template, det behövs för kalibrering
+aux4 <- pop.template(design4, calmodel=~(aldkon+utb-1), partition = F)
+aux4
+aux4[1] <- 841269
+aux4[2] <- 950487
+aux4[3] <- 1236159
+aux4[4] <- 830221
+aux4[5] <- 796725
+aux4[6] <- 911748
+aux4[7] <- 1211723
+aux4[8] <- 900192
+aux4[9] <- 2654451 # OBS! utb kategori 2
+aux4[10] <- 1488358 # OBS! utb kategori 3
+
+aux4
+
+# kalibrering utförs här
+descal4 <- e.calibrate(design = design4,
+                        df.population = aux4,
+                        calmodel= ~(aldkon+utb-1),
+                        partition = FALSE,
+                        calfun = "linear",
+                        bounds = c(-100, 100),
+                        aggregate.stage = NULL
+)
+
+summary(descal1b)
+weights(descal1b) %>% unique
+data$ald
+
+# Estimationsanrop
+svystatTM(descal4, ~y, by = ~ald)
+svystatTM(descal4, ~y, by = ~ald, estimator = c("Mean"))
+```
 
 ## Statistical tests
 

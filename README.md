@@ -335,6 +335,167 @@ convertd(c(22,"aa"))
 # [1] "1900-01-21" "aa" 
 ```
 
+## Merge cells
+
+``` r
+  mergemycells <- function(df, wb, sheet, column, offset = 1, .by=NULL, filtrera = TRUE) {
+    # in this case we filter the dataframe by a variable corresponding to the sheet name
+    if (filtrera) {
+      tmp <- df |> filter(respondentkategori==sheet)
+    } else {
+      tmp <- df
+    }
+    #offset <- 1 # om rader/kolumner börjar på rad/kolumn 2 ist för 1
+    
+    # if by is not null, the merging will be performed on by but will use column as reference for which ids to target
+    if (!is.null(.by)) {
+     # dep <- deparse(substitute(.by))
+      dep <- .by
+    } else {
+      dep <- deparse(substitute(column))
+     }
+    whichcol <- which(names(tmp) == dep)+offset
+    
+    # get unique values from column name
+    unika <- tmp |> pull({{column}}) |> unique()
+
+    # check which row ids match with unique values above
+    rader <- map(1:length(unika), ~which(tmp |> pull({{ column }}) %in% unika[.x])+(offset+1)) 
+    #return(rader)
+    # split again if the categories will repeat further on
+    # it will return a list of unbroken sequences
+    rader <- map(rader, ~ split(.x, cumsum(c(TRUE, diff(.x)!=1)))) |> flatten()
+
+    # merge cells
+    map(rader, ~mergeCells(wb = wb, sheet = sheet, cols = whichcol, rows = .x))
+    # add style for merged cells
+    map(rader, ~addStyle(wb = wb, sheet = sheet, style = createStyle(valign = "center", halign = "center"), cols = whichcol, rows = .x, stack = T))
+  }
+
+
+# merge column 'Hej' based on unbroken rows 
+map(sheets, ~ mergemycells(svar1, wb, .x, column=Hej))
+# område will merge cells based on the same rows as the column Hej 
+map(sheets, ~ mergemycells(svar1, wb, .x, column=Hej, .by= "Område" ))
+```
+
+## Conditional colors based on text in cell
+
+``` r
+mycolors <- list("Grön" = createStyle(fgFill = "#23FF00"),
+                 "Gul" = createStyle(fgFill = "#FFFB00"),
+                 "Röd" = createStyle(fgFill = "#FF0000")
+)
+
+conditional_colors_by_text2 <- function(df, wb, sheets, colors, target_cols) {
+    for (i in target_cols) {
+      for (.color in names(colors)) {
+        map(.x = sheets,
+            ~ addStyle(wb = wb,
+                       sheet = .x,
+                       style = mycolors[[.color]],
+                       rows = which(grepl(df |> select(all_of(i)) |> pull(), pattern = .color))+1,
+                       cols = which(names(df) %in% i)
+            )
+        )
+      }
+    }
+}
+
+conditional_colors_by_text2(farger, wb, c("sheet1", "sheets2"), mycolors, target_cols = c("col1", "col2"))
+```
+
+## Add outside borders to cells
+
+[Credits to Luke C on
+StackOverflow](https://stackoverflow.com/questions/54322814/how-to-apply-thick-border-around-a-cell-range-using-the-openxlsx-package-in-r).
+
+``` r
+OutsideBorders <-
+    function(wb_,
+             sheet_,
+             rows_,
+             cols_,
+             border_col = "black",
+             border_thickness = "medium") {
+      left_col = min(cols_)
+      right_col = max(cols_)
+      top_row = min(rows_)
+      bottom_row = max(rows_)
+      # https://stackoverflow.com/questions/54322814/how-to-apply-thick-border-around-a-cell-range-using-the-openxlsx-package-in-r
+      sub_rows <- list(c(bottom_row:top_row),
+                       c(bottom_row:top_row),
+                       top_row,
+                       bottom_row)
+      
+      sub_cols <- list(left_col,
+                       right_col,
+                       c(left_col:right_col),
+                       c(left_col:right_col))
+      
+      directions <- list("Left", "Right", "Top", "Bottom")
+      
+      mapply(function(r_, c_, d) {
+        temp_style <- createStyle(border = d,
+                                  borderColour = border_col,
+                                  borderStyle = border_thickness)
+        addStyle(
+          wb_,
+          sheet_,
+          style = temp_style,
+          rows = r_,
+          cols = c_,
+          gridExpand = TRUE,
+          stack = TRUE
+        )
+        
+      }, sub_rows, sub_cols, directions)
+    }
+
+
+map(sheets,
+      ~ OutsideBorders(
+        wb,
+        sheet_ = .x,
+        rows_ = 0:nrow(svar1)+1,
+        cols_ = 0:ncol(svar1)
+      )
+  )
+
+# Optional: also add borders inside:
+kanter <- createStyle(border = "TopBottomLeftRight", borderStyle = "thin", borderColour="black", wrapText = TRUE, halign = "left", valign = "top")
+
+# important to use stack=TRUE 
+map(sheets,
+      ~openxlsx::addStyle(wb, .x, kanter, 
+                          rows = 1:(nrow(svar1)+1),
+                          cols = 1:(ncol(svar1)), gridExpand = T,
+                          stack = T))
+```
+
+## Hide columns
+
+Will hide columns but can easily be expanded.
+
+``` r
+hidecols <- c("col1", "col2") # specify which column names to hide
+map(sheets, ~groupColumns(wb, sheet = .x, cols = which(names(svar1) %in% hidecols), hidden = T))
+```
+
+## Write excel formulas
+
+``` r
+ss <- "my sheet"
+startcol <- 4
+startrow <- 17
+# fill xy-coordinated with vales from another sheet 
+openxlsx::writeFormula(wb, ss, x = "=AnotherSheet!U3"  ,xy = c(startcol, startrow))
+
+# writedata can also be used to write to specific cells
+openxlsx::writeData(wb, ss, 9999, xy = c(startcol, startrow+1))
+openxlsx::writeData(wb, ss, 12, xy = c(startcol, startrow+2))
+```
+
 ## Add a plot to an excel sheet
 
 ``` r
@@ -1679,7 +1840,7 @@ p_X <- df %>%
  ( p_pdf + p_X)
 ```
 
-![](README_files/figure-commonmark/unnamed-chunk-71-1.png)
+![](README_files/figure-commonmark/unnamed-chunk-76-1.png)
 
 ### Relationships between cdf and inverse cdf, quantiles and sample quantiles
 

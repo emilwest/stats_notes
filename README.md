@@ -252,35 +252,6 @@ map(sheets, ~openxlsx::setColWidths(wb, sheet = .x, cols = 1:ncol(df |> filter(r
 openxlsx::saveWorkbook(wb, file = str_glue("Output/insert_name.xlsx"), overwrite = T)
 ```
 
-## Openxlsx conditional formatting based on text
-
-``` r
-wb <- openxlsx::createWorkbook()
-sheets <- c("sheet1", "sheet2")
-mycolors <- list("Grön" = createStyle(fgFill = "#23FF00"),
-     "Gul" = createStyle(fgFill = "#FFFB00"),
-     "Röd" = createStyle(fgFill = "#FF0000")
-     )
-target_cols <- c("col1", "col2")
-
-conditional_colors_by_text <- function(wb, sheets, colors, target_cols) {
-  for (i in target_cols) {
-    for (.color in names(colors)) {
-      map(.x = sheets,
-          ~ addStyle(wb = wb, 
-                     sheet = .x,
-                     style = mycolors[[.color]], 
-                     rows = which(grepl(svar1 |> filter(respondentkategori == .x) |> select(all_of(i)) |> pull(), pattern = .color)) + 1,
-                     cols = which(names(svar1 |> filter(respondentkategori == .x)) %in% i)
-          )
-      )
-    }
-  }
-}
-
-conditional_colors_by_text(wb, sheets, mycolors, target_cols)
-```
-
 ## Openxlsx write one table after another on the same sheet
 
 ``` r
@@ -1840,7 +1811,7 @@ p_X <- df %>%
  ( p_pdf + p_X)
 ```
 
-![](README_files/figure-commonmark/unnamed-chunk-76-1.png)
+![](README_files/figure-commonmark/unnamed-chunk-75-1.png)
 
 ### Relationships between cdf and inverse cdf, quantiles and sample quantiles
 

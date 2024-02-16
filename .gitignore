@@ -3,3 +3,4 @@
 .RData
 .Ruserdata
 R/trafikverket_apikey.txt
+README_cache/*

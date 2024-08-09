@@ -786,6 +786,22 @@ bind_rows(sms_tot, mms_tot) %>%
       dplyr::rename(value = !! last(names(sms_tot)))
 ```
 
+## Create factor variable from case_when
+
+``` r
+factor_case_when <- function(..., reverse = FALSE) {
+  args <- as.list(match.call()) # capture args to list
+  args <- args[-c(1, which(names(args) == "reverse"))] # ...skip first element which is name of func and reverse-arg
+
+  lvls <- purrr::map(args, \(x) x[[3]]) |> # use third element 
+    purrr::discard(\(x) is.na(x)) 
+
+  if (reverse) lvls <- rev(lvls)
+
+  factor(dplyr::case_when(...), levels = unique(lvls)) 
+}
+```
+
 ## Split delimited strings in a column and insert as new rows
 
 Consider
@@ -1811,7 +1827,7 @@ p_X <- df %>%
  ( p_pdf + p_X)
 ```
 
-![](README_files/figure-commonmark/unnamed-chunk-75-1.png)
+![](README_files/figure-commonmark/unnamed-chunk-76-1.png)
 
 ### Relationships between cdf and inverse cdf, quantiles and sample quantiles
 

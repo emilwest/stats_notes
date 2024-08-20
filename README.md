@@ -2347,7 +2347,7 @@ $$
 Notice that the two sums could be simplified to a single sum because
 when $k=l$ the first term has the same form as the second term. Imagine
 that the first term was the diagonal in a covariance matrix and the
-second term was on the diagonals.
+second term was on the off-diagonals.
 
 It can be shown that
 

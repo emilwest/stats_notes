@@ -220,7 +220,7 @@ V(\hat{t}) &= \sum _{k \in U} (\frac{y _k}{\pi _k})^2 V(I _k) +  \sum _{k \in U}
 \end{align}
 $$
 
-Notice that the two sums could be simplified to a single sum because when $k=l$ the first term has the same form as the second term. Imagine that the first term was the diagonal in a covariance matrix and the second term was on the diagonals.
+Notice that the two sums could be simplified to a single sum because when $k=l$ the first term has the same form as the second term. Imagine that the first term was the diagonal in a covariance matrix and the second term was on the off-diagonals.
 
 It can be shown that
 

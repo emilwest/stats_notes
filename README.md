@@ -2121,21 +2121,21 @@ Typically, the set notation is used in survey sampling. The variable
 (undersökningsvariabeln) is denoted as $y$ instead of the traditional
 $x$.
 
-$\bar{y} = \frac{1}{n}\sum_{i \in s}y_i, \text{ where }s= {1,2,...,n}$
+$\bar{y} = \frac{1}{n}\sum _{i \in s}y _i, \text{ where }s= {1,2,...,n}$
 
 The population is
 
 $U = {1,2,...,k,...,N}$
 
-Let $y_k$ denote the value of element $k$ in the population.
+Let $y _k$ denote the value of element $k$ in the population.
 
 The parameter (målstorhet) $t$ (the total of $y$) is very important.
 
-$t = t_y = \sum_{k \in U} y_k = \sum_{U} y_k = y_1 + y_2 + ... + y_N$
+$t = t _y = \sum _{k \in U} y _k = \sum _{U} y _k = y _1 + y _2 + ... + y _N$
 
 The mean is a function of the total:
 
-$\bar{y}_U = \frac{\sum_U y_k}{N} = \frac{\sum_U y_k}{\sum_U 1} = \frac{\sum_U y_k}{\sum_U z_k} = \frac{t_y}{t_z}, \text{ where } z_k = 1$
+$\bar{y} _U = \frac{\sum _U y _k}{N} = \frac{\sum _U y _k}{\sum _U 1} = \frac{\sum _U y _k}{\sum _U z _k} = \frac{t _y}{t _z}, \text{ where } z _k = 1$
 
 To estimate the parameters, a sample $s$ is drawn of size $n$ according
 to a sampling design $p(s)$. In some sampling designs, $N$ is known and
@@ -2156,7 +2156,7 @@ For example, consider the objects A, B, C, D, E ($N=5$). If we select
 $n=3$ objects, this can be done in
 $\binom{5}{3} = \frac{5!}{3!(5-3)!} = 10$ different ways. The
 probability for each of the possible samples is $p(s) = 1/10=0.1$. The
-sum of all $p(s)=1$ ie $\sum_{\text{all s}} p(s) = 1$.
+sum of all $p(s)=1$ ie $\sum _{\text{all s}} p(s) = 1$.
 
     # A tibble: 10 × 7
           Nr A     B     C     D     E     `p(s)`
@@ -2181,9 +2181,9 @@ Inklusionssannolikhet (första ordningens).
 
 The probability of selecting element $k$ is
 
-$P(k \in s) = \pi_k = \sum p(s)$ for all $s$ where $k$ is inkluded.
+$P(k \in s) = \pi _k = \sum p(s)$ for all $s$ where $k$ is inkluded.
 
-In the example above for $N=5,n=3$, $\pi_k = n/N = 0.6$ (for OSU).
+In the example above for $N=5,n=3$, $\pi _k = n/N = 0.6$ (for OSU).
 
 This can be shown by asking: what is the probability of an event
 happening k times in n trials, without replacement? We can use the
@@ -2192,25 +2192,25 @@ hypergeometric distribution.
 $P(k \in s) = \frac{\binom{1}{1}\binom{N-1}{n-1}}{\binom{N}{n}} = \frac{\frac{(N-1)!}{(n-1)![N-1-(n-1)]!}}{\frac{N!}{n!(N-n)!}} = \frac{(N-1)!n!(N-n)!}{N!(n-1)!(N-n)!} = \frac{n}{N}$
 
 An indicator variable can be used to indicate if element k is included
-in the sample: $I_k = 1$ if $k\in s$ and $I_k = 0$ if $k \notin s$.
-$I_k$ is a Bernoulli random variable.
+in the sample: $I _k = 1$ if $k\in s$ and $I _k = 0$ if $k \notin s$.
+$I _k$ is a Bernoulli random variable.
 
-$E(I_k) = P(I_k = 1)\times 1 + P(I_k = 0)\times 0 = P(I_k = 1) = \pi_k$
+$E(I _k) = P(I _k = 1)\times 1 + P(I _k = 0)\times 0 = P(I _k = 1) = \pi _k$
 
 Also note that:
 
-$E(I_k^2) = P(I_k^2 = 1)\times 1 + P(I_k^2 = 0)\times 0 = P(I_k^2 = 1) = \pi_k$
+$E(I _k^2) = P(I _k^2 = 1)\times 1 + P(I _k^2 = 0)\times 0 = P(I _k^2 = 1) = \pi _k$
 
-since $I_k^2 = 1^2 = 1$ if $k\in s$.
+since $I _k^2 = 1^2 = 1$ if $k\in s$.
 
 The variance of the inclusion probability is
 
 $$
-V(I_k) = E[I_k - E(I_k)]^2 \\
-= E[I_k^2] - [E(I_k)]^2 \\
-= E[I_k] - [E(I_k)]^2 \\
-= \pi_k-\pi_k^2  \\
-= \pi_k(1-\pi_k)
+V(I _k) = E[I _k - E(I _k)]^2 \\
+= E[I _k^2] - [E(I _k)]^2 \\
+= E[I _k] - [E(I _k)]^2 \\
+= \pi _k-\pi _k^2  \\
+= \pi _k(1-\pi _k)
 $$
 
 –
@@ -2219,17 +2219,17 @@ $$
 
 The probability of selecting both element $k$ and $l$ is
 
-$P(k \cap l \in s) = P(I_k I_l = 1) = \sum p(s)$ for all s where k and l
-are included. Note that $I_k I_l = 1$ if and only if both k and l are in
-the sample.
+$P(k \cap l \in s) = P(I _k I _l = 1) = \sum p(s)$ for all s where k and
+l are included. Note that $I _k I _l = 1$ if and only if both k and l
+are in the sample.
 
-$E(I_k I_l ) = P(I_k I_l = 1) = \pi_{kl}$
+$E(I _k I _l ) = P(I _k I _l = 1) = \pi _{kl}$
 
 which is
 
 $$
 \begin{align}
-\pi_{kl} &= P(k \cap l \in s)  \\ 
+\pi _{kl} &= P(k \cap l \in s)  \\ 
 &= \frac{\binom{2}{2}\binom{N-2}{n-2}}{\binom{N}{n}} \\
 &= \frac{\frac{(N-2)!}{(n-2)![N-2-(n-2)]!}}{\frac{N!}{n!(N-n)!}} \\
 &= \frac{(N-2)!n!(N-n)!}{N!(n-2)!(N-n)!} \\
@@ -2256,7 +2256,7 @@ both A and B has a probability of 0.3 ($\sum p(s) = 0.1+0.1+0.1$).
 
 which is shown to be equal to
 
-$\pi_{kl} = \frac{3(2-1)}{5(5-1)} = \frac{6}{20} = \frac{3}{10} = 0.3$
+$\pi _{kl} = \frac{3(2-1)}{5(5-1)} = \frac{6}{20} = \frac{3}{10} = 0.3$
 
 ## Horvitz-Thompson Estimator
 
@@ -2264,28 +2264,28 @@ The HT-estimator is a general unbiased estimator regardless of the
 sampling design.
 
 $$
-\hat{t} = \hat{t}_y = \hat{t}_{yHT} = \sum_{k \in s} \frac{y_k}{\pi_k} = \sum_{k \in s}d_k y_k = \frac{N}{n} \sum_{k \in s} y_k = N\bar{y}_s
+\hat{t} = \hat{t} _y = \hat{t} _{yHT} = \sum _{k \in s} \frac{y _k}{\pi _k} = \sum _{k \in s}d _k y _k = \frac{N}{n} \sum _{k \in s} y _k = N\bar{y} _s
 $$
 
-where $d_k = 1/\pi_k = N/n$ (OSU) is the design weight (designvikt) and
-is often added as a variable to the dataset.
+where $d _k = 1/\pi _k = N/n$ (OSU) is the design weight (designvikt)
+and is often added as a variable to the dataset.
 
 The design weight can be interpreted as how many objects a certain
 object from the sample shall represent. If $N=1000, n=100$, then
 
-$\pi_k = n/N = 100/1000 = 0.1$
+$\pi _k = n/N = 100/1000 = 0.1$
 
-$d_k = N/n = 1000/100 = 10$
+$d _k = N/n = 1000/100 = 10$
 
 For example, for a sample of 100 schools from a population of 1000
 schools, each school in the sample represents 10 schools in the
 population.
 
-$E(\hat{t}) = E(\sum_{k \in s} \frac{y_k}{\pi_k}) = E(\sum_{k \in U} I_k \frac{y_k}{\pi_k}) = \sum_{k \in U} E(I_k) \frac{y_k}{\pi_k} = \sum_{k \in U} \pi_k \frac{y_k}{\pi_k} = \sum_{k \in U} y_k = t$
+$E(\hat{t}) = E(\sum _{k \in s} \frac{y _k}{\pi _k}) = E(\sum _{k \in U} I _k \frac{y _k}{\pi _k}) = \sum _{k \in U} E(I _k) \frac{y _k}{\pi _k} = \sum _{k \in U} \pi _k \frac{y _k}{\pi _k} = \sum _{k \in U} y _k = t$
 
 Note that:
 
-- Indcator variable $I_k$ was added so sum over s changed to sum over U
+- Indcator variable $I _k$ was added so sum over s changed to sum over U
 
 - $y$ is regarded as a fixed constant in this type of survey sampling.
   The randomness is instead introduced from the sampling design. The
@@ -2295,12 +2295,12 @@ Note that:
 Note that the mean is estimated with
 
 $$
-\hat{\bar{y}}_U = \frac{\sum_s y_k/\pi_k}{\sum_s d_k} = \frac{\hat{t}_{HT}}{\hat{N}} = \frac{\sum_{k \in s} (N/n)y_k}{N} = \frac{1}{n} \sum_{k \in s} y_k = \bar{y}_s
+\hat{\bar{y}} _U = \frac{\sum _s y _k/\pi _k}{\sum _s d _k} = \frac{\hat{t} _{HT}}{\hat{N}} = \frac{\sum _{k \in s} (N/n)y _k}{N} = \frac{1}{n} \sum _{k \in s} y _k = \bar{y} _s
 $$
 
-In OSU, $\hat{N} = \sum_s d_k = \sum_s N/n = N/n \sum_s 1 = N$.
+In OSU, $\hat{N} = \sum _s d _k = \sum _s N/n = N/n \sum _s 1 = N$.
 
-$E(\hat{\bar{y}}_U) = \frac{E(\sum_s y_k/\pi_k)}{N} = \frac{\sum_U y_k}{N} = \frac{t}{N}$
+$E(\hat{\bar{y}} _U) = \frac{E(\sum _s y _k/\pi _k)}{N} = \frac{\sum _U y _k}{N} = \frac{t}{N}$
 
 ### Variance of the Horvitz-Thompson Estimator
 
@@ -2308,39 +2308,39 @@ Variance of a linear combination of variables general formula:
 
 $$
 \begin{align}
-Var(a_1x_1 + \dots a_nx_n) &= \sum_{i=1}^n a_i^2 V(x_i) + 2 \sum_{i=1}^n \sum_{j>i}^n a_i a_j \text{ Cov}(x_i,x_j) \\
-&= \sum_{i=1}^n a_i^2 V(x_i) +  \sum_{i=1}^n \sum_{j=1}^n a_i a_j \text{ Cov}(x_i,x_j), i\neq j
+Var(a _1x _1 + \dots a _nx _n) &= \sum _{i=1}^n a _i^2 V(x _i) + 2 \sum _{i=1}^n \sum _{j>i}^n a _i a _j \text{ Cov}(x _i,x _j) \\
+&= \sum _{i=1}^n a _i^2 V(x _i) +  \sum _{i=1}^n \sum _{j=1}^n a _i a _j \text{ Cov}(x _i,x _j), i\neq j
 \end{align}
 $$
 
 $$
 \begin{align}
-V(\hat{t}) &= V(\sum_{k \in s}\frac{y_k}{\pi_k}) \\
-&=  V(\sum_{k \in U} I_k \frac{y_k}{\pi_k}) \\
-&= \sum_{k \in U} (\frac{y_k}{\pi_k})^2 V(I_k) +  \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} \text{ Cov}(I_k,I_l), k\neq l
+V(\hat{t}) &= V(\sum _{k \in s}\frac{y _k}{\pi _k}) \\
+&=  V(\sum _{k \in U} I _k \frac{y _k}{\pi _k}) \\
+&= \sum _{k \in U} (\frac{y _k}{\pi _k})^2 V(I _k) +  \sum _{k \in U} \sum _{l \in U} \frac{y _k}{\pi _k} \frac{y _l}{\pi _l} \text{ Cov}(I _k,I _l), k\neq l
 \end{align}
 $$
 
 Where the variance of the inclusion indicator variable is
 
-$$V(I_k) = E[I_k - E(I_k)]^2 = E[I_k^2] - [E(I_k)]^2 = E[I_k] - [E(I_k)]^2 \\
-= \pi_k-\pi_k^2 = \pi_k(1-\pi_k)$$
+$$V(I _k) = E[I _k - E(I _k)]^2 = E[I _k^2] - [E(I _k)]^2 = E[I _k] - [E(I _k)]^2 \\
+= \pi _k-\pi _k^2 = \pi _k(1-\pi _k)$$
 
 and the covariance
 
-$\text{ Cov}(I_k,I_l) = E[I_k I_l] - E[I_k]E[I_l] = \pi_{kl}-\pi_k \pi_l$
+$\text{ Cov}(I _k,I _l) = E[I _k I _l] - E[I _k]E[I _l] = \pi _{kl}-\pi _k \pi _l$
 
-Also note that $\pi_{kk} = \pi_{k}$
+Also note that $\pi _{kk} = \pi _{k}$
 
 Collect expressions
 
 $$
 \begin{align}
-V(\hat{t}) &= \sum_{k \in U} (\frac{y_k}{\pi_k})^2 V(I_k) +  \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} \text{ Cov}(I_k,I_l), k\neq l \\
-&=  \sum_{k \in U} (\frac{y_k}{\pi_k})^2 \pi_k(1-\pi_k) +  \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l), k\neq l \\
-&= \sum_{k \in U} \frac{y_k}{\pi_k}\frac{y_k}{\pi_k} (\pi_{kk}-\pi_k\pi_k) + \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l), k\neq l \\
-&= \sum_{k \in U} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l) \\
-&= \sum_{k \in U} \sum_{l \in U} (\pi_{kl}-\pi_k \pi_l)  \frac{y_k}{\pi_k} \frac{y_l}{\pi_l}
+V(\hat{t}) &= \sum _{k \in U} (\frac{y _k}{\pi _k})^2 V(I _k) +  \sum _{k \in U} \sum _{l \in U} \frac{y _k}{\pi _k} \frac{y _l}{\pi _l} \text{ Cov}(I _k,I _l), k\neq l \\
+&=  \sum _{k \in U} (\frac{y _k}{\pi _k})^2 \pi _k(1-\pi _k) +  \sum _{k \in U} \sum _{l \in U} \frac{y _k}{\pi _k} \frac{y _l}{\pi _l} (\pi _{kl}-\pi _k \pi _l), k\neq l \\
+&= \sum _{k \in U} \frac{y _k}{\pi _k}\frac{y _k}{\pi _k} (\pi _{kk}-\pi _k\pi _k) + \sum _{k \in U} \sum _{l \in U} \frac{y _k}{\pi _k} \frac{y _l}{\pi _l} (\pi _{kl}-\pi _k \pi _l), k\neq l \\
+&= \sum _{k \in U} \sum _{l \in U} \frac{y _k}{\pi _k} \frac{y _l}{\pi _l} (\pi _{kl}-\pi _k \pi _l) \\
+&= \sum _{k \in U} \sum _{l \in U} (\pi _{kl}-\pi _k \pi _l)  \frac{y _k}{\pi _k} \frac{y _l}{\pi _l}
 \end{align}
 $$
 
@@ -2351,14 +2351,14 @@ second term was on the diagonals.
 
 It can be shown that
 
-$V(\hat{t}) = \sum_{k \in U} \sum_{l \in U} (\pi_{kl}-\pi_k \pi_l) \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} = N^2\frac{1-\frac{n}{N}}{n} S^2_{yU}$
+$V(\hat{t}) = \sum _{k \in U} \sum _{l \in U} (\pi _{kl}-\pi _k \pi _l) \frac{y _k}{\pi _k} \frac{y _l}{\pi _l} = N^2\frac{1-\frac{n}{N}}{n} S^2 _{yU}$
 
 where
 
 $$
 \begin{align} 
-S^2_{yU} &= \frac{1}{N-1}\sum_{k \in U} (y_k - \bar{y}_U)^2 \\
-&= \frac{1}{N} (\sum_{k \in U} y^2_k - \frac{1}{N-1}\sum_{k \in U}\sum_{l \in U} y_ky_l), k \neq l
+S^2 _{yU} &= \frac{1}{N-1}\sum _{k \in U} (y _k - \bar{y} _U)^2 \\
+&= \frac{1}{N} (\sum _{k \in U} y^2 _k - \frac{1}{N-1}\sum _{k \in U}\sum _{l \in U} y _ky _l), k \neq l
 \end{align}
 $$
 
@@ -2366,27 +2366,42 @@ Proof:
 
 $$
 \begin{align} 
-V(\hat{t}) &= \sum_{k \in U} \sum_{l \in U} (\pi_{kl}-\pi_k \pi_l)  \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} \\
-&= \sum_{k \in U} \frac{y_k}{\pi_k}\frac{y_k}{\pi_k} (\pi_{kk}-\pi_k\pi_k) + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{y_k}{\pi_k} \frac{y_l}{\pi_l} (\pi_{kl}-\pi_k \pi_l) \\
-&= \sum_{k \in U} \frac{y_k}{\frac{n}{N}}\frac{y_k}{\frac{n}{N}} (\frac{n}{N}-\frac{n}{N}\frac{n}{N}) +  \sum_{k \in U, \\ k \neq l} \sum_{l \in U}  (\frac{n(n-1)}{N(N-1)}-\frac{n}{N} \frac{n}{N}) \frac{y_k}{\frac{n}{N}} \frac{y_l}{\frac{n}{N}} \\
-&= \sum_{k \in U}  \frac{n}{N}(1-\frac{n}{N}) \frac{N^2}{n^2} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{n}{N}(\frac{n-1}{N-1}-\frac{n}{N})\frac{N^2}{n^2}y_k y_l \\
-&=  \frac{N^2}{n^2}(1 - \frac{n}{N})\frac{n}{N} (\sum_{k \in U} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) y_k y_l) \\
-&= N^2 \frac{(1 - \frac{n}{N})}{n}\frac{1}{N} (\sum_{k \in U} y_k^2 + \sum_{k \in U, \\ k \neq l} \sum_{l \in U} \frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) y_k y_l) \\
-&= N^2 \frac{(1 - \frac{n}{N})}{n}\frac{1}{N} (\sum_{k \in U} y_k^2 + \frac{1}{N-1} \sum_{k \in U, \\ k \neq l} \sum_{l \in U}  y_k y_l) \\
-&= N^2 \frac{(1 - \frac{n}{N})}{n} S^2_{yU}
+V(\hat{t}) &= \sum _{k \in U} \sum _{l \in U} (\pi _{kl}-\pi _k \pi _l)  \frac{y _k}{\pi _k} \frac{y _l}{\pi _l} \\
+&= \sum _{k \in U} \frac{y _k}{\pi _k}\frac{y _k}{\pi _k} (\pi _{kk}-\pi _k\pi _k) + \sum _{k \in U, \\ k \neq l} \sum _{l \in U} \frac{y _k}{\pi _k} \frac{y _l}{\pi _l} (\pi _{kl}-\pi _k \pi _l) \\
+&= \sum _{k \in U} \frac{y _k}{\frac{n}{N}}\frac{y _k}{\frac{n}{N}} (\frac{n}{N}-\frac{n}{N}\frac{n}{N}) +  \sum _{k \in U, \\ k \neq l} \sum _{l \in U}  (\frac{n(n-1)}{N(N-1)}-\frac{n}{N} \frac{n}{N}) \frac{y _k}{\frac{n}{N}} \frac{y _l}{\frac{n}{N}} \\
+&= \sum _{k \in U}  \frac{n}{N}(1-\frac{n}{N}) \frac{N^2}{n^2} y _k^2 + \sum _{k \in U, \\ k \neq l} \sum _{l \in U} \frac{n}{N}(\frac{n-1}{N-1}-\frac{n}{N})\frac{N^2}{n^2}y _k y _l \\
+&=  \frac{N^2}{n^2}(1 - \frac{n}{N})\frac{n}{N} (\sum _{k \in U} y _k^2 + \sum _{k \in U, \\ k \neq l} \sum _{l \in U} \frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) y _k y _l) \\
 \end{align}
 $$
 
-Note that
-$\frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) = \frac{1}{(\frac{N-n}{N})}(\frac{N(n-1)-n(N-1)}{N(N-1)}) = \frac{1}{(\frac{N-n}{N})}(\frac{n-N}{N(N-1)}) = \frac{N}{N-n} (\frac{n-N}{N(N-1)}) = \frac{1}{N-1}$
+Where
 
-$N^2/n, n/N, (1-n/N)$ broke out.
+$\pi _{k} = \frac{n}{N}$
 
 and
 
-$\pi_{k} = \frac{n}{N}$
+$\pi _{kl} = P(k \cap l \in s) = \frac{\binom{2}{2}{\binom{N-2}{n-2}}}{\binom{N}{n}} = \frac{n(n-1)}{N(N-1)}, k \neq l$.
 
-$\pi_{kl} = P(k \cap l \in s) = \frac{\binom{2}{2}{\binom{N-2}{n-2}}}{\binom{N}{n}} = \frac{n(n-1)}{N(N-1)}, k \neq l$
+Simplify expression outside the parenthesis
+
+$$
+\begin{align} 
+&= N^2 \frac{(1 - \frac{n}{N})}{n}\frac{1}{N} (\sum _{k \in U} y _k^2 + \sum _{k \in U, \\ k \neq l} \sum _{l \in U} \frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) y _k y _l) \\
+\end{align}
+$$
+
+Note that the right term inside the parenthesis can be simplified as
+follows:
+$\frac{1}{(1 - \frac{n}{N})}(\frac{n-1}{N-1}-\frac{n}{N}) = \frac{1}{(\frac{N-n}{N})}(\frac{N(n-1)-n(N-1)}{N(N-1)}) = \frac{1}{(\frac{N-n}{N})}(\frac{n-N}{N(N-1)}) = \frac{N}{N-n} (\frac{n-N}{N(N-1)}) = \frac{1}{N-1}$
+
+It can now be simplified as following:
+
+$$
+\begin{align} 
+&= N^2 \frac{(1 - \frac{n}{N})}{n}\frac{1}{N} (\sum _{k \in U} y _k^2 + \frac{1}{N-1} \sum _{k \in U, \\ k \neq l} \sum _{l \in U}  y _k y _l) \\
+&= N^2 \frac{(1 - \frac{n}{N})}{n} S^2 _{yU}
+\end{align}
+$$
 
 ## Dragningsschema (Urvalsschema)
 
@@ -2489,7 +2504,7 @@ observations in a certain location.
 If $x_k$ is a help variable correlated with $y_k$, then it’s possible to
 choose
 
-$\pi_k = x_k / t_x, n x_k < t_x$
+$\pi _k = x _k / t _x, n x _k < t _x$
 
 A list sequential schema is given by:
 
